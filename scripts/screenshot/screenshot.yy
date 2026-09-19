@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"screenshot",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"screenshot",
+  "parent":{
+    "name":"custom",
+    "path":"folders/src/custom.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

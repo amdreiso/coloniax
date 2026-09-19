@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"input_mapping",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"input_mapping",
+  "parent":{
+    "name":"libs",
+    "path":"folders/src/libs.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

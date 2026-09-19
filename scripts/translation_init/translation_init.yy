@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"translation_init",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"translation_init",
+  "parent":{
+    "name":"translation",
+    "path":"folders/src/translation.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

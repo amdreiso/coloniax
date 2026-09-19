@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"tolin",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"tolin",
+  "parent":{
+    "name":"libs",
+    "path":"folders/src/libs.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"handle_escape",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"handle_escape",
+  "parent":{
+    "name":"custom",
+    "path":"folders/src/custom.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

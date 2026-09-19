@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"vela",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"vela",
+  "parent":{
+    "name":"libs",
+    "path":"folders/src/libs.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

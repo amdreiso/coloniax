@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"planet_generate_name",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"planet_generate_name",
+  "parent":{
+    "name":"custom",
+    "path":"folders/src/custom.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

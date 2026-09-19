@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"prop_create",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"prop_create",
+  "parent":{
+    "name":"planet",
+    "path":"folders/src/planet.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

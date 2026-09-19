@@ -1,0 +1,36 @@
+
+index	= view_camera[0];
+
+width	= 320;
+height	= 180;
+
+zoom	= 2;
+zoomTo	= zoom;
+
+target = noone;
+followSpeed = 0.2;
+
+left	= 0;
+right	= 0;
+top		= 0;
+bottom	= 0;
+
+shakeValue		= 0;
+shakePower		= 2;
+shakeFalloff	= 0.1;
+
+shake = function(value, pwr=2, falloff=0.1) {
+	shakeValue		= value;
+	shakePower		= pwr;
+	shakeFalloff	= falloff;
+}
+
+inView = function(xx, yy, width, height) {
+	var w = width / 2;
+	var h = height / 2;
+	
+	return (
+		right > xx - w && left < xx + w &&
+		bottom > yy - h && top < yy + h
+	);
+}

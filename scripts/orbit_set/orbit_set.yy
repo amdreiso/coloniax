@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"orbit_set",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"orbit_set",
+  "parent":{
+    "name":"physics",
+    "path":"folders/src/physics.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

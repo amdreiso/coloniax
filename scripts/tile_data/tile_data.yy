@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"tile_data",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"tile_data",
+  "parent":{
+    "name":"planet",
+    "path":"folders/src/planet.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

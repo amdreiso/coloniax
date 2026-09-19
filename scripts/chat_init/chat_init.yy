@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"chat_init",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"chat_init",
+  "parent":{
+    "name":"custom",
+    "path":"folders/src/custom.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
