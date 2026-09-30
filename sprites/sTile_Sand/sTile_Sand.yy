@@ -26,8 +26,8 @@
   "nineSlice":null,
   "origin":9,
   "parent":{
-    "name":"Tile",
-    "path":"folders/spr/Tile.yy",
+    "name":"Earth",
+    "path":"folders/spr/Tile/Earth.yy",
   },
   "preMultiplyAlpha":false,
   "resourceType":"GMSprite",

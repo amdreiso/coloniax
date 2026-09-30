@@ -1,4 +1,6 @@
 
+if (Paused) return;
+
 depth = parent.depth - tileIndex.y;
 
 alphaBypass		= max(0, alphaBypass - 1);

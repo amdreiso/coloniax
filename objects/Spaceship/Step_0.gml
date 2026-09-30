@@ -1,14 +1,25 @@
 
+if (Paused) return;
+
 event_inherited();
 
 // Controls
 if (controlling) {
 	Player.x = x;
 	Player.y = y;
+	
+	SOUND.ListenerPosition(x, y);
+	
+	var ty = y+4;
+	var mx = mouse_x, my = mouse_y;
+	mouseAngle = point_direction(x, ty, mx, my);
 }
+
+turretSpriteShootingCooldown = max(0, turretSpriteShootingCooldown - 1);
 
 canMove = (!player.ejected && !Debug.console && !CHAT.open);
 pilot();
+shoot();
 
 angle = dir;
 
@@ -16,10 +27,13 @@ angle = dir;
 hsp = lengthdir_x(spd, dir);
 vsp = lengthdir_y(spd, dir);
 
-orbit_set();
+if (!stationed) orbit_set();
 
-x += hsp;
-y += vsp;
+x += hsp + knockback.x;
+y += vsp + knockback.y;
+
+knockback.x = lerp(knockback.x, 0, 0.03);
+knockback.y = lerp(knockback.y, 0, 0.03);
 
 // Player
 if (instance_exists(Planet)) {
@@ -42,8 +56,9 @@ if (keyboard_check_pressed(vk_space)) {
 	}
 }
 
+
 if (keyboard_check(vk_control)) {
-	if (mouse_check_button(mb_left)) {
+	if (mouse_check_button_pressed(mb_left)) {
 		x = mouse_x;
 		y = mouse_y;
 	}

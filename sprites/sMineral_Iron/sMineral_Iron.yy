@@ -1,10 +1,10 @@
 {
   "$GMSprite":"v2",
   "%Name":"sMineral_Iron",
-  "bboxMode":0,
+  "bboxMode":2,
   "bbox_bottom":14,
-  "bbox_left":0,
-  "bbox_right":28,
+  "bbox_left":8,
+  "bbox_right":23,
   "bbox_top":0,
   "collisionKind":1,
   "collisionTolerance":0,
@@ -19,6 +19,7 @@
   "height":15,
   "HTile":false,
   "layers":[
+    {"$GMImageLayer":"","%Name":"87783a15-94dc-40ca-b2fe-a24183860fb6","blendMode":0,"displayName":"Layer 1","isLocked":false,"name":"87783a15-94dc-40ca-b2fe-a24183860fb6","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":false,},
     {"$GMImageLayer":"","%Name":"cd569bf6-2dc9-4ee0-903a-abb06b4cc18c","blendMode":0,"displayName":"default","isLocked":false,"name":"cd569bf6-2dc9-4ee0-903a-abb06b4cc18c","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
   ],
   "name":"sMineral_Iron",

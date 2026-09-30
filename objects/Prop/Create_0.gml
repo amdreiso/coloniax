@@ -15,6 +15,8 @@ dropTable = new Table();
 
 offset = new Vec2();
 
+emitter = audio_emitter_create();
+
 hitCooldown = 0;
 hit = function() {
 	if (!instance_exists(Player) || hitCooldown) return;

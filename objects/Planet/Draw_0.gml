@@ -1,10 +1,8 @@
 
 if (surface_exists(surface)) {
 	drawPlanet();
-	
 } else {
 	generateSurface();
-	
 }
 
 var outlineSpeed = 0.5;
@@ -15,10 +13,7 @@ if (hovering) {
 }
 
 if (outlineSize > 0.05) {
-	draw_sprite_ext(sIcon_Border, 0, left, top, outlineSize, outlineSize, 0, c_white, 1);
-	draw_sprite_ext(sIcon_Border, 0, right, top, outlineSize, outlineSize, -90, c_white, 1);
-	draw_sprite_ext(sIcon_Border, 0, right, bottom, outlineSize, outlineSize, -180, c_white, 1);
-	draw_sprite_ext(sIcon_Border, 0, left, bottom, outlineSize, outlineSize, -270, c_white, 1);
+	draw_boundaries(outlineSize);
 }
 
 if (Debug.showDebugUI) {

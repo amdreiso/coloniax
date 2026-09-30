@@ -24,6 +24,7 @@ function input_mapping(){
 	
 	// Bindings
 	Input.Bind.bindings = ds_map_create();
+	
 	Input.Bind.Set = function(key, flags={}, ignoreBusy=false, fn=function(){}) {
 		var bind = {
 			control: false,
@@ -35,6 +36,7 @@ function input_mapping(){
 		struct_merge(bind, flags);
 		Input.Bind.bindings[? key] = bind;
 	}
+	
 	Input.Bind.Find = function(key) {
 		var b = Input.Bind.bindings[? key];
 		if (b == undefined) return;

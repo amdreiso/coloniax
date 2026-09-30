@@ -29,6 +29,7 @@ function vela(){
 	Vela_Theme = {};
 	
 	#macro TRANSPARENT -1
+	#macro BUTTON_HOLD_MS 30
 	
 	// Vela theme
 	var themefile = "theme.tolin";
@@ -328,6 +329,10 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 					node.hovered = node.OnMouse(xx, yy);
 					
 					if (node.hovered) {
+						CursorBusy = true;
+						window_set_cursor(cr_handpoint);
+						node.selected = true;
+						
 						var bc = node.style.buttonHoverColor;
 						var alpha = 0.25;
 						
@@ -340,19 +345,34 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 						draw_rectangle_color(xx, yy, xx + node.width - 1, yy + node.height - 1, bc, bc, bc, bc, false);
 						draw_set_alpha(1);
 						
-						if (mouse_check_button_released(mb_left)) {
-							window_set_cursor(cr_default);
-							node.callback.Call([node]);
+						if (mouse_check_button(mb_left) && node.canHold) {
+							node.tick += 1;
+							if (node.tick >= BUTTON_HOLD_MS) {
+								node.held = true;
+								node.callback.Call([node, true]);
+							}
 						}
 						
-						CursorBusy = true;
-						window_set_cursor(cr_handpoint);
-						node.selected = true;
+						if (mouse_check_button_released(mb_left)) {
+							if (node.held) {
+								node.held = false;
+								node.tick = 0;
+								CursorBusy = false;
+								window_set_cursor(cr_default);
+							} else {
+								node.tick = 0;
+								CursorBusy = false;
+								window_set_cursor(cr_default);
+								node.callback.Call([node, false]);
+							}
+						}
+						
 					}
 					
 					if (node.selected && !node.hovered) {
 						CursorBusy = false;
 						node.selected = false;
+						node.tick = 0;
 						window_set_cursor(cr_default);
 					}
 					
@@ -524,10 +544,12 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 		}
 		
 		if (self.dragging) {
+			CursorBusy = true;
 			self.initPos = new Vec2(mx + self.dragOffset.x, my + self.dragOffset.y);
 			
 			if (mouse_check_button_released(mb_left)) {
 				self.dragging = false;
+				CursorBusy = false;
 			}
 		}
 	}
@@ -547,6 +569,8 @@ function v_Node() constructor {
 	self.selected = false;
 	self.editing = false;
 	self.style = v_GetDefaultStyle();
+	self.tick = 0;
+	self.held = false;
 	
 	self.callback = new Callback();
 	
@@ -596,6 +620,7 @@ function v_Text(text, styleComponents={}) : v_Node() constructor {
 function v_Button(textOrSprite, func=function(){}, styleComponents={}) : v_Node() constructor {
 	self.type = eNodeType.BUTTON;
 	self.callback.Register(func);
+	self.canHold = true;
 	
 	if (is_string(textOrSprite)) {
 		self.text = textOrSprite;
@@ -633,10 +658,12 @@ function v_Meter(width, height, maxvalue, get=function(){}, styleComponents={}) 
 		maxvalue: maxvalue,
 	};
 	
+	var defaultColor = c_blue;
+	
 	self.ApplyStyle({
 		margin: new Dim(0, 10),
-		borderColor: c_lime,
-		backgroundColor: c_lime,
+		borderColor: defaultColor,
+		backgroundColor: defaultColor,
 	});
 	self.ApplyStyle(styleComponents);
 	self.UpdateLayout();

@@ -1,10 +1,7 @@
 function draw_debug_ui(){
-	
 	if (!Debug.showDebugUI) return;
-		
 	content = [];
 	maxstrlen = 0;
-	
 	_ = function(str, color=c_white) {
 		str = " " + str + " ";
 		maxstrlen = max(maxstrlen, string_length(str));
@@ -19,7 +16,7 @@ function draw_debug_ui(){
 			return;
 		}
 		
-		var left = size / 2 - ceil(len / 2);
+		var left  = size / 2 - ceil(len / 2);
 		var right = size / 2 - floor(len / 2);
 		
 		var final = string_repeat("=", left) + title + string_repeat("=", right);
@@ -29,6 +26,7 @@ function draw_debug_ui(){
 	line("info");
 	_($"{Manifest.name} v{Manifest.version} {Manifest.build} by {Manifest.author}");
 	_($"fps: {fps}");
+	_($"processes: {array_length(Process.list)}");
 	_($"kbs: {bool_string(KeyboardBusy)} mbs: {bool_string(CursorBusy)}");
 	
 	if (instance_exists(Spaceship)) {

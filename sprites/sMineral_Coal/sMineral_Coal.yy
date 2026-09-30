@@ -1,10 +1,10 @@
 {
   "$GMSprite":"v2",
   "%Name":"sMineral_Coal",
-  "bboxMode":0,
+  "bboxMode":2,
   "bbox_bottom":14,
-  "bbox_left":1,
-  "bbox_right":29,
+  "bbox_left":8,
+  "bbox_right":23,
   "bbox_top":0,
   "collisionKind":1,
   "collisionTolerance":0,
@@ -13,6 +13,10 @@
   "For3D":false,
   "frames":[
     {"$GMSpriteFrame":"v1","%Name":"cfc52030-a93a-404b-b997-da271cb742d2","name":"cfc52030-a93a-404b-b997-da271cb742d2","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"618ea48d-1145-4df9-8458-12c622c2378e","name":"618ea48d-1145-4df9-8458-12c622c2378e","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"d1459ae2-d7a3-4461-b7c5-5f48f9bfabf0","name":"d1459ae2-d7a3-4461-b7c5-5f48f9bfabf0","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"1584f62c-39f9-44c7-93be-d0fd896e2a20","name":"1584f62c-39f9-44c7-93be-d0fd896e2a20","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"7d64288f-2068-43f1-bbf9-529bfb376e57","name":"7d64288f-2068-43f1-bbf9-529bfb376e57","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,
@@ -20,6 +24,7 @@
   "HTile":false,
   "layers":[
     {"$GMImageLayer":"","%Name":"cd569bf6-2dc9-4ee0-903a-abb06b4cc18c","blendMode":0,"displayName":"default","isLocked":false,"name":"cd569bf6-2dc9-4ee0-903a-abb06b4cc18c","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
+    {"$GMImageLayer":"","%Name":"57f878cc-fed1-4a0f-8d27-4c5dcfcb56b2","blendMode":0,"displayName":"Layer 1","isLocked":false,"name":"57f878cc-fed1-4a0f-8d27-4c5dcfcb56b2","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
   ],
   "name":"sMineral_Coal",
   "nineSlice":null,
@@ -49,7 +54,7 @@
     },
     "eventStubScript":null,
     "eventToFunction":{},
-    "length":1.0,
+    "length":5.0,
     "lockOrigin":false,
     "moments":{
       "$KeyframeStore<MomentsEventKeyframe>":"",
@@ -71,6 +76,18 @@
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
                 "0":{"$SpriteFrameKeyframe":"","Id":{"name":"cfc52030-a93a-404b-b997-da271cb742d2","path":"sprites/sMineral_Coal/sMineral_Coal.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
               },"Disabled":false,"id":"fc601166-81ca-4ed8-8f0c-a5ec51487b15","IsCreationKey":false,"Key":0.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"618ea48d-1145-4df9-8458-12c622c2378e","path":"sprites/sMineral_Coal/sMineral_Coal.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"74ca3838-52c0-4a60-9f69-2ad95881ad97","IsCreationKey":false,"Key":1.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"d1459ae2-d7a3-4461-b7c5-5f48f9bfabf0","path":"sprites/sMineral_Coal/sMineral_Coal.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"d304d9c3-b332-4eb5-8707-4d5bcc79be50","IsCreationKey":false,"Key":2.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"1584f62c-39f9-44c7-93be-d0fd896e2a20","path":"sprites/sMineral_Coal/sMineral_Coal.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"32b8d9d0-c3cb-44ad-b357-1ed5c25e1c87","IsCreationKey":false,"Key":3.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"7d64288f-2068-43f1-bbf9-529bfb376e57","path":"sprites/sMineral_Coal/sMineral_Coal.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"4e66545a-e6e9-4401-969e-9835566ffc5d","IsCreationKey":false,"Key":4.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
           ],"resourceType":"KeyframeStore<SpriteFrameKeyframe>","resourceVersion":"2.0",},"modifiers":[],"name":"frames","resourceType":"GMSpriteFramesTrack","resourceVersion":"2.0","spriteId":null,"trackColour":0,"tracks":[],"traits":0,},
     ],
     "visibleRange":null,

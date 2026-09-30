@@ -8,7 +8,9 @@ zoom	= 2;
 zoomTo	= zoom;
 
 target = noone;
-followSpeed = 0.2;
+
+defaultFollowSpeed = 1;
+followSpeed = 1;
 
 left	= 0;
 right	= 0;
@@ -18,6 +20,8 @@ bottom	= 0;
 shakeValue		= 0;
 shakePower		= 2;
 shakeFalloff	= 0.1;
+
+offset = new Vec2();
 
 shake = function(value, pwr=2, falloff=0.1) {
 	shakeValue		= value;

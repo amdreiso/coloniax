@@ -12,10 +12,10 @@ part_type_sprite(particleFire, sParticle_Fire_2, false, false, true);
 part_type_speed(particleFire, 0, 0.10, -0.0001, 0);
 part_type_colour3(particleFire, c_yellow, c_red, c_black);
 part_type_alpha2(particleFire, 1, 0);
-part_type_size(particleFire, 0.8, 1.5, -0.001, 0);
+part_type_size(particleFire, 0.8, 1.5, 0.025, 0);
 part_type_direction(particleFire, -180, 180, 0, 0);
 part_type_orientation(particleFire, -180, 180, 0, 0, true);
-part_type_life(particleFire, 2 * 60, 4 * 60);
+part_type_life(particleFire, 4 * 60, 8 * 60);
 
 particleSplash = part_type_create();
 part_type_direction(particleSplash, 60, 120, 0, 0);
@@ -31,12 +31,31 @@ part_type_life(particleFoam, 15, 30);
 part_type_size(particleFoam, 0.80, 1.20, -0.001, 0.001);
 part_type_alpha2(particleFoam, 1, 0);
 
+particleFlame = part_type_create();
+part_type_sprite(particleFlame, sParticle_Flames, false, false, true);
+part_type_direction(particleFlame, 90, 90, 0, 0);
+part_type_life(particleFlame, 60, 180);
+part_type_speed(particleFlame, 0.2, 0.5, 0, 0);
+part_type_alpha2(particleFlame, 1, 0);
+
+particleFlash = part_type_create();
+part_type_sprite(particleFlash, sParticle_Flash, false, false, true);
+part_type_life(particleFlash, 3, 4);
+
+particleSmoke = part_type_create();
+part_type_sprite(particleSmoke, sParticle_Smoke, false, false, true);
+part_type_life(particleSmoke, 2 * 60, 5 * 60);
+part_type_alpha2(particleSmoke, 0.7, 0.0);
+part_type_direction(particleSmoke, 90, 90, 0, 0);
+part_type_speed(particleSmoke, 0.10, 0.50, -0.01, 0);
+
+
 // Space Generation
 chunks = {};
 job = [];
 
 function chunkGetKey(x, y) {
-	key = $"{x}x{y}";
+	var key = $"{x}x{y}";
 	return key;
 }
 

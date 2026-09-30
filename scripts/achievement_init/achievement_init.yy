@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"achievement_init",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"achievement_init",
+  "parent":{
+    "name":"data",
+    "path":"folders/src/data.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

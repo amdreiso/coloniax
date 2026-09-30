@@ -83,17 +83,28 @@ function effect_init(){
 	EFFECT.Register(
 		eEffectID.Flames,
 		function(e){
-			CHAT.SendTime("Player got burned");
 		},
 		function(e){
 			static tick = 0;
 			tick ++;
 			if (tick > 30) {
-				CHAT.SendTime("WARNING:: You are burning!");
 				tick = 0;
+			}
+			
+			if (irandom(5) > 4) {
+				var part = instance_create_depth(e.x, e.y, e.depth, Particle);
+				part.setLifetime(1);
+				part.setAmount(1);
+				part.setParticle(World.particleFlame);
+				part.setRange(6, 6);
 			}
 		},
 		function(e){
+			with (e) {
+				gpu_set_fog(true, c_orange, 0, 1);
+				draw_sprite_ext(sprite, frame, x, y, xscale, image_yscale, angle, c_white, abs(sin(current_time * 0.01) * 0.30) + 0.60);
+				gpu_set_fog(false, c_white, 0, 1);
+			}
 		},
 		function(e){
 		}

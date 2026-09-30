@@ -1,9 +1,24 @@
 event_inherited();
 
 sun = instance_nearest(x, y, Sun);
+orbitRadius = point_distance(sun.x, sun.y, x, y);
+orbitAngle = point_direction(sun.x, sun.y, x, y);	
 mass = 10000;
+motion = new Vec2();
 
 children = new Children();
+riders = [];
+riderPush = function(obj) {
+	if (!instance_exists(obj)) return;
+	array_push(riders, obj);
+}
+riderRemove = function(obj) {
+	for (var i = 0; i < array_length(riders); i++) {
+		if (riders[i] == obj) {
+			array_delete(riders, i, 1);
+		}
+	}
+}
 
 hsp = 0;
 vsp = 0;
@@ -17,7 +32,7 @@ noise = new perlin(seed);
 
 randomize();
 
-type = irandom(ePlanetType.COUNT - 1);
+type				= irandom(ePlanetType.COUNT - 1);
 planet				= PLANET.Generate(type);
 chunkSizes			= planet.parameters.getChunkSizes();
 geologyChunkSizes	= planet.parameters.getGeologyChunkSizes();
@@ -64,7 +79,7 @@ function TileData(this, planet, x, y) constructor {
 		}
 	}
 	
-	static CreateProp = function(this, obj, components = {}, occupy=true, dumbass=false) {
+	static CreateProp = function(this, obj, components = {}, occupy=true) {
 		if (self.occupied) return false;
 		
 		var prop = prop_create(this, obj, self.x, self.y, self.index);
@@ -79,20 +94,16 @@ function TileData(this, planet, x, y) constructor {
 			var xx = self.index.x + size[i][0];
 			var yy = self.index.y + size[i][1];
 			
+			if (size[i][1] % 2 != 0 && yy % 2 == 0) {
+				xx += 1;
+			}
+			
 			var tile = self.parent.grid[# xx, yy];
 			if (tile != undefined) {
 				tile.occupied = true;
 				
-				if (dumbass) {
-					if (tile.CreateProp(self.parent, Mineral, {
-						sprite: sTile_Default_Top,
-					}, false)) {
-						CHAT.Send($"Placed prop of size {size[i][0]}x{size[i][1]} at x={xx} y={yy}");
-					}
-				}
 			}
 		}
-		
 		return true;
 	}
 	
@@ -102,14 +113,22 @@ function TileData(this, planet, x, y) constructor {
 	var components = TILE.Get(self.tileID).components;
 	
 	if (components.canSpawnMinerals) {
-		if (g >= 70 && t >= 67) {
-			self.CreateProp(self.parent, Mineral, {
-				sprite: sMineral_Iron,
-			}, false);
-		} else if (g >= 65 && t <= 58) {
-			self.CreateProp(self.parent, Mineral, {
-				sprite: sMineral_Coal,
-			}, false);
+		for (var i = 0; i < array_length(planet.parameters.mineralSpawnTable); i++) {
+			var m = planet.parameters.mineralSpawnTable[i];
+			var gmin = m.geologyMin, gmax = m.geologyMax;
+			var tmin = m.terrainMin, tmax = m.terrainMax;
+			var value = struct_get(planet.resources, m.resource);
+			
+			var spr = sMineral_Coal;
+			if (m.resource == "iron") {
+				spr = sMineral_Iron;
+			}
+			
+			if ((g >= gmin && g <= gmax) && (t >= (tmin - value) && t <= tmax)) {
+				self.CreateProp(self.parent, Mineral, {
+					sprite: spr,
+				}, false);
+			}
 		}
 	}
 	
@@ -169,7 +188,9 @@ generateSurface = function() {
 		
 		surface_set_target(surface);
 		
-		if (tile.tileID == eTileID.WATER || tile.tileID == eTileID.LAVA) {
+		var t = TILE.Get(tile.tileID).components;
+		
+		if (t.isLiquid) {
 			gpu_set_blendmode(bm_subtract);
 			draw_sprite_ext(
 				spr, index,

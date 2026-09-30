@@ -18,6 +18,10 @@ item_data();
 tile_data();
 planet_init();
 effect_init();
+sound_init();
+await_init();
+process_init();
+achievement_init();
 
 // Draw
 draw_set_font(fnt_main);
@@ -34,7 +38,7 @@ display_set_gui_maximise();
 // Globals
 G Manifest;
 Manifest = {
-	name			: "COLONIAX",
+	name			: "coloniax",
 	version			: "0.0",
 	build			: "indev",
 	author			: "andy (c) lowqualitypictures",
@@ -49,6 +53,7 @@ Debug = {
 }
 
 G Paused;
+Paused = false;
 
 G GameSpeed;
 GameSpeed = 1;
@@ -88,4 +93,14 @@ if (file_exists("main.tolin")) {
 	tolin_run(tolinState);
 }
 
-audio_play_sound(snd_traveling_0, 0, true, 0.10);
+audio_group_load(audiogroup_default);
+audio_group_load(audiogroup_music);
+
+Process.Push(function() {
+	if (audio_group_is_loaded(audiogroup_music)) {
+		audio_play_sound(snd_traveling_1, 0, true, 1);
+		return true;
+	}
+});
+
+showSavingIcon = 0;

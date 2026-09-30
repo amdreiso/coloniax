@@ -2,14 +2,27 @@
 event_inherited();
 
 sun = instance_nearest(x, y, Sun);
+orbitRadius = point_distance(sun.x, sun.y, x, y);
+orbitAngle  = point_direction(sun.x, sun.y, x, y);
 controlling = true;
 
+shadowSurface = surface_create(64, 64);
+
+visionDistance = 512;
+
 // Camera
-var cam = instance_create_depth(x, y, depth, Camera);
+cam = instance_create_depth(x, y, depth, Camera);
 cam.target = self;
 
 instance_create_depth(x + 200, y + 200, depth, Enemy_Mercenary);
 instance_create_depth(x + 400, y + 200, depth, Enemy_Mother);
+
+// Modules
+modules = {
+	turret:			eItemID.BASIC_TURRET,
+	gyro:			eItemID.IMPROVED_GYRO,
+	propeller:		eItemID.IMPROVED_PROPELLER,
+};
 
 // Player
 player = {
@@ -19,21 +32,70 @@ player = {
 // Health
 hp = new Stat();
 
+// Turret
+turretSprite = sTurret_Canon;
+turretSpriteShooting = sTurret_Canon_Shooting;
+turretSpriteShootingCooldown = 0;
+turretAngle = 0;
+turretProjectileOffset = 16;
+
 // Movement
 canMove = true;
 dir = irandom(360);
+
 acceleration = 0.025;
 deceleration = 0.005;
-
 maxTurnSpeed = 1.05;
 turnSpeed = 0;
 turnForce = 0.085;
-onPlanet = false;
-
 maxSpeed = 5;
+
+applyModules = function() {
+	// propeller
+	acceleration = 0.025;
+	deceleration = 0.005;
+	maxSpeed = 5;
+	
+	// gyro stuff
+	maxTurnSpeed	= 0;
+	turnForce		= 0;
+	
+	// Turret
+	if (modules.turret != undefined) {
+		var turret = ITEM.Get(modules.turret).components;
+		turretSprite = turret.sprite;
+		turretFirerate = turret.firerate;
+	}
+	
+	// Gyro
+	if (modules.gyro != undefined) {
+		var gyro = ITEM.Get(modules.gyro).components;
+		turnForce = gyro.turnForce;
+		maxTurnSpeed = gyro.maxTurnSpeed;
+	}
+	
+	// Propeller
+	if (modules.propeller != undefined) {
+		var propeller = ITEM.Get(modules.propeller).components;
+		acceleration	= propeller.acceleration;
+		deceleration	= propeller.deceleration;
+		maxSpeed		= propeller.maxSpeed;
+	}
+}
+
+applyModules();
+
+onPlanet = false;
 spd = 0;
 hsp = 0;
 vsp = 0;
+knockback = new Vec2();
+
+stationed = false;
+
+onPlayerEnter = function() {
+	SOUND.PlayCameraRelative(eSoundType.SFX, snd_door, false, 1);
+}
 
 ejectPlayer = function() {
 	var con = (spd < 0.05 && onPlanet);
@@ -44,10 +106,22 @@ ejectPlayer = function() {
 	player.ejected = true;
 	
 	var planet = instance_nearest(x, y, Planet);
-	Player.planet = planet;
+	planet.riderPush(id);
+	planet.riderPush(Player);
 	
+	Player.planet = planet;
+	Player.planetPosition = new Vec2(
+		Player.x - planet.x,
+		Player.y - planet.y,
+	);
+	
+	stationed = true;
 	menuOpen = false;
 	controlling = false;
+	
+	onPlayerEnter();
+	
+	ACHIEVEMENT.Find(eAchievementType.ON_PLANET_LANDING);
 }
 
 boardPlayer = function() {
@@ -57,10 +131,16 @@ boardPlayer = function() {
 	Camera.target = Spaceship;
 	player.ejected = false;
 	
+	stationed = false;
+	
 	Player.controlling = false;
+	Player.planet.riderRemove(id);
+	Player.planet.riderRemove(Player);
 	Player.planet = noone;
 	
 	controlling = true;
+	
+	onPlayerEnter();
 }
 
 createJetParticles = function(xoff, yoff, val) {
@@ -74,22 +154,33 @@ createJetParticles = function(xoff, yoff, val) {
 	var emitter = part_emitter_create(World.ps);
 	part_emitter_region(World.ps, emitter, xx - r, xx + r, yy - r, yy + r, ps_shape_rectangle, ps_distr_gaussian);
 	part_emitter_burst(World.ps, emitter, World.particleFire, n);
-	
 }
+
+propellerSound = -1;
 
 pilot = function() {
 	if (keyboard_check(ord("W")) && canMove) {
 		spd = min(maxSpeed, spd + acceleration);
 		var offset = 15;
+		createJetParticles(0, 0, 16);
 		
-		createJetParticles(-5, 0, 16);
-		createJetParticles(5, 0, 16);
+		var gain = SOUND.GetRelativeGain(1) * Settings.audio.sfx * Settings.audio.volume;
+		
+		if (propellerSound == -1 || !audio_is_playing(snd_propeller_0)) {
+			propellerSound = SOUND.Play(eSoundType.SFX, snd_propeller_0, false, gain, 1);
+		} else {
+			audio_sound_gain(propellerSound, gain, 200);
+		}
 		
 	} else {
 		spd = max(0, spd - deceleration);
-		
+		if (propellerSound != -1) {
+			audio_sound_gain(propellerSound, 0, 100);
+			if (audio_sound_get_gain(propellerSound) <= 0.1) {
+				propellerSound = -1;
+			}
+		}
 	}
-	
 	steer();
 }
 
@@ -113,6 +204,37 @@ steer = function() {
 	dir += turnSpeed;
 }
 
+shoot = function() {
+	if (!controlling || onPlanet) return;
+	var projectileID = eItemID.BASIC_PROJECTILE;
+	
+	if (keyboard_check_pressed(vk_space) && turretSpriteShootingCooldown == 0 && !CursorBusy) {
+		var xx = x + lengthdir_x(turretProjectileOffset, mouseAngle);
+		var yy = y + lengthdir_y(turretProjectileOffset, mouseAngle);
+		var inst = instance_create_depth(xx, yy, depth + 100, Projectile);
+		var proj = ITEM.Get(projectileID).components;
+		
+		inst.sprite = proj.sprite;
+		inst.spd = proj.spd + spd;
+		inst.dir = mouseAngle;
+		
+		knockback.x -= lengthdir_x(proj.knockback, mouseAngle);
+		knockback.y -= lengthdir_y(proj.knockback, mouseAngle);
+		
+		turretSpriteShootingCooldown = turretFirerate;
+		
+		SOUND.PlayCameraRelative(eSoundType.SFX, snd_plasma_gun, false, 0.5, [0.90, 1.00]);
+		
+		var part = instance_create_depth(xx, yy, depth, Particle);
+		part.setAmount(6);
+		part.setLifetime(1);
+		part.setParticle(World.particleSmoke);
+		part.setRange(6, 6);
+		
+		Camera.shake(2, 1);
+	}
+}
+
 x = room_width  / 2;
 y = room_height / 2;
 
@@ -123,25 +245,41 @@ angle = 0;
 scale = 1;
 color = c_white;
 alpha = 1;
-
-turretAngle = 0;
+mouseAngle = 0;
 
 drawSpaceship = function(spr, x, y, scale, angle, color, alpha, offsetFactor = 1) {
 	var s = scale;
 	var c = c_red;
 	
 	var ty = y+4;
-	var mx = mouse_x, my = mouse_y;
-	var t = point_direction(x, ty, mx, my);
-	if (controlling) turretAngle = t;
+	if (controlling && !Paused && point_distance(x, y, mouse_x, mouse_y) > 20) {
+		turretAngle = point_direction(x, y, mouse_x, mouse_y);
+	}
 	
-	draw_sprite_stacked(sTurret_Canon, x, ty, SPRITE_STACKED_OFFSET, s, s, turretAngle, color, alpha);
+	var ts = (turretSpriteShootingCooldown) ? turretSpriteShooting : turretSprite;
 	
+	if (onPlanet) {
+		if (!surface_exists(shadowSurface)) {
+			shadowSurface = surface_create(64, 64);
+		} else {
+			surface_set_target(shadowSurface);
+	
+			draw_clear_alpha(c_black, 0);
+			draw_sprite_stacked(ts, 32, 32, SPRITE_STACKED_OFFSET, s, s, turretAngle, c_black, alpha);
+			draw_sprite_stacked(spr, 32, 32, SPRITE_STACKED_OFFSET * offsetFactor, s, s, angle, c_black, alpha);
+	
+			surface_reset_target();
+		
+			draw_surface_ext(shadowSurface, x - 32, y - 32 + 4, 1, 1, 0, c_white, 0.25);
+		}
+	}
+	
+	draw_sprite_stacked(ts, x, ty, SPRITE_STACKED_OFFSET, s, s, turretAngle, color, alpha);
 	draw_sprite_stacked(spr, x, y, SPRITE_STACKED_OFFSET * offsetFactor, s, s, angle, color, alpha);
+	
 	
 	if (hp.value < 20) {
 		var a = sin(current_time / 300) * 0.25;
-		
 		draw_set_alpha(a);
 		draw_sprite_stacked(spr, x, y, SPRITE_STACKED_OFFSET * offsetFactor, s, s, angle, c_red, a);
 		draw_set_alpha(1);
@@ -179,7 +317,6 @@ Input.Bind.Set(ord("E"), {}, , function(){
 	if (!controlling) return;
 	menuOpen = !menuOpen;
 });
-
 
 main = new v_Panel(200, 200, {
 	direction: eNodeDirection.COLUMN,
@@ -270,7 +407,6 @@ section4.Push(new v_Surface(160, 160, function(xx, yy, width, height){
 	drawSpeedometer(xx, yy, height);
 }));
 main.Push(section4);
-
 main.Push(v_Separator());
 
 

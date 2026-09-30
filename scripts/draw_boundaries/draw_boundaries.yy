@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"draw_boundaries",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"draw_boundaries",
+  "parent":{
+    "name":"custom",
+    "path":"folders/src/custom.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

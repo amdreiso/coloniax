@@ -25,6 +25,205 @@ function fovy(){
 	}
 }
 
+function settings_init() {
+	G Settings;
+	Settings = settings_get();
+	
+	#macro SETTINGS_FILE "settings.json"
+}
+
+function settings_get(){
+	// Default settings
+	var stt = {
+		camera : {
+			shakeIntensity: 1,
+		},
+		
+		graphics : {
+			lighting: true,
+		},
+		
+		audio: {
+			ui: 1,
+			sfx: 1,
+			music: 1.0,
+			volume: 1,
+			zoomFalloff: 2,
+		},
+	};
+	
+	var load = settings_load();
+	struct_merge_recursive(stt, load);
+	
+	return stt;
+}
+
+function settings_save() {
+	var file = SETTINGS_FILE;
+	var content = json_stringify(Settings);
+	var buffer = buffer_create(string_byte_length(content)+1, buffer_fixed, 1);
+	buffer_write(buffer, buffer_string, content);
+	buffer_save(buffer, file);
+	buffer_delete(buffer);
+	
+	Main.showSavingIcon = 4 * 60;
+}
+
+function settings_load() {
+	var file = SETTINGS_FILE;
+	if (!file_exists(file)) return {};
+	
+	var content = fread(fopen(file), buffer_string);
+	return json_parse(content);
+}
+
+function await_init() {
+	G Await;
+	Await = {};
+	Await.list = [];
+	Await.Register = function(milliseconds, f=function(){}) {
+		array_push(Await.list, {
+			ms: milliseconds,
+			fn: f,
+		});
+	}
+	Await.Run = function() {
+		for (var i = 0; i < array_length(Await.list); i++) {
+			var a = Await.list[i];
+			a.ms = max(0, a.ms - 1);
+			if (a.ms == 0) {
+				a.fn();
+				array_delete(Await.list, i, 1);
+			}
+		}
+	}
+}
+
+function sound_init() {
+	G SOUND; SOUND = {};
+	
+	enum eSoundType {
+		SFX,
+		MUSIC,
+		UI,
+	}
+	
+	var m = 1;
+	SOUND.distance		= 100 * m;
+	SOUND.dropoff		= 500 * m;
+	SOUND.multiplier	= 1;
+	
+	audio_falloff_set_model(audio_falloff_exponent_distance);
+	audio_listener_orientation(0, 1, 0, 0, 0, 1);
+	
+	SOUND.Play = function(type, snd, loop=false, gain=1, pitch=random_range(0.70, 1.00)){
+		var gainType = 1;
+
+		switch (type) {
+			case eSoundType.SFX:
+				gainType = Settings.audio.sfx;
+				break;
+
+			case eSoundType.MUSIC:
+				gainType = Settings.audio.music;
+				break;
+
+			case eSoundType.UI:
+				gainType = Settings.audio.UI;
+				break;
+		}
+
+		if (is_array(pitch)) {
+			if (array_length(pitch) > 1) then pitch = random_range(pitch[0], pitch[1]);
+		}
+		var g = gain * gainType * Settings.audio.volume;
+		return audio_play_sound(snd, 0, loop, g, 0, pitch);
+	}
+	
+	SOUND.GetRelativeGain = function(gain) {
+		return min(1, gain / (Camera.zoom * Settings.audio.zoomFalloff));
+	}
+	
+	SOUND.PlayCameraRelative = function(type, snd, loop=false, gain=1, pitch=random_range(0.70, 1.00)){
+		var gainType = 1;
+
+		switch (type) {
+			case eSoundType.SFX:
+				gainType = Settings.audio.sfx;
+				break;
+
+			case eSoundType.MUSIC:
+				gainType = Settings.audio.music;
+				break;
+
+			case eSoundType.UI:
+				gainType = Settings.audio.UI;
+				break;
+		}
+
+		if (is_array(pitch)) {
+			if (array_length(pitch) > 1) then pitch = random_range(pitch[0], pitch[1]);
+		}
+		var g = gain * gainType * Settings.audio.volume;
+		var actualgain = min(1, g / (Camera.zoom * Settings.audio.zoomFalloff))
+		return audio_play_sound(snd, 0, loop, actualgain, 0, pitch);
+	}
+
+	SOUND.PlayAt = function(type, snd, x, y, loop=false, gain=1, pitch=random_range(0.70, 1.00), offset=0){
+		var gainType = 1;
+
+		switch (type) {
+			case eSoundType.SFX:
+				gainType = Settings.audio.sfx;
+				break;
+
+			case eSoundType.MUSIC:
+				gainType = Settings.audio.music;
+				break;
+
+			case eSoundType.UI:
+				gainType = Settings.audio.UI;
+				break;
+		}
+
+		if (is_array(pitch)) {
+			if (array_length(pitch) > 1) then pitch = random_range(pitch[0], pitch[1]);
+		}
+		var g = gain * gainType * Settings.audio.volume;
+		return audio_play_sound_at(snd, x, y, 0, SOUND.distance, SOUND.dropoff, SOUND.multiplier, loop, 0, g, offset, pitch);
+	}
+	
+	SOUND.PlayOn = function(emitter, type, snd, loop=false, gain=1, pitch=random_range(0.70, 1.00), offset=0){
+		if (!audio_emitter_exists(emitter)) return;
+		
+		var gainType = 1;
+
+		switch (type) {
+			case eSoundType.SFX:
+				gainType = Settings.audio.sfx;
+				break;
+
+			case eSoundType.MUSIC:
+				gainType = Settings.audio.music;
+				break;
+
+			case eSoundType.UI:
+				gainType = Settings.audio.UI;
+				break;
+		}
+
+		if (is_array(pitch)) {
+			if (array_length(pitch) > 1) then pitch = random_range(pitch[0], pitch[1]);
+		}
+		var g = gain * gainType * Settings.audio.volume;
+		return audio_play_sound_on(emitter, snd, loop, 0, g, offset, pitch, 0);
+	}
+
+	SOUND.ListenerPosition = function(x, y) {
+		audio_listener_position(x, y, 0);
+	}
+}
+
 function draw_on_surface(surface, func=function(){}) {
 	if (!surface_exists(surface)) return;
 	surface_set_target(surface);
@@ -755,8 +954,8 @@ function show_object_status() {
 	}
 }
 
-function mouse_box_collision() {
-	var on = (mouse_x > bbox_left && mouse_x < bbox_right && mouse_y > bbox_top && mouse_y < bbox_bottom);
+function mouse_box_collision(left=bbox_left, right=bbox_right, top=bbox_top, bottom=bbox_bottom) {
+	var on = (mouse_x > left && mouse_x < right && mouse_y > top && mouse_y < bottom);
 	return on;
 }
 
