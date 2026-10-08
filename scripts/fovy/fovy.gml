@@ -44,10 +44,10 @@ function settings_get(){
 		},
 		
 		audio: {
-			ui: 1,
-			sfx: 1,
-			music: 1.0,
 			volume: 1,
+			music: 0.75,
+			sfx: 1,
+			ui: 1,
 			zoomFalloff: 2,
 		},
 	};

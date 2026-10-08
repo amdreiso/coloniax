@@ -40,6 +40,18 @@ function item_data(){
 				return c;
 			}
 			
+			case eItemType.GUN: {
+				c = {
+					projectileID: -1,
+					
+					damage: 0,
+					recoil: 0,
+					
+				};
+				struct_merge_recursive(c, components);
+				return c;
+			}
+			
 			case eItemType.SPACESHIP_MODULE_TURRET: {
 				c = {
 					type: eItemType.SPACESHIP_MODULE_TURRET,
@@ -75,6 +87,8 @@ function item_data(){
 					type: eItemType.SPACESHIP_MODULE_GYRO,
 					turnForce: 0,
 					maxTurnSpeed: 0,
+
+					independent: false,
 				}
 				struct_merge_recursive(c, components);
 				return c;
@@ -112,6 +126,7 @@ function item_data(){
 	
 	ITEM.Register(eItemID.WOOD, ITEM.Prototype(eItemType.BLANK, sItem_Wood));
 	ITEM.Register(eItemID.STEEL, ITEM.Prototype(eItemType.BLANK, sItem_Steel));
+	ITEM.Register(eItemID.URANIUM, ITEM.Prototype(eItemType.BLANK, sItem_Uranium));
 	
 	#endregion
 	
@@ -163,6 +178,8 @@ function item_data(){
 	ITEM.Register(eItemID.IMPROVED_GYRO, ITEM.Prototype(eItemType.SPACESHIP_MODULE_GYRO, -1, {
 		turnForce: 0.1,
 		maxTurnSpeed: 2.0,
+		independent: true,
+		minSpeed: 0.25,
 	}));
 	
 	// Propellers
@@ -191,8 +208,5 @@ function item_data(){
 	}));
 	
 	#endregion
-	
-	
-	
 	
 }

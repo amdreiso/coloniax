@@ -300,6 +300,7 @@ inventory.Add(eItemID.BASIC_SOLAR_PANEL, 99);
 inventory.Add(eItemID.BASIC_MINING_DRILL, 99);
 inventory.Add(eItemID.WOOD, 99);
 inventory.Add(eItemID.STEEL, 99);
+inventory.Add(eItemID.URANIUM, 99);
 
 slotIndex = 0;
 slotSet = function(index){

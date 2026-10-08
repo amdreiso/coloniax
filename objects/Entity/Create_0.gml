@@ -12,4 +12,3 @@ behavior = undefined;
 // Health
 isInvincible = false;
 hp = new Stat(100);
-

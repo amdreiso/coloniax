@@ -50,6 +50,10 @@ turnSpeed = 0;
 turnForce = 0.085;
 maxSpeed = 5;
 
+// Gyro
+gyroIndependent = false;
+gyroMinimumSpeed = 0;
+
 applyModules = function() {
 	// propeller
 	acceleration = 0.025;
@@ -72,6 +76,8 @@ applyModules = function() {
 		var gyro = ITEM.Get(modules.gyro).components;
 		turnForce = gyro.turnForce;
 		maxTurnSpeed = gyro.maxTurnSpeed;
+		gyroIndependent = gyro.independent;
+		gyroMinimumSpeed = gyro.minSpeed;
 	}
 	
 	// Propeller
@@ -185,16 +191,23 @@ pilot = function() {
 }
 
 steer = function() {
+	if (!controlling) return;
+
 	var left = keyboard_check(ord("A"));
 	var right = keyboard_check(ord("D"));
 	
 	var speedFactor = (spd / maxSpeed);
+	var turnSpeedModifier = 1;
+	if (gyroIndependent) {
+		speedFactor = max(gyroMinimumSpeed, (spd / maxSpeed));
+		turnSpeedModifier = 1;
+	}
 	
 	if (left) {
-		turnSpeed = min(maxTurnSpeed, turnSpeed + turnForce) * speedFactor;
+		turnSpeed = min(maxTurnSpeed, turnSpeed + turnForce * turnSpeedModifier) * speedFactor;
 		
 	} else if (right) {
-		turnSpeed = max(-maxTurnSpeed, turnSpeed - turnForce) * speedFactor;
+		turnSpeed = max(-maxTurnSpeed, turnSpeed - turnForce * turnSpeedModifier) * speedFactor;
 		
 	} else {
 		turnSpeed = lerp(turnSpeed, 0, 0.025);
@@ -205,7 +218,7 @@ steer = function() {
 }
 
 shoot = function() {
-	if (!controlling || onPlanet) return;
+	if (!controlling || onPlanet || KeyboardBusy) return;
 	var projectileID = eItemID.BASIC_PROJECTILE;
 	
 	if (keyboard_check_pressed(vk_space) && turretSpriteShootingCooldown == 0 && !CursorBusy) {
@@ -252,7 +265,7 @@ drawSpaceship = function(spr, x, y, scale, angle, color, alpha, offsetFactor = 1
 	var c = c_red;
 	
 	var ty = y+4;
-	if (controlling && !Paused && point_distance(x, y, mouse_x, mouse_y) > 20) {
+	if (controlling && !Paused && point_distance(x, y, mouse_x, mouse_y) > 5) {
 		turretAngle = point_direction(x, y, mouse_x, mouse_y);
 	}
 	
@@ -276,7 +289,6 @@ drawSpaceship = function(spr, x, y, scale, angle, color, alpha, offsetFactor = 1
 	
 	draw_sprite_stacked(ts, x, ty, SPRITE_STACKED_OFFSET, s, s, turretAngle, color, alpha);
 	draw_sprite_stacked(spr, x, y, SPRITE_STACKED_OFFSET * offsetFactor, s, s, angle, color, alpha);
-	
 	
 	if (hp.value < 20) {
 		var a = sin(current_time / 300) * 0.25;
@@ -409,7 +421,100 @@ section4.Push(new v_Surface(160, 160, function(xx, yy, width, height){
 main.Push(section4);
 main.Push(v_Separator());
 
+function draw_minimap() {
+	var minimap = {}
+	minimap.size = 200;
+	minimap.margin = 16;
+	var offset = minimap.size / 2 + minimap.margin;
+	minimap.x = WIDTH  - offset;
+	minimap.y = HEIGHT - offset;
+	minimap.dis = 100;
+	minimap.scale = 2;
+	
+	minimapSurface = surface_create(minimap.size, minimap.size);
+
+	if (!surface_exists(minimapSurface)) {
+		minimapSurface = surface_create(minimap.size, minimap.size);
+	}
+
+	var ps = 4; // point size
+	minimap.controller = Player;
+	if (Player.controlling) {
+		minimap.controller = Player;
+	} else if (Spaceship.controlling) {
+		minimap.controller = Spaceship;
+	}
+
+	rect(minimap.x, minimap.y, minimap.size, minimap.size, #101010, false);
+	rect(minimap.x, minimap.y, minimap.size, minimap.size, #303030, true);
+
+	var Track = function(minimap, obj, fixed=false, fn=function(){}) {
+		for (var i = 0; i < instance_number(obj); i++) {
+			var inst = instance_find(obj, i);
+			var px = inst.x - minimap.controller.x;
+			var py = inst.y - minimap.controller.y;
+			px /= minimap.dis;
+			py /= minimap.dis;
+			var num = 1.5;
+			var s = minimap.size;
+
+			if (fixed) {
+				var ss = s/2;
+				px = clamp(px, -ss, ss);
+				py = clamp(py, -ss, ss);
+			}
+
+			var outsideMap = (abs(px) > s / num || abs(py) > s / num);
+			if (!outsideMap || fixed) {
+				surface_set_target(minimapSurface);
+				method({
+					obj: inst,
+					x: s/2+px,
+					y: s/2+py,
+					scale: minimap.scale,
+				}, fn)();
+				surface_reset_target();
+			}
+		}
+	}
+
+	Track(minimap, Planet, , function(){
+		draw_sprite_ext(sIcon_Minimap_Planet, obj.iconIndex, x, y, scale, scale, 0, c_white, 1);
+	});
+
+	Track(minimap, Sun, , function(){
+		draw_sprite_ext(sIcon_Minimap_Sun, 0, x, y, scale, scale, 0, c_white, 1);
+	});
+
+	// Player
+	surface_set_target(minimapSurface);
+	if (minimap.controller == Player) {
+		draw_sprite_ext(
+			sPlayer_Idle, 0, minimap.size/2, minimap.size/2,
+			minimap.scale, minimap.scale, 0, c_white, 1);
+	} 
+	else if (minimap.controller = Spaceship) {
+		draw_sprite_ext(
+			sIcon_Minimap_Spaceship, 0, minimap.size/2, minimap.size/2, 
+			minimap.scale, minimap.scale, Spaceship.dir, c_white, 1);
+	}
+	surface_reset_target();
+
+	if (surface_exists(minimapSurface)) {
+		draw_surface(minimapSurface, minimap.x-minimap.size/2, minimap.y-minimap.size/2);
+	}
+	
+	surface_free(minimapSurface);
+	
+	// cardial
+	draw_sprite_ext(sIcon_Minimap_Cardial, 0, minimap.x, minimap.y-minimap.size/2, 1, 1, 0, c_white, 1);
+	draw_sprite_ext(sIcon_Minimap_Cardial, 1, minimap.x+minimap.size/2, minimap.y, 1, 1, 0, c_white, 1);
+	draw_sprite_ext(sIcon_Minimap_Cardial, 2, minimap.x, minimap.y+minimap.size/2, 1, 1, 0, c_white, 1);
+	draw_sprite_ext(sIcon_Minimap_Cardial, 3, minimap.x-minimap.size/2, minimap.y, 1, 1, 0, c_white, 1);
+}
 
 GUI.Register(function(){
 	if (menuOpen) then main.Draw();
+
+	draw_minimap();
 });

@@ -183,9 +183,3 @@ sep(graphicSettings);
 
 
 index = main;
-
-
-
-
-
-

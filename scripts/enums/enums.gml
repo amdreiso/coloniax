@@ -1,9 +1,9 @@
 function enums(){
-	// ITEMS
 	enum eItemType {
 		BLANK,
 		PICKAXE,
 		PROP,
+		GUN,
 		SPACESHIP_MODULE_TURRET,
 		SPACESHIP_MODULE_PROPELLER,
 		SPACESHIP_MODULE_ARMOR,
@@ -16,6 +16,7 @@ function enums(){
 		// Blanks
 		WOOD,
 		STEEL,
+		URANIUM,
 		
 		// Pickaxes
 		BASIC_PICKAXE,
@@ -39,5 +40,11 @@ function enums(){
 		// Turret Projectiles
 		BASIC_PROJECTILE,
 		ARMOR_PIERCING_PROJECTILE,
+	}
+
+	enum ePlanetIcon {
+		DEFAULT,
+		RING,
+		EARTH,
 	}
 }

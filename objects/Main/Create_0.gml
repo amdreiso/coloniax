@@ -38,11 +38,13 @@ display_set_gui_maximise();
 // Globals
 G Manifest;
 Manifest = {
-	name			: "coloniax",
-	version			: "0.0",
+	name			: "Coloniax",
+	version			: "0.0.0",
 	build			: "indev",
-	author			: "andy (c) lowqualitypictures",
+	author			: "Andy (c) lowqualitypictures",
 }
+
+CHAT.Send($"{Manifest.name} {Manifest.version}v {Manifest.build} :Alien:  :Spaceship:");
 
 G Debug;
 Debug = {

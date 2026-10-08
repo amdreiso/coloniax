@@ -684,4 +684,3 @@ function v_InputBox(str="text here...", styleComponents={}) : v_Node() construct
 	print($"INPUT_BOX NODE: dim: {self.width}x{self.height} with style: '{self.style}'");
 }
 
-

@@ -35,4 +35,3 @@ shape = ps_shape_rectangle;
 setShape = function(val=ps_shape_rectangle) {
 	shape = val;
 }
-

@@ -58,5 +58,7 @@ Temporary Items
 *.resource_order
 *.old
 
+.gm
+
 # GMRT build directory
 Build

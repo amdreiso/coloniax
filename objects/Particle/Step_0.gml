@@ -16,5 +16,3 @@ switch (mode) {
 		part_emitter_stream(ps, emitter, particle, amount);
 		break;
 }
-
-

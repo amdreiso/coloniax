@@ -72,7 +72,7 @@ function World_Star(x, y, depth=0) constructor {
 	    #FFB56B 
 	);
 	var val = color_get_value(self.color);
-	self.color = color_darkness(self.color, irandom_range(70, val));
+	self.color = color_darkness(self.color, irandom_range(20, val));
 	self.depth = depth;
 }
 

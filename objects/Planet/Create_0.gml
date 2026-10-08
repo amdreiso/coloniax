@@ -37,6 +37,11 @@ planet				= PLANET.Generate(type);
 chunkSizes			= planet.parameters.getChunkSizes();
 geologyChunkSizes	= planet.parameters.getGeologyChunkSizes();
 
+iconIndex = choose(ePlanetIcon.DEFAULT, ePlanetIcon.RING);
+if (type == ePlanetType.EARTH) {
+	iconIndex = ePlanetIcon.EARTH;
+}
+
 function TileData(this, planet, x, y) constructor {
 	self.parent = this;
 	var params = planet.parameters;
