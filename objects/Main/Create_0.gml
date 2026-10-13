@@ -22,6 +22,7 @@ sound_init();
 await_init();
 process_init();
 achievement_init();
+minimap_init();
 
 // Draw
 draw_set_font(fnt_main);

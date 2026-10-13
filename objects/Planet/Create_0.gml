@@ -38,6 +38,8 @@ chunkSizes			= planet.parameters.getChunkSizes();
 geologyChunkSizes	= planet.parameters.getGeologyChunkSizes();
 
 iconIndex = choose(ePlanetIcon.DEFAULT, ePlanetIcon.RING);
+iconColor = PLANET.GetColor(type);
+
 if (type == ePlanetType.EARTH) {
 	iconIndex = ePlanetIcon.EARTH;
 }

@@ -107,5 +107,28 @@ function Inventory(slots = 10, capacityPerSlot = 100) constructor {
 			log($"slot '{i}' : '{slot}'");
 		}
 	}
+
+	static Craft = function(itemID) {
+		var recipe = RECIPE.Find(itemID);
+		if (recipe == -1) return;
+
+		var indices = [];
+
+		for (var i = 0; i < array_length(recipe.ingredients); i++) {
+			var e = recipe.ingredients[i];
+			var has = self.Has(e.itemID, e.quantity)
+			if (!has){
+				CHAT.Send("You don't have enough items to craft this");
+				return;
+			}
+			array_push(indices, {index:has, quantity:e.quantity});
+		}
+
+		for (var i = 0; i < array_length(indices); i++) {
+			self.Remove(indices[i].index, indices[i].quantity);
+		}
+
+		self.Add(itemID);
+	}
 }
 

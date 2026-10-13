@@ -7,9 +7,23 @@ function planet_init(){
 		
 		COUNT,
 	}
-	
+
+	enum ePlanetIcon {
+		DEFAULT,
+		RING,
+		EARTH,
+	}
+
 	G PLANET;
 	PLANET = {};
+
+	PLANET.GetColor = function(type) {
+		switch(type) {
+			case ePlanetType.EARTH: 	return #ffffff;
+			case ePlanetType.VOLCANIC: 	return #ff5555;
+			case ePlanetType.ICE: 		return #aaaaff;
+		}
+	}
 	
 	PLANET.TerrainLevel = function(tileID, threshold=0) constructor {
 		self.tileID = tileID;

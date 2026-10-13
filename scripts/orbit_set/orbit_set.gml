@@ -28,5 +28,21 @@ function orbit_set(planet=false) {
 		rider.x += mx;
 		rider.y += my;
 	}
-	
 }
+
+function orbit_get(x, y) {
+	var body = sun;
+
+	var r = point_distance(body.x, body.y, x, y);
+	if (r < 1) return;
+
+	var a = point_direction(body.x, body.y, x, y);
+	var w = radtodeg(sqrt(GRAVITATIONAL_CONSTANT * body.mass / power(r, 3)));
+	a -= w;
+
+	var ox = x;
+	var oy = y;
+
+	return new Vec2(body.x + lengthdir_x(r, a), body.y + lengthdir_y(r, a));
+}
+

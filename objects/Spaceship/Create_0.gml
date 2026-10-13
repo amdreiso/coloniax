@@ -7,15 +7,11 @@ orbitAngle  = point_direction(sun.x, sun.y, x, y);
 controlling = true;
 
 shadowSurface = surface_create(64, 64);
-
 visionDistance = 512;
 
 // Camera
 cam = instance_create_depth(x, y, depth, Camera);
 cam.target = self;
-
-instance_create_depth(x + 200, y + 200, depth, Enemy_Mercenary);
-instance_create_depth(x + 400, y + 200, depth, Enemy_Mother);
 
 // Modules
 modules = {
@@ -103,8 +99,12 @@ onPlayerEnter = function() {
 	SOUND.PlayCameraRelative(eSoundType.SFX, snd_door, false, 1);
 }
 
+isPlayerEjectable = function() {
+	return (spd < 0.05 && onPlanet);
+}
+
 ejectPlayer = function() {
-	var con = (spd < 0.05 && onPlanet);
+	var con = isPlayerEjectable();
 	if (!con) return;
 	
 	Player.controlling = true;
@@ -218,10 +218,10 @@ steer = function() {
 }
 
 shoot = function() {
-	if (!controlling || onPlanet || KeyboardBusy) return;
+	if (!controlling || isPlayerEjectable() || KeyboardBusy) return;
 	var projectileID = eItemID.BASIC_PROJECTILE;
 	
-	if (keyboard_check_pressed(vk_space) && turretSpriteShootingCooldown == 0 && !CursorBusy) {
+	if (keyboard_check_pressed(vk_space) && turretSpriteShootingCooldown == 0) {
 		var xx = x + lengthdir_x(turretProjectileOffset, mouseAngle);
 		var yy = y + lengthdir_y(turretProjectileOffset, mouseAngle);
 		var inst = instance_create_depth(xx, yy, depth + 100, Projectile);
@@ -271,20 +271,19 @@ drawSpaceship = function(spr, x, y, scale, angle, color, alpha, offsetFactor = 1
 	
 	var ts = (turretSpriteShootingCooldown) ? turretSpriteShooting : turretSprite;
 	
+	// drop shadow
 	if (onPlanet) {
 		if (!surface_exists(shadowSurface)) {
 			shadowSurface = surface_create(64, 64);
 		} else {
 			surface_set_target(shadowSurface);
-	
 			draw_clear_alpha(c_black, 0);
-			draw_sprite_stacked(ts, 32, 32, SPRITE_STACKED_OFFSET, s, s, turretAngle, c_black, alpha);
-			draw_sprite_stacked(spr, 32, 32, SPRITE_STACKED_OFFSET * offsetFactor, s, s, angle, c_black, alpha);
-	
+			draw_sprite_stacked(ts, 32, 32, SPRITE_STACKED_OFFSET, scale, scale, turretAngle, c_black, alpha);
+			draw_sprite_stacked(spr, 32, 32, SPRITE_STACKED_OFFSET * offsetFactor, scale, scale, angle, c_black, alpha);
 			surface_reset_target();
-		
-			draw_surface_ext(shadowSurface, x - 32, y - 32 + 4, 1, 1, 0, c_white, 0.25);
 		}
+	
+		draw_surface_ext(shadowSurface, x - 32, y - 32 + 4, 1, 1, 0, c_white, 0.33);
 	}
 	
 	draw_sprite_stacked(ts, x, ty, SPRITE_STACKED_OFFSET, s, s, turretAngle, color, alpha);
@@ -421,100 +420,7 @@ section4.Push(new v_Surface(160, 160, function(xx, yy, width, height){
 main.Push(section4);
 main.Push(v_Separator());
 
-function draw_minimap() {
-	var minimap = {}
-	minimap.size = 200;
-	minimap.margin = 16;
-	var offset = minimap.size / 2 + minimap.margin;
-	minimap.x = WIDTH  - offset;
-	minimap.y = HEIGHT - offset;
-	minimap.dis = 100;
-	minimap.scale = 2;
-	
-	minimapSurface = surface_create(minimap.size, minimap.size);
-
-	if (!surface_exists(minimapSurface)) {
-		minimapSurface = surface_create(minimap.size, minimap.size);
-	}
-
-	var ps = 4; // point size
-	minimap.controller = Player;
-	if (Player.controlling) {
-		minimap.controller = Player;
-	} else if (Spaceship.controlling) {
-		minimap.controller = Spaceship;
-	}
-
-	rect(minimap.x, minimap.y, minimap.size, minimap.size, #101010, false);
-	rect(minimap.x, minimap.y, minimap.size, minimap.size, #303030, true);
-
-	var Track = function(minimap, obj, fixed=false, fn=function(){}) {
-		for (var i = 0; i < instance_number(obj); i++) {
-			var inst = instance_find(obj, i);
-			var px = inst.x - minimap.controller.x;
-			var py = inst.y - minimap.controller.y;
-			px /= minimap.dis;
-			py /= minimap.dis;
-			var num = 1.5;
-			var s = minimap.size;
-
-			if (fixed) {
-				var ss = s/2;
-				px = clamp(px, -ss, ss);
-				py = clamp(py, -ss, ss);
-			}
-
-			var outsideMap = (abs(px) > s / num || abs(py) > s / num);
-			if (!outsideMap || fixed) {
-				surface_set_target(minimapSurface);
-				method({
-					obj: inst,
-					x: s/2+px,
-					y: s/2+py,
-					scale: minimap.scale,
-				}, fn)();
-				surface_reset_target();
-			}
-		}
-	}
-
-	Track(minimap, Planet, , function(){
-		draw_sprite_ext(sIcon_Minimap_Planet, obj.iconIndex, x, y, scale, scale, 0, c_white, 1);
-	});
-
-	Track(minimap, Sun, , function(){
-		draw_sprite_ext(sIcon_Minimap_Sun, 0, x, y, scale, scale, 0, c_white, 1);
-	});
-
-	// Player
-	surface_set_target(minimapSurface);
-	if (minimap.controller == Player) {
-		draw_sprite_ext(
-			sPlayer_Idle, 0, minimap.size/2, minimap.size/2,
-			minimap.scale, minimap.scale, 0, c_white, 1);
-	} 
-	else if (minimap.controller = Spaceship) {
-		draw_sprite_ext(
-			sIcon_Minimap_Spaceship, 0, minimap.size/2, minimap.size/2, 
-			minimap.scale, minimap.scale, Spaceship.dir, c_white, 1);
-	}
-	surface_reset_target();
-
-	if (surface_exists(minimapSurface)) {
-		draw_surface(minimapSurface, minimap.x-minimap.size/2, minimap.y-minimap.size/2);
-	}
-	
-	surface_free(minimapSurface);
-	
-	// cardial
-	draw_sprite_ext(sIcon_Minimap_Cardial, 0, minimap.x, minimap.y-minimap.size/2, 1, 1, 0, c_white, 1);
-	draw_sprite_ext(sIcon_Minimap_Cardial, 1, minimap.x+minimap.size/2, minimap.y, 1, 1, 0, c_white, 1);
-	draw_sprite_ext(sIcon_Minimap_Cardial, 2, minimap.x, minimap.y+minimap.size/2, 1, 1, 0, c_white, 1);
-	draw_sprite_ext(sIcon_Minimap_Cardial, 3, minimap.x-minimap.size/2, minimap.y, 1, 1, 0, c_white, 1);
-}
-
 GUI.Register(function(){
 	if (menuOpen) then main.Draw();
-
-	draw_minimap();
+	MINIMAP.Draw();
 });

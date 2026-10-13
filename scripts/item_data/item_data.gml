@@ -1,4 +1,51 @@
 function item_data(){
+	enum eItemType {
+		BLANK,
+		PICKAXE,
+		PROP,
+		GUN,
+		SPACESHIP_MODULE_TURRET,
+		SPACESHIP_MODULE_PROPELLER,
+		SPACESHIP_MODULE_ARMOR,
+		SPACESHIP_MODULE_GYRO,
+		
+		TURRET_PROJECTILE,
+	}
+	
+	enum eItemID {
+		// Blanks
+		WOOD,
+		STEEL,
+		URANIUM,
+
+		// Guns
+		PISTOL,
+		LMG,
+		
+		// Pickaxes
+		BASIC_PICKAXE,
+		
+		// Props
+		BASIC_SOLAR_PANEL,
+		BASIC_MINING_DRILL,
+		
+		// Spaceship Turrets
+		BASIC_TURRET,
+		DOUBLE_BARREL_TURRET,
+		
+		// Spaceship Gyros
+		BASIC_GYRO,
+		IMPROVED_GYRO,
+		
+		// Spaceship Propellers
+		BASIC_PROPELLER,
+		IMPROVED_PROPELLER,
+		
+		// Turret Projectiles
+		BASIC_PROJECTILE,
+		ARMOR_PIERCING_PROJECTILE,
+	}
+
 	G ITEM; ITEM = new Registry();
 	
 	var defaultComponents = {
@@ -42,11 +89,18 @@ function item_data(){
 			
 			case eItemType.GUN: {
 				c = {
+					type: eItemType.GUN,
 					projectileID: -1,
 					
 					damage: 0,
 					recoil: 0,
-					
+					firerate: 0,
+					automatic: false,
+					precision: 0,
+					cameraShake: 1,
+					ammo: 0,
+					magazine: 0,
+					sprite: -1,
 				};
 				struct_merge_recursive(c, components);
 				return c;
@@ -102,7 +156,6 @@ function item_data(){
 					knockback: 0,
 					sprite: -1,
 					piercing: 0,
-					
 				}
 				struct_merge_recursive(c, components);
 				return c;
@@ -128,6 +181,33 @@ function item_data(){
 	ITEM.Register(eItemID.STEEL, ITEM.Prototype(eItemType.BLANK, sItem_Steel));
 	ITEM.Register(eItemID.URANIUM, ITEM.Prototype(eItemType.BLANK, sItem_Uranium));
 	
+	#endregion
+
+	#region Guns
+
+	ITEM.Register(eItemID.PISTOL, ITEM.Prototype(eItemType.GUN, sItem_Gun_Pistol, {
+		damage: 5,
+		recoil: 4,
+		firerate: 50,
+		automatic: false,
+		precision: 2.0,
+		cameraShake: 1,
+		ammo: 0,
+		magazine: 0,
+		projectileOffset: 16,
+	}));
+	
+	ITEM.Register(eItemID.LMG, ITEM.Prototype(eItemType.GUN, sItem_Gun_LMG, {
+		damage: 5,
+		recoil: 2,
+		firerate: 10,
+		automatic: true,
+		precision: 2.0,
+		cameraShake: 0.75,
+		ammo: 0,
+		projectileOffset: 16,
+	}));
+
 	#endregion
 	
 	#region Tools

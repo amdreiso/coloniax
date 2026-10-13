@@ -40,7 +40,7 @@ focusCheck = function() {
 		}
 	}
 	
-	if (mouse_check_button(mb_left) && focus != noone) {
+	if (mouse_check_button(mb_left) && focus != noone && !holdingGun) {
 		focus.hit();
 		swing = min(1, swing + 0.1);
 		
@@ -118,6 +118,28 @@ syncToPlanet = function() {
 	y = planet.y + planetPosition.y;
 }
 
+// Gun
+gunCooldown = 0;
+gunRecoil = 0;
+
+handleGun = function(item) {
+	var c = item.components;
+	var auto = (c.automatic) ? mouse_check_button(mb_left) : mouse_check_button_pressed(mb_left);
+	var shooting = (auto);
+	var canShoot = (!gunCooldown && controlling && !Paused);
+	
+	gunCooldown = max(0, gunCooldown - 1);
+	gunRecoil = lerp(gunRecoil, 0, 0.2);
+	
+	if (shooting && canShoot) {
+		gunCooldown = c.firerate;
+		gunRecoil = c.recoil;
+
+		SOUND.PlayCameraRelative(eSoundType.SFX, snd_plasma_gun, false, 0.5, [0.90, 1.10]);
+		Camera.shake(c.cameraShake, 1);
+	}
+}
+
 // Effects
 effect = new EFFECT.State(self);
 
@@ -143,76 +165,108 @@ placeDirection = 1;
 swing = false;
 
 handlePlacingProps = function(item) {
-	if (item.components.type == eItemType.PROP && planet.inBoundary(mouse_x, mouse_y)) {
-		var color = c_white;
-		var half = TILE_HEIGHT / 2;
-		var prop = item.components.prop;
-		var size = item.components.size;
-		var mx = (mouse_x + TILE_WIDTH/2) - planet.x;
-		var my = mouse_y - planet.y;
-		var xx, yy, tx, ty;
-		var hh = floor(TILE_HEIGHT / 2);
-		ty = floor(my / hh);
-		var xoff = (ty % 2 == 0) ? TILE_WIDTH / 2 : 0;
-		tx = floor((mx - xoff) / TILE_WIDTH);
-		var pos = isometric_position(tx, ty);
-		var s = planet.size / 2;
-		var t = planet.grid[# tx + s, ty + s];
-		
-		if (t != undefined) {
-			color = (t.canPlaceProps && !t.occupied) ? c_white : c_red;
-		}
+	if (Paused) return;
+	if (item.components.type != eItemType.PROP) return;
+	if (!planet.inBoundary(mouse_x, mouse_y)) return;
+
+	var color = c_white;
+	var half = TILE_HEIGHT / 2;
+	var prop = item.components.prop;
+	var size = item.components.size;
+	var mx = (mouse_x + TILE_WIDTH/2) - planet.x;
+	var my = mouse_y - planet.y;
+	var xx, yy, tx, ty;
+	var hh = floor(TILE_HEIGHT / 2);
+	ty = floor(my / hh);
+	var xoff = (ty % 2 == 0) ? TILE_WIDTH / 2 : 0;
+	tx = floor((mx - xoff) / TILE_WIDTH);
+	var pos = isometric_position(tx, ty);
+	var s = planet.size / 2;
+	var t = planet.grid[# tx + s, ty + s];
+	
+	if (t != undefined) {
+		color = (t.canPlaceProps && !t.occupied) ? c_white : c_red;
+	}
+			
+	if (keyboard_check_pressed(ord("R"))) {
+		placeDirection *= -1; 
+	}
+			
+	draw_sprite_ext(
+		object_get_sprite(prop), 0, 
+		planet.x + pos.x, planet.y + pos.y, 
+		placeDirection, 1, 0, color, 0.25
+	);
+			
+	if (mouse_check_button_pressed(mb_right)) {
+		if (t != undefined && t.canPlaceProps) {
+			if (t.CreateProp(planet, prop, {
+				image_xscale : placeDirection,
+				size : item.components.size, // Grid tile size
 				
-		if (keyboard_check_pressed(ord("R"))) {
-			placeDirection *= -1; 
-		}
-				
-		draw_sprite_ext(
-			object_get_sprite(prop), 0, 
-			planet.x + pos.x, planet.y + pos.y, 
-			placeDirection, 1, 0, color, 0.25
-		);
-				
-		if (mouse_check_button_pressed(mb_right)) {
-			if (t != undefined && t.canPlaceProps) {
-				if (t.CreateProp(planet, prop, {
-					image_xscale : placeDirection,
-					size : item.components.size, // Grid tile size
-					
-				}, false, true)) then inventory.Remove(slotIndex, 1);
-			}
+			}, false, true)) then inventory.Remove(slotIndex, 1);
 		}
 	}
 }
 
-drawHandItem = function(icon) {
-	if (icon != -1) {
-		var righthand = new Vec2(3, 1);
-		var lefthand = new Vec2(-2, 1);
-			
-		if (state == ePlayerState.SWIM) {
-			righthand = new Vec2(4, 1);
-		}
-			
-		if (floor(frame) % 2 == 0) {
-			switch (state) {
-				case ePlayerState.WALK:
-					righthand = new Vec2(4, 3);
-					lefthand = new Vec2(-3, 3);
-					break;
-					
-				case ePlayerState.SWIM:
-					righthand = new Vec2(4, 2);
-					break;
-			}
-		}
-			
-		var swingValue = (sin(current_time * 0.03) + 1) * 0.5;
-		var swingAngle = power(swingValue, 2) * 40 - 20;
-		var handAngle = swingAngle * swing;
-			
-		draw_sprite_ext(icon, 1, x + righthand.x * xscale, y - righthand.y, xscale, 1, handAngle, c_white, 1);
+drawHandGun = function(item) {
+	var icon = item.components.icon;
+	var angle = point_direction(x, y, mouse_x, mouse_y);
+	var recoilMultiplier = 0.01;
+	var xx = x - lengthdir_x(gunRecoil, angle);
+	var yy = y - lengthdir_y(gunRecoil, angle);
+	var yscale = 1;
+	draw_text(x, y-64, gunRecoil);
+
+	if (mouse_x < x) {
+		yscale = -1;
 	}
+	
+	handleGun(item);
+
+	draw_sprite_ext(icon, 1, xx, yy, 1, yscale, angle, c_white, 1);
+}
+
+holdingGun = false;
+
+drawHandItem = function(item) {
+	var icon = item.components.icon;
+	var type = item.components.type;
+
+	holdingGun = (type == eItemType.GUN);
+
+	if (holdingGun) {
+		drawHandGun(item);
+		return;
+	}
+
+	if (icon == -1) return;
+
+	var righthand = new Vec2(3, 1);
+	var lefthand = new Vec2(-2, 1);
+		
+	if (state == ePlayerState.SWIM) {
+		righthand = new Vec2(4, 1);
+	}
+		
+	if (floor(frame) % 2 == 0) {
+		switch (state) {
+			case ePlayerState.WALK:
+				righthand = new Vec2(4, 3);
+				lefthand = new Vec2(-3, 3);
+				break;
+				
+			case ePlayerState.SWIM:
+				righthand = new Vec2(4, 2);
+				break;
+		}
+	}
+		
+	var swingValue = (sin(current_time * 0.03) + 1) * 0.5;
+	var swingAngle = power(swingValue, 2) * 40 - 20;
+	var handAngle = swingAngle * swing;
+		
+	draw_sprite_ext(icon, 1, x + righthand.x * xscale, y - righthand.y, xscale, 1, handAngle, c_white, 1);
 }
 
 draw = function() {
@@ -259,7 +313,6 @@ draw = function() {
 				spd = 700;
 				
 			}
-			
 		}
 	} 
 	else if (moving) {
@@ -269,11 +322,14 @@ draw = function() {
 	}
 	
 	frame = (current_time / spd) % 2;
-	
 	angle = (moving) ? sin(current_time * 0.015) * 4 : 0;
-	
 	if (hsp != 0) xscale = sign(hsp);
 	
+	sprite = spr;
+	
+	if (!inWater) then draw_sprite_ext(sPlayer_Shadow, frame, x, y, xscale, image_yscale, angle, c_white, 0.5);
+	draw_sprite_ext(sprite, frame, x, y, xscale, image_yscale, angle, c_white, 1);
+
 	// Item Holding
 	var hand = inventory.Get(slotIndex);
 	if (hand.itemID != -1) {
@@ -281,16 +337,11 @@ draw = function() {
 		var icon = item.components.icon;
 		
 		// Draw item sprite in hand
-		drawHandItem(icon);
+		drawHandItem(item);
 		
 		// Placing Propr
 		handlePlacingProps(item);
 	}
-	
-	sprite = spr;
-	
-	if (!inWater) then draw_sprite_ext(sPlayer_Shadow, frame, x, y, xscale, image_yscale, angle, c_white, 0.5);
-	draw_sprite_ext(sprite, frame, x, y, xscale, image_yscale, angle, c_white, 1);
 }
 
 // Inventory
@@ -301,6 +352,8 @@ inventory.Add(eItemID.BASIC_MINING_DRILL, 99);
 inventory.Add(eItemID.WOOD, 99);
 inventory.Add(eItemID.STEEL, 99);
 inventory.Add(eItemID.URANIUM, 99);
+inventory.Add(eItemID.PISTOL, 1);
+inventory.Add(eItemID.LMG, 1);
 
 slotIndex = 0;
 slotSet = function(index){
@@ -361,3 +414,42 @@ drawHotbar = function() {
 }
 
 GUI.Register(drawHotbar);
+
+
+// Crafting system
+G RECIPE;
+RECIPE = {};
+
+RECIPE.data = {};
+
+RECIPE.Register = function(result) {
+	var recipe = {};
+	recipe.result = result;
+	recipe.ingredients = [];
+	for (var i = 1; i < argument_count; i++) {
+		array_push(recipe.ingredients, argument[i]);
+	}
+	RECIPE.data[$ result] = recipe;
+}
+
+RECIPE.Find = function(itemID) {
+	var r = RECIPE.data[$ itemID];
+	if (r == undefined) return -1;
+	return r;
+}
+
+RECIPE.Register(
+	eItemID.PISTOL, 
+	new ItemStack(eItemID.WOOD, 	2),
+	new ItemStack(eItemID.URANIUM, 	2),
+);
+
+RECIPE.Register(
+	eItemID.LMG,
+	new ItemStack(eItemID.URANIUM, 30),
+	new ItemStack(eItemID.BASIC_MINING_DRILL, 2),
+	new ItemStack(eItemID.BASIC_SOLAR_PANEL, 5),
+	new ItemStack(eItemID.STEEL, 99),
+);
+
+inventory.Craft(eItemID.LMG);
