@@ -20,3 +20,4 @@ if (Debug.showDebugUI) {
 	draw_circle_colour(x, y, 4, c_blue, c_blue, false);
 	draw_ellipse(left, top, right, bottom, true);
 }
+

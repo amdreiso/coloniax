@@ -32,10 +32,7 @@
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
-  "spriteId":{
-    "name":"sBody_Sun",
-    "path":"sprites/sBody_Sun/sBody_Sun.yy",
-  },
+  "spriteId":null,
   "spriteMaskId":null,
   "visible":true,
 }

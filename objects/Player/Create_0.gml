@@ -438,18 +438,19 @@ RECIPE.Find = function(itemID) {
 	return r;
 }
 
-RECIPE.Register(
-	eItemID.PISTOL, 
-	new ItemStack(eItemID.WOOD, 	2),
-	new ItemStack(eItemID.URANIUM, 	2),
-);
+// RECIPE.Register(
+// 	eItemID.PISTOL, 
+// 	new ItemStack(eItemID.WOOD, 	2),
+// 	new ItemStack(eItemID.URANIUM, 	2),
+// );
+ 
+// RECIPE.Register(
+// 	eItemID.LMG,
+// 	new ItemStack(eItemID.URANIUM, 30),
+// 	new ItemStack(eItemID.BASIC_MINING_DRILL, 2),
+// 	new ItemStack(eItemID.BASIC_SOLAR_PANEL, 5),
+// 	new ItemStack(eItemID.STEEL, 99),
+// );
 
-RECIPE.Register(
-	eItemID.LMG,
-	new ItemStack(eItemID.URANIUM, 30),
-	new ItemStack(eItemID.BASIC_MINING_DRILL, 2),
-	new ItemStack(eItemID.BASIC_SOLAR_PANEL, 5),
-	new ItemStack(eItemID.STEEL, 99),
-);
+//inventory.Craft(eItemID.LMG);
 
-inventory.Craft(eItemID.LMG);

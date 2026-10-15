@@ -12,10 +12,7 @@
     "name":"Props",
     "path":"folders/obj/Props.yy",
   },
-  "parentObjectId":{
-    "name":"Prop",
-    "path":"objects/Prop/Prop.yy",
-  },
+  "parentObjectId":null,
   "persistent":false,
   "physicsAngularDamping":0.1,
   "physicsDensity":0.5,
@@ -33,10 +30,7 @@
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
-  "spriteId":{
-    "name":"sProp_BasicMiningDrill",
-    "path":"sprites/sProp_BasicMiningDrill/sProp_BasicMiningDrill.yy",
-  },
+  "spriteId":null,
   "spriteMaskId":null,
   "visible":true,
 }

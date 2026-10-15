@@ -11,10 +11,7 @@
     "name":"Props",
     "path":"folders/obj/Props.yy",
   },
-  "parentObjectId":{
-    "name":"Prop",
-    "path":"objects/Prop/Prop.yy",
-  },
+  "parentObjectId":null,
   "persistent":false,
   "physicsAngularDamping":0.1,
   "physicsDensity":0.5,
@@ -32,10 +29,7 @@
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
-  "spriteId":{
-    "name":"sProp_IceShard",
-    "path":"sprites/sProp_IceShard/sProp_IceShard.yy",
-  },
+  "spriteId":null,
   "spriteMaskId":null,
   "visible":true,
 }

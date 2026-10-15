@@ -118,7 +118,7 @@ function Inventory(slots = 10, capacityPerSlot = 100) constructor {
 			var e = recipe.ingredients[i];
 			var has = self.Has(e.itemID, e.quantity)
 			if (!has){
-				CHAT.Send("You don't have enough items to craft this");
+				CHAT.Send("You don't have enough items to craft this.");
 				return;
 			}
 			array_push(indices, {index:has, quantity:e.quantity});

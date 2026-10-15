@@ -424,3 +424,4 @@ GUI.Register(function(){
 	if (menuOpen) then main.Draw();
 	MINIMAP.Draw();
 });
+

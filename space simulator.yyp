@@ -164,6 +164,7 @@
     {"id":{"name":"sEmoji_Exclamation","path":"sprites/sEmoji_Exclamation/sEmoji_Exclamation.yy",},},
     {"id":{"name":"sEmoji_Interrogation","path":"sprites/sEmoji_Interrogation/sEmoji_Interrogation.yy",},},
     {"id":{"name":"sEmoji_Spaceship","path":"sprites/sEmoji_Spaceship/sEmoji_Spaceship.yy",},},
+    {"id":{"name":"sEmoji_Tux","path":"sprites/sEmoji_Tux/sEmoji_Tux.yy",},},
     {"id":{"name":"sEnemy_Mercenary","path":"sprites/sEnemy_Mercenary/sEnemy_Mercenary.yy",},},
     {"id":{"name":"sEnemy_Mother","path":"sprites/sEnemy_Mother/sEnemy_Mother.yy",},},
     {"id":{"name":"sIcon_Border","path":"sprites/sIcon_Border/sIcon_Border.yy",},},

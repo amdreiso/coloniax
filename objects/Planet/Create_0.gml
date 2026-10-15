@@ -231,8 +231,9 @@ drawPlanet = function() {
 	var rx = radius;
 	var ry = radius / 2;
 	
-	//var spaceshipCollision = (distance_to_object(Spaceship) < radius / 2);
-	//var spaceshipCollision = ((dx * dx) / (rx * rx) + (dy * dy) / (ry * ry) <= 1);
+	if (Camera.inView(x, y, width, width)) {
+		CHAT.SendTime("Planet is in view");
+	}
 	
 	draw_surface(surface, left, top);
 }
@@ -240,3 +241,4 @@ drawPlanet = function() {
 inBoundary = function(x, y) {
 	return (x > left && x < right && y > top && y < bottom);
 }
+

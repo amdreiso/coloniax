@@ -13,10 +13,7 @@
     "name":"Entities",
     "path":"folders/obj/Entities.yy",
   },
-  "parentObjectId":{
-    "name":"Entity",
-    "path":"objects/Entity/Entity.yy",
-  },
+  "parentObjectId":null,
   "persistent":false,
   "physicsAngularDamping":0.1,
   "physicsDensity":0.5,
