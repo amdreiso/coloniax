@@ -6,7 +6,7 @@
   "name":"handle_escape",
   "parent":{
     "name":"custom",
-    "path":"folders/src/custom.yy",
+    "path":"folders/scr/custom.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

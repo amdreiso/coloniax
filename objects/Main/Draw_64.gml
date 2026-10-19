@@ -1,4 +1,6 @@
 
+draw_set_font(fnt_main);
+
 GUI.Call();
 CHAT.Draw();
 draw_debug_ui();

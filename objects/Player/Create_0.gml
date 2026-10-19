@@ -53,7 +53,10 @@ focusCheck = function() {
 // Movement
 canMove = true;
 moving = false;
+defaultSpd = 1;
 spd = 1;
+hsp = 0;
+vsp = 0;
 knockback = new Vec2();
 
 getMultiplier = function() {
@@ -90,6 +93,8 @@ applyCollisions = function() {
 	}
 }
 
+planetTilePosition = new Vec2();
+
 applyMovement = function() {
 	if (canMove) {
 		x += hsp;
@@ -104,7 +109,7 @@ applyMovement = function() {
 	var rx = radius;
 	var ry = radius / 2;
 	var dist = (dx * dx) / (rx * rx) + (dy * dy) / (ry * ry);
-	
+
 	if (dist > 1) {
 	    var scale = 1 / sqrt(dist);
 	    x = cx + dx * scale;
@@ -116,6 +121,18 @@ syncToPlanet = function() {
 	if (planet == noone) return;
 	x = planet.x + planetPosition.x;
 	y = planet.y + planetPosition.y;
+
+	var dx = x - planet.x;
+	var dy = y - planet.y;
+
+	planetTilePosition.x = floor(dx / TILE_WIDTH + planet.size / 2);
+	planetTilePosition.y = floor(dy / (TILE_HEIGHT / 2) + planet.size / 2);
+	var pp = planetTilePosition;
+
+	var tile = planet.grid[# pp.x, pp.y];
+	if (tile != undefined) {
+		CHAT.Send(T.Get(T.Tile(tile.tileID)));
+	}
 }
 
 // Gun
@@ -164,6 +181,18 @@ onLava = false;
 placeDirection = 1;
 swing = false;
 
+function getPlanetTilePosition(x, y) {
+	var mx = (x + TILE_WIDTH/2) - planet.x;
+	var my = y - planet.y;
+	var xx, yy, tx, ty;
+	var hh = floor(TILE_HEIGHT / 2);
+	ty = floor(my / hh);
+	var xoff = (ty % 2 == 0) ? TILE_WIDTH / 2 : 0;
+	tx = floor((mx - xoff) / TILE_WIDTH);
+	var pos = isometric_position(tx, ty);
+	return pos;
+}
+
 handlePlacingProps = function(item) {
 	if (Paused) return;
 	if (item.components.type != eItemType.PROP) return;
@@ -191,20 +220,27 @@ handlePlacingProps = function(item) {
 	if (keyboard_check_pressed(ord("R"))) {
 		placeDirection *= -1; 
 	}
+
+	var propx = planet.x + pos.x;
+	var propy = planet.y + pos.y;
+	var propspr = item.components.sprite;
 			
 	draw_sprite_ext(
-		object_get_sprite(prop), 0, 
+		propspr, 0, 
 		planet.x + pos.x, planet.y + pos.y, 
 		placeDirection, 1, 0, color, 0.25
 	);
 			
 	if (mouse_check_button_pressed(mb_right)) {
 		if (t != undefined && t.canPlaceProps) {
-			if (t.CreateProp(planet, prop, {
+			var thisprop = t.CreateProp(planet, prop, {
 				image_xscale : placeDirection,
 				size : item.components.size, // Grid tile size
-				
-			}, false, true)) then inventory.Remove(slotIndex, 1);
+			}, false, true); 
+
+			if (thisprop) {
+				inventory.Remove(slotIndex, 1);
+			}
 		}
 	}
 }

@@ -63,3 +63,4 @@ if (keyboard_check(vk_control)) {
 		y = mouse_y;
 	}
 }
+

@@ -6,7 +6,7 @@
   "name":"effect_init",
   "parent":{
     "name":"effects",
-    "path":"folders/src/effects.yy",
+    "path":"folders/scr/effects.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

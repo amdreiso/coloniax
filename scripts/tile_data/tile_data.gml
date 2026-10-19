@@ -17,6 +17,7 @@ function tile_data(){
 	TILE.SetDefaultComponents({
 		sprite: sTile_Default,
 		load: function(){},
+		update: function(self){},
 		canPlaceProps: true,
 		canSpawnMinerals: false,
 		isLiquid: false,
@@ -73,6 +74,15 @@ function tile_data(){
 			
 			obj.effect.Add(eEffectID.Flames);
 		},
+		update: function(obj) {
+			if (irandom(1000)>999) {
+				var part = instance_create_depth(obj.x, obj.y, obj.depth, Particle);
+				part.setLifetime(1);
+				part.setAmount(irandom(1)+1);
+				part.setParticle(World.particleLavaDropplet);
+				part.setRange(TILE_HEIGHT, TILE_HEIGHT);
+			}
+		},
 	}));
 	
 	TILE.Register(eTileID.VOLCANIC_ROCK, tile(sTile_VolcanicRock, {
@@ -84,11 +94,5 @@ function tile_data(){
 			if (irandom(100) > 80) then t.CreateProp(planet, Prop_IceSpike);
 		},
 	}));
-	
-	
-	
-	
-	
-	
-	
+
 }

@@ -6,7 +6,7 @@
   "name":"orbit_set",
   "parent":{
     "name":"physics",
-    "path":"folders/src/physics.yy",
+    "path":"folders/scr/physics.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

@@ -15,3 +15,4 @@ parent.grid[# tileIndex.x, tileIndex.y].occupied = false;
 DRAW.Remove(DRAW_index);
 
 audio_emitter_free(emitter);
+

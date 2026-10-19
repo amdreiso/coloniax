@@ -6,7 +6,7 @@
   "name":"minimap_init",
   "parent":{
     "name":"minimap",
-    "path":"folders/src/minimap.yy",
+    "path":"folders/scr/minimap.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

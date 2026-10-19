@@ -17,13 +17,18 @@ setParticleSystem = function(system = World.ps) {
 emitter = part_emitter_create(ps);
 
 mode = "burst";
-function setMode(m="burst") {
+setMode = function(m="burst") {
 	mode = m;
 }
 
 range = new Vec2();
 setRange = function(x, y) {
 	range = new Vec2(x, y);
+}
+
+animationSpeed = 1;
+setAnimationSpeed = function(value) {
+	animationSpeed = current_time / value;
 }
 
 amount = 1;

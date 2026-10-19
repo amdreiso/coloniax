@@ -19,6 +19,7 @@
   "height":20,
   "HTile":false,
   "layers":[
+    {"$GMImageLayer":"","%Name":"96fa7812-c37c-4961-8fcc-3a88f78d3b6d","blendMode":0,"displayName":"Layer 1","isLocked":false,"name":"96fa7812-c37c-4961-8fcc-3a88f78d3b6d","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
     {"$GMImageLayer":"","%Name":"00a1df9b-92af-4c53-91de-d9bd01907f58","blendMode":0,"displayName":"default","isLocked":false,"name":"00a1df9b-92af-4c53-91de-d9bd01907f58","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
   ],
   "name":"sProp_Rock0",

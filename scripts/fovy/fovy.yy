@@ -6,7 +6,7 @@
   "name":"fovy",
   "parent":{
     "name":"libs",
-    "path":"folders/src/libs.yy",
+    "path":"folders/scr/libs.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

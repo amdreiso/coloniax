@@ -231,9 +231,7 @@ drawPlanet = function() {
 	var rx = radius;
 	var ry = radius / 2;
 	
-	if (Camera.inView(x, y, width, width)) {
-		CHAT.SendTime("Planet is in view");
-	}
+	if (!Camera.inView(x, y, width, width)) return;
 	
 	draw_surface(surface, left, top);
 }

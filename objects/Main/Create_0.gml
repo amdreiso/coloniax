@@ -101,7 +101,8 @@ audio_group_load(audiogroup_music);
 
 Process.Push(function() {
 	if (audio_group_is_loaded(audiogroup_music)) {
-		audio_play_sound(snd_traveling_1, 0, true, 1);
+		var snd = choose(snd_traveling_0, snd_traveling_1, snd_traveling_2);
+		audio_play_sound(snd, 0, true, 1);
 		return true;
 	}
 });

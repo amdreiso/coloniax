@@ -17,3 +17,4 @@ if (audio_emitter_exists(emitter)) {
 	audio_emitter_position(emitter, x, y, 0);
 }
 ;
+

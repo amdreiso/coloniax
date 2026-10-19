@@ -6,7 +6,7 @@
   "name":"tile_data",
   "parent":{
     "name":"planet",
-    "path":"folders/src/planet.yy",
+    "path":"folders/scr/planet.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

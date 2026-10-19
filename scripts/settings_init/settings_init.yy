@@ -6,7 +6,7 @@
   "name":"settings_init",
   "parent":{
     "name":"settings",
-    "path":"folders/src/settings.yy",
+    "path":"folders/scr/settings.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

@@ -5,3 +5,4 @@ draw();
 focusCheck();
 
 effect.Call("draw");
+

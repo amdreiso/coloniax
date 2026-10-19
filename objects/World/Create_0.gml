@@ -1,6 +1,5 @@
 
 // Particles
-
 // Particle system
 ps = part_system_create();
 part_system_automatic_draw(ps, false);
@@ -49,6 +48,31 @@ part_type_alpha2(particleSmoke, 0.7, 0.0);
 part_type_direction(particleSmoke, 90, 90, 0, 0);
 part_type_speed(particleSmoke, 0.10, 0.50, -0.01, 0);
 
+particleDust = part_type_create();
+part_type_sprite(particleDust, sParticle_Dust, false, false, true);
+part_type_colour1(particleDust, c_dkgray);
+part_type_life(particleDust, 1 * 60, 3 * 60);
+part_type_alpha2(particleDust, 0.7, 0.0);
+part_type_direction(particleDust, -180, 180, 0, 0);
+part_type_speed(particleDust, 0.30, 0.15, -0.0045, 0);
+part_type_size(particleDust, 1.00, 0.80, -0.005, 0);
+
+particleCloud = part_type_create();
+part_type_sprite(particleCloud, sParticle_Cloud, true, false, true);
+part_type_colour2(particleCloud, c_white, c_ltgray);
+part_type_life(particleCloud, 2 * 60, 3 * 60);
+part_type_alpha2(particleCloud, 0.9, 0.0);
+part_type_direction(particleCloud, -180, 180, 0, 0);
+part_type_speed(particleCloud, 0.100, 0.001, -0.001, 0);
+part_type_size(particleCloud, 1.00, 0.80, -0.005, 0);
+
+particleLavaDropplet = part_type_create();
+part_type_sprite(particleLavaDropplet, sParticle_Fire, false, false, true);
+part_type_life(particleLavaDropplet, 10, 30);
+var deviation = 25;
+part_type_direction(particleLavaDropplet, 90-deviation, 90+deviation, 0, 0);
+part_type_speed(particleLavaDropplet, 1, 0.80, -0.0075, 0.0005);
+part_type_gravity(particleLavaDropplet, 0.075, 270);
 
 // Space Generation
 chunks = {};
@@ -118,3 +142,4 @@ function getChunkPosition(x, y) {
 		floor((y + CHUNK_SIZE / 2) / CHUNK_SIZE)
 	);
 }
+

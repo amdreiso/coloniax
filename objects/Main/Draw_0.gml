@@ -1,3 +1,3 @@
 
-gpu_set_texfilter(false);
+//gpu_set_texfilter(false);
 

@@ -6,7 +6,7 @@
   "name":"Inventory",
   "parent":{
     "name":"inventory",
-    "path":"folders/src/inventory.yy",
+    "path":"folders/scr/inventory.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

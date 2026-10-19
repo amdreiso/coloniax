@@ -6,7 +6,7 @@
   "name":"draw_debug_ui",
   "parent":{
     "name":"debug",
-    "path":"folders/src/debug.yy",
+    "path":"folders/scr/debug.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

@@ -32,3 +32,4 @@ for (var i = 0; i < array_length(keys); i++) {
         variable_struct_remove(chunks, key);
     }
 }
+

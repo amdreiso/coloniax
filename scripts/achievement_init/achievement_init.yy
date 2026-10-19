@@ -6,7 +6,7 @@
   "name":"achievement_init",
   "parent":{
     "name":"data",
-    "path":"folders/src/data.yy",
+    "path":"folders/scr/data.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

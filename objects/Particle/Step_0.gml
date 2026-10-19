@@ -5,6 +5,8 @@ if (lifetime <= 0) {
 	instance_destroy();
 }
 
+image_speed = animationSpeed;
+
 part_emitter_region(ps, emitter, x-range.x/2, x+range.x/2, y-range.y/2, y+range.y/2, shape, ps_distr_gaussian);
 
 switch (mode) {
@@ -16,3 +18,4 @@ switch (mode) {
 		part_emitter_stream(ps, emitter, particle, amount);
 		break;
 }
+

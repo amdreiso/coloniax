@@ -6,7 +6,7 @@
   "name":"translation_init",
   "parent":{
     "name":"translation",
-    "path":"folders/src/translation.yy",
+    "path":"folders/scr/translation.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

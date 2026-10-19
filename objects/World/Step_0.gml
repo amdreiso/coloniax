@@ -12,3 +12,4 @@ repeat (1) {
 	chunks[$ keypos] = new World_Chunk(j.x, j.y);
 	chunks[$ keypos].Load();
 }
+
