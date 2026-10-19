@@ -6,8 +6,8 @@ randomize();
 fovy();
 console_init();
 input_mapping();
-tolin_init();
-tolin_builtin();
+//tolin_init();
+//tolin_builtin();
 vela();
 
 translation_init();
@@ -86,15 +86,14 @@ instance_create_layer(x, y, "Spaceship", Spaceship);
 window_set_caption(Manifest.name);
 CONSOLE.Run("start");
 
-fopen("main.tolin");
-
-if (file_exists("main.tolin")) {
-	tolinState = new TolinState();
-	tolin_load_builtin_functions(tolinState, Tolin_BuiltInFunctions);
-	tolin_load_constants(tolinState);
-	tolin_load_file(tolinState, "main.tolin");
-	tolin_run(tolinState);
-}
+//fopen("main.tolin");
+//if (file_exists("main.tolin")) {
+//	tolinState = new TolinState();
+//	tolin_load_builtin_functions(tolinState, Tolin_BuiltInFunctions);
+//	tolin_load_constants(tolinState);
+//	tolin_load_file(tolinState, "main.tolin");
+//	tolin_run(tolinState);
+//}
 
 audio_group_load(audiogroup_default);
 audio_group_load(audiogroup_music);

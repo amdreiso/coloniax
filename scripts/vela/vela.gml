@@ -32,15 +32,15 @@ function vela(){
 	#macro BUTTON_HOLD_MS 30
 	
 	// Vela theme
-	var themefile = "theme.tolin";
-	fopen(themefile);
-	if (file_exists(themefile)) {
-		var tolinState = new TolinState();
-		tolin_load_builtin_functions(tolinState, Tolin_BuiltInFunctions);
-		tolin_load_constants(tolinState);
-		tolin_load_file(tolinState, themefile);
-		tolin_run(tolinState);
-	}
+	//var themefile = "theme.tolin";
+	//fopen(themefile);
+	//if (file_exists(themefile)) {
+	//	var tolinState = new TolinState();
+	//	tolin_load_builtin_functions(tolinState, Tolin_BuiltInFunctions);
+	//	tolin_load_constants(tolinState);
+	//	tolin_load_file(tolinState, themefile);
+	//	tolin_run(tolinState);
+	//}
 }
 
 function v_GetDefaultStyle() {
