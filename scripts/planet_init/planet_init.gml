@@ -39,7 +39,7 @@ function planet_init(){
 	}
 	
 	PLANET.GenerateComponents = function(type) {
-		var level = PLANET.TerrainLevel;
+		var Level = PLANET.TerrainLevel;
 		
 		switch (type) {
 			case ePlanetType.EARTH: {
@@ -54,10 +54,10 @@ function planet_init(){
 					},
 					
 					terrain: [
-						new level(eTileID.WATER, 0),
-						new level(eTileID.SAND, 48),
-						new level(eTileID.GRASS, 50),
-						new level(eTileID.STONE, 70),
+						new Level(eTileID.WATER, 0),
+						new Level(eTileID.SAND, 48),
+						new Level(eTileID.GRASS, 50),
+						new Level(eTileID.STONE, 70),
 					],
 					
 					parameters: {
@@ -102,8 +102,8 @@ function planet_init(){
 					},
 					
 					terrain: [
-						new level(eTileID.VOLCANIC_ROCK, 0),
-						new level(eTileID.LAVA, 70),
+						new Level(eTileID.VOLCANIC_ROCK, 0),
+						new Level(eTileID.LAVA, 70),
 					],
 					
 					parameters: {
@@ -153,8 +153,8 @@ function planet_init(){
 					},
 					
 					terrain: [
-						new level(eTileID.FROZEN_WATER, 0),
-						new level(eTileID.ICE, 35),
+						new Level(eTileID.ICE, 0),
+						new Level(eTileID.SNOW, 35),
 					],
 					
 					parameters: {

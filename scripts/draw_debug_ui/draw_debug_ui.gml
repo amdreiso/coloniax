@@ -37,6 +37,12 @@ function draw_debug_ui(){
 		var ppos = World.getChunkPosition(p.x, p.y);
 		_($"cx: {ppos.x} cy: {ppos.y}");
 	}
+
+	if (instance_exists(Player)) {
+		line("Player");
+		var p = Player;
+		_($"x: {p.x} y: {p.y} | tx: {p.planetTilePosition.x} ty: {p.planetTilePosition.y}");
+	}
 	
 	if (Debug.windowInfo) {
 		line("Window");

@@ -94,7 +94,6 @@ function TileData(this, planet, x, y) constructor {
 		self.parent.children.Append(prop);
 		
 		var size = variable_instance_get(prop, "size") ?? [[0, 0]];
-		
 		self.occupied = occupy;
 		
 		for (var i = 0; i < array_length(size); i++) {
@@ -224,6 +223,33 @@ generateSurface = function() {
 		surface_reset_target();
 	}
 }
+
+createStructure = function(x, y, structureID) {
+	var s = STRUCTURE.Get(structureID);
+	if (s == undefined) return;
+
+	CHAT.Send($"Creating structure on x = {x} y = {y}");
+	var iseven = (y % 2 == 0) ? 1 : 0;
+
+	for (var i = 0; i < array_length(s); i++) {
+		var t = s[i];
+		var xx, yy;
+		var tx, ty;
+		tx = t.x + (1 * iseven);
+		ty = t.y;
+		xx = x + tx;
+		yy = y + ty;
+
+		CHAT.Send($"tx = {tx} ty = {ty}");
+
+		var tile = grid[# xx, yy];
+		if (tile == undefined) continue;
+
+		tile.CreateProp(self, t.prop, t.propComponents);
+	}
+}
+
+//createStructure(size/2, size/2, eStructureID.RUINS_0);
 
 drawPlanet = function() {
 	var dx = Spaceship.x - x;

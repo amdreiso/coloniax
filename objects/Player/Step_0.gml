@@ -34,3 +34,7 @@ effect.Apply();
 
 SOUND.ListenerPosition(x, y);
 
+if (keyboard_check_pressed(ord("H"))) {
+	planet.createStructure(planetTilePosition.x, planetTilePosition.y, eStructureID.RUINS_0);
+}
+

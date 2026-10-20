@@ -23,7 +23,7 @@
   ],
   "name":"sTile_Default_Top",
   "nineSlice":null,
-  "origin":9,
+  "origin":4,
   "parent":{
     "name":"Tile",
     "path":"folders/spr/Tile.yy",

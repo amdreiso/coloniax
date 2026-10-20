@@ -131,7 +131,6 @@ syncToPlanet = function() {
 
 	var tile = planet.grid[# pp.x, pp.y];
 	if (tile != undefined) {
-		CHAT.Send(T.Get(T.Tile(tile.tileID)));
 	}
 }
 
@@ -180,18 +179,6 @@ inWater = false;
 onLava = false;
 placeDirection = 1;
 swing = false;
-
-function getPlanetTilePosition(x, y) {
-	var mx = (x + TILE_WIDTH/2) - planet.x;
-	var my = y - planet.y;
-	var xx, yy, tx, ty;
-	var hh = floor(TILE_HEIGHT / 2);
-	ty = floor(my / hh);
-	var xoff = (ty % 2 == 0) ? TILE_WIDTH / 2 : 0;
-	tx = floor((mx - xoff) / TILE_WIDTH);
-	var pos = isometric_position(tx, ty);
-	return pos;
-}
 
 handlePlacingProps = function(item) {
 	if (Paused) return;
