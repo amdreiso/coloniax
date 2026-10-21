@@ -74,6 +74,15 @@ part_type_direction(particleLavaDropplet, 90-deviation, 90+deviation, 0, 0);
 part_type_speed(particleLavaDropplet, 1, 0.80, -0.0075, 0.0005);
 part_type_gravity(particleLavaDropplet, 0.075, 270);
 
+particlePoison = part_type_create();
+var ptPoisonLife = sprite_get_number(sParticle_Poison) * 4;
+part_type_sprite(particlePoison, sParticle_Poison, true, true, false);
+part_type_direction(particlePoison, 90 - 30, 90 + 30, 0, 0);
+part_type_size(particlePoison, 0.5, 1.25, 0.005, 0);
+part_type_life(particlePoison, ptPoisonLife, ptPoisonLife);
+part_type_speed(particlePoison, 0, 0.3, 0, 0);
+
+
 // Space Generation
 chunks = {};
 job = [];

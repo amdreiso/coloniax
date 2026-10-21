@@ -80,4 +80,8 @@ function input_mapping(){
 		keyboard_string = "";
 		CHAT.open = true;
 	});
+
+	Input.Bind.Set(ord("R"), INPUT_CTRL_SHIFT, , function(){
+		game_restart();
+	})
 }

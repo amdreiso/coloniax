@@ -4,6 +4,7 @@ function planet_init(){
 		EARTH,
 		VOLCANIC,
 		ICE,
+		POISON,
 		
 		COUNT,
 	}
@@ -22,6 +23,8 @@ function planet_init(){
 			case ePlanetType.EARTH: 	return #ffffff;
 			case ePlanetType.VOLCANIC: 	return #ff5555;
 			case ePlanetType.ICE: 		return #aaaaff;
+			case ePlanetType.POISON:	return #55ff99;
+			default: 					return #ffffff;
 		}
 	}
 	
@@ -191,6 +194,56 @@ function planet_init(){
 					},
 				}
 			}
+
+			case ePlanetType.POISON: {
+				return {
+					resources: {
+						water: 0,
+						stone: 0,
+						tree: 0,
+						poison: irandom(30),
+						lava: 0,
+						iron: 0,
+						coal: 0,
+					},
+					
+					terrain: [
+						new Level(eTileID.POISON, 0),
+						new Level(eTileID.SHORT_POISONOUS_GRASS, 50),
+						new Level(eTileID.POISONOUS_GRASS, 54),
+					],
+					
+					parameters: {
+						base: "poison",
+						
+						getChunkSizes: function() {
+							return choose(
+								[[32, 16], [32, 16]],
+								[[64, 64], [32, 32], [16, 16]],
+								[[64, 64], [32, 32]],
+								[[48, 48], [48, 48]],
+							);
+						},
+						
+						getGeologyChunkSizes: function() {
+							return choose(
+								[[128, 64], [64, 32]],
+								[[8, 4], [12, 6], [16, 8]], 
+								[[8, 4], [12, 6]],
+								[[8, 4]],
+							);
+						},
+						
+						mineralSpawnTable: [
+						],
+						
+						// Chance to change chunk sizes
+						chunkInfluence:		20,
+						geologyInfluence:	80,
+					},
+				}
+			}
+
 		}
 	}
 	

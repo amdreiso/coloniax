@@ -1,56 +1,56 @@
 {
-  "managed":true,
-  "resourceVersion":"2.0",
-  "physicsKinematic":false,
-  "physicsGroup":1,
-  "physicsStartAwake":true,
+  "overriddenProperties":[],
   "spriteId":null,
-  "physicsShapePoints":[],
-  "spriteMaskId":null,
+  "physicsGroup":1,
   "parentObjectId":{
-    "path":"objects/Prop/Prop.yy",
-    "name":"Prop"
+    "name":"Prop",
+    "path":"objects/Prop/Prop.yy"
   },
-  "physicsRestitution":0.1,
-  "physicsLinearDamping":0.1,
   "eventList":[{
-      "collisionObjectId":null,
-      "isDnD":false,
       "eventType":0,
-      "resourceType":"GMEvent",
-      "%Name":"",
+      "$GMEvent":"v1",
       "resourceVersion":"2.0",
-      "name":"",
-      "eventNum":0,
-      "$GMEvent":"v1"
-    },{
+      "%Name":"",
       "collisionObjectId":null,
-      "isDnD":false,
-      "eventType":8,
-      "resourceType":"GMEvent",
-      "%Name":"",
-      "resourceVersion":"2.0",
       "name":"",
-      "eventNum":0,
-      "$GMEvent":"v1"
+      "isDnD":false,
+      "resourceType":"GMEvent",
+      "eventNum":0
+    },{
+      "eventType":8,
+      "$GMEvent":"v1",
+      "resourceVersion":"2.0",
+      "%Name":"",
+      "collisionObjectId":null,
+      "name":"",
+      "isDnD":false,
+      "resourceType":"GMEvent",
+      "eventNum":0
     }],
+  "name":"Prop_BasicMiningDrill",
+  "persistent":false,
+  "physicsKinematic":false,
+  "managed":true,
+  "spriteMaskId":null,
+  "$GMObject":"",
+  "visible":true,
+  "solid":false,
+  "physicsLinearDamping":0.1,
+  "physicsObject":false,
   "physicsAngularDamping":0.1,
   "resourceType":"GMObject",
-  "physicsShape":1,
-  "name":"Prop_BasicMiningDrill",
-  "visible":true,
-  "parent":{
-    "path":"folders/obj/Props.yy",
-    "name":"Props"
-  },
-  "physicsSensor":false,
-  "persistent":false,
-  "properties":[],
-  "physicsObject":false,
-  "physicsDensity":0.5,
-  "overriddenProperties":[],
+  "resourceVersion":"2.0",
   "%Name":"Prop_BasicMiningDrill",
-  "solid":false,
+  "properties":[],
+  "physicsStartAwake":true,
+  "physicsShapePoints":[],
+  "physicsSensor":false,
+  "parent":{
+    "name":"Props",
+    "path":"folders/obj/Props.yy"
+  },
   "physicsFriction":0.2,
-  "$GMObject":""
+  "physicsShape":1,
+  "physicsDensity":0.5,
+  "physicsRestitution":0.1
 }

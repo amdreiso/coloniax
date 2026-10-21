@@ -143,10 +143,10 @@ handleGun = function(item) {
 	var auto = (c.automatic) ? mouse_check_button(mb_left) : mouse_check_button_pressed(mb_left);
 	var shooting = (auto);
 	var canShoot = (!gunCooldown && controlling && !Paused);
-	
+
 	gunCooldown = max(0, gunCooldown - 1);
 	gunRecoil = lerp(gunRecoil, 0, 0.2);
-	
+
 	if (shooting && canShoot) {
 		gunCooldown = c.firerate;
 		gunRecoil = c.recoil;
@@ -246,7 +246,6 @@ drawHandGun = function(item) {
 	}
 	
 	handleGun(item);
-
 	draw_sprite_ext(icon, 1, xx, yy, 1, yscale, angle, c_white, 1);
 }
 

@@ -1,9 +1,24 @@
-function planet_generate_name(){
+function planet_generate_name(planetType = ePlanetType.EARTH){
 	
 	var prepositions	= "of";
-	var adjectives		= "giant,big,forgotten,bizarre,dry,hot,cold,colossus,round";
-	var nouns			= "planet,body,ziggurat,home,world";
-	var objects			= "nothingness,the past,time,junk";
+	var adjectives		= "giant,big,forgotten,bizarre,colossus,round";
+	var nouns			= "ball,planet,body,ziggurat,home,world";
+	var objects			= "nothingness,time,junk";
+	var demonyms		= "the past";
+
+	switch (planetType) {
+		case ePlanetType.POISON:
+			adjectives += ",poisonous,toxic,smelly,deadly,venomous,virulent,harmful,noxious";
+			break;
+
+		case ePlanetType.VOLCANIC:
+			adjectives += ",red-hot,live,blistering,raging,burning,warm";
+			break;
+
+		case ePlanetType.ICE:
+			adjectives += ",stale,frigid,cold-blooded,inhuman,insensate,cold,frozen,arctic,polar,frosty,cool";
+			break;
+	}
 	
 	var get = function(str) {
 		str = string_split(str, ",");
@@ -11,7 +26,7 @@ function planet_generate_name(){
 		return str + " ";
 	}
 	
-	var type = irandom(3);
+	var type = irandom(4);
 	
 	switch (type) {
 		case 0: {
@@ -47,6 +62,15 @@ function planet_generate_name(){
 			var obj = get(objects);
 			
 			return string_join("", adj, obj);
+		}
+
+		case 4: {
+			// ADJECTIVE PREPOSITION DEMONYM
+			var adj = get(adjectives);
+			var pre = get(prepositions);
+			var dem = get(demonyms);
+			
+			return string_join("", adj, pre, dem);
 		}
 	}
 	

@@ -10,6 +10,9 @@ function tile_data(){
 		STONE,
 		VOLCANIC_ROCK,
 		SNOW,
+		POISON,
+		SHORT_POISONOUS_GRASS,
+		POISONOUS_GRASS,
 	}
 	
 	G TILE;
@@ -21,6 +24,7 @@ function tile_data(){
 		canPlaceProps: true,
 		canSpawnMinerals: false,
 		isLiquid: false,
+		frameSpeed: irandom_range(300, 500),
 		
 		onEntityCollision: function(obj) {
 		},
@@ -95,4 +99,28 @@ function tile_data(){
 			if (irandom(100) > 80) then t.CreateProp(planet, Prop_IceSpike);
 		},
 	}));
+	
+	TILE.Register(eTileID.POISON, tile(sTile_Poison, {
+		isLiquid: true,
+		frameSpeed: function(){
+			return irandom_range(100, 200);
+		},
+
+		update: function(obj) {
+			if (irandom(1000)>995) {
+				var part = instance_create_depth(obj.x, obj.y, obj.depth, Particle);
+				part.setLifetime(1);
+				part.setAmount(1);
+				part.setParticle(World.particlePoison);
+				part.setRange(TILE_HEIGHT, TILE_HEIGHT);
+			}
+		}
+	}));
+
+	TILE.Register(eTileID.SHORT_POISONOUS_GRASS, tile(sTile_ShortPoisonousGrass, {
+	}));
+
+	TILE.Register(eTileID.POISONOUS_GRASS, tile(sTile_PoisonousGrass, {
+	}));
+
 }

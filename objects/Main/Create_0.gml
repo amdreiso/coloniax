@@ -40,13 +40,13 @@ display_set_gui_maximise();
 // Globals
 G Manifest;
 Manifest = {
-	name			: "Coloniax",
-	version			: "0.0.0",
-	build			: "indev",
-	author			: "Andy (c) lowqualitypictures",
+	name	: "Coloniax",
+	version	: "0.0",
+	build	: "indev",
+	author	: "Andy (c) lowqualitypictures",
 }
 
-CHAT.Send($"{Manifest.name} {Manifest.version}v {Manifest.build} :Alien:  :Spaceship:");
+CHAT.Send($"{Manifest.name} {Manifest.version}v {Manifest.build}");
 
 G Debug;
 Debug = {
@@ -77,6 +77,7 @@ DRAW = new Callback();
 
 // file system
 mkdir("screenshots");
+mkdir("planets");
 
 // Start
 instance_create_depth(x, y, -999999, Draw_Handler);
@@ -108,4 +109,5 @@ Process.Push(function() {
 });
 
 showSavingIcon = 0;
+
 

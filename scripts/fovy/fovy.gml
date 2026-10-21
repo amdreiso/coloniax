@@ -58,6 +58,13 @@ function settings_get(){
 	return stt;
 }
 
+function resolve(val) {
+	if (is_method(val)) {
+		return val();
+	}
+	return val;
+}
+
 function settings_save() {
 	var file = SETTINGS_FILE;
 	var content = json_stringify(Settings);

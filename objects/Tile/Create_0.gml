@@ -5,18 +5,19 @@ frameSpeed = irandom_range(300, 500);
 
 isLiquid = false;
 
-tick = irandom(10000);
+tick = irandom(1000);
 cooldown = irandom(3 * 60);
 
 update = function(){}
 
 set = function(tileid) {
-	var t = TILE.Get(tileid);
-	tileID = tileid;
-	sprite = t.components.sprite;
-	isLiquid = t.components.isLiquid;
-	update = t.components.update;
-	sprite_index = sprite;
+	var t 			= TILE.Get(tileid);
+	tileID 			= tileid;
+	sprite 			= t.components.sprite;
+	isLiquid 		= t.components.isLiquid;
+	update 			= t.components.update;
+	frameSpeed		= resolve(t.components.frameSpeed);
+	sprite_index 	= sprite;
 	
 	if (tileid == eTileID.LAVA) {
 		tick = 0;

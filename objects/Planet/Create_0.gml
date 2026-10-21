@@ -26,7 +26,6 @@ vsp = 0;
 hovering = false;
 outlineSize = 0;
 
-name = planet_generate_name();
 seed = irandom(1000000);
 noise = new perlin(seed);
 
@@ -36,6 +35,8 @@ type				= irandom(ePlanetType.COUNT - 1);
 planet				= PLANET.Generate(type);
 chunkSizes			= planet.parameters.getChunkSizes();
 geologyChunkSizes	= planet.parameters.getGeologyChunkSizes();
+
+name = planet_generate_name(type);
 
 iconIndex = choose(ePlanetIcon.DEFAULT, ePlanetIcon.RING);
 iconColor = PLANET.GetColor(type);
