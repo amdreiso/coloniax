@@ -28,6 +28,7 @@ function draw_debug_ui(){
 	_($"fps: {fps}");
 	_($"processes: {array_length(Process.list)}");
 	_($"kbs: {bool_string(KeyboardBusy)} mbs: {bool_string(CursorBusy)}");
+	_($"velax: {Vela.navigation.x} velay: {Vela.navigation.y}");
 	
 	if (instance_exists(Spaceship)) {
 		line("Spaceship");

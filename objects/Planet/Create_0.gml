@@ -96,19 +96,24 @@ function TileData(this, planet, x, y) constructor {
 		
 		var size = variable_instance_get(prop, "size") ?? [[0, 0]];
 		self.occupied = occupy;
+
+		var iseven = (self.index.y % 2 == 0) ? 1 : 0;
 		
 		for (var i = 0; i < array_length(size); i++) {
-			var xx = self.index.x + size[i][0];
-			var yy = self.index.y + size[i][1];
+			var tx = size[i][0];
+			var ty = size[i][1];
+			var xx = self.index.x + tx;
+			var yy = self.index.y + ty;
 			
-			if (size[i][1] % 2 != 0 && yy % 2 == 0) {
-				xx += 1;
+			if (iseven) {
+				if (ty % 2 != 0) {
+					xx += 1;
+				}
 			}
 			
 			var tile = self.parent.grid[# xx, yy];
 			if (tile != undefined) {
 				tile.occupied = true;
-				
 			}
 		}
 		return true;
@@ -229,19 +234,22 @@ createStructure = function(x, y, structureID) {
 	var s = STRUCTURE.Get(structureID);
 	if (s == undefined) return;
 
-	CHAT.Send($"Creating structure on x = {x} y = {y}");
 	var iseven = (y % 2 == 0) ? 1 : 0;
 
 	for (var i = 0; i < array_length(s); i++) {
 		var t = s[i];
 		var xx, yy;
 		var tx, ty;
-		tx = t.x + (1 * iseven);
+		tx = t.x;
 		ty = t.y;
 		xx = x + tx;
 		yy = y + ty;
 
-		CHAT.Send($"tx = {tx} ty = {ty}");
+		if (iseven) {
+			if (ty % 2 == false) {
+				xx -= 1;
+			}
+		}
 
 		var tile = grid[# xx, yy];
 		if (tile == undefined) continue;

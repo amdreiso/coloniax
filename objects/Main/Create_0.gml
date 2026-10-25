@@ -6,7 +6,7 @@ randomize();
 fovy();
 console_init();
 input_mapping();
-//tolin_init();
+tolin_init();
 //tolin_builtin();
 vela();
 
@@ -97,6 +97,10 @@ CONSOLE.Run("start");
 //	tolin_run(tolinState);
 //}
 
+ts = tolin_state();
+tolin_add_code(ts, "Spaceship.dir = 90");
+tolin_run(ts);
+
 audio_group_load(audiogroup_default);
 audio_group_load(audiogroup_music);
 
@@ -109,5 +113,4 @@ Process.Push(function() {
 });
 
 showSavingIcon = 0;
-
 

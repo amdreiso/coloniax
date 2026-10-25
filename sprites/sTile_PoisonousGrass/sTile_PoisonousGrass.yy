@@ -13,13 +13,27 @@
   "For3D":false,
   "frames":[
     {"$GMSpriteFrame":"v1","%Name":"593822fa-399e-4e37-a024-6cc4266d137b","name":"593822fa-399e-4e37-a024-6cc4266d137b","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"ba624774-5373-475c-be18-acfabf1016b8","name":"ba624774-5373-475c-be18-acfabf1016b8","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
     {"$GMSpriteFrame":"v1","%Name":"c2c78541-5e2f-4a63-a5c6-321ff104ab7d","name":"c2c78541-5e2f-4a63-a5c6-321ff104ab7d","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"2baa7cff-524d-4a5f-a104-eb21e3ad6783","name":"2baa7cff-524d-4a5f-a104-eb21e3ad6783","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"90dc7df6-489a-49a8-91e2-a90f61288450","name":"90dc7df6-489a-49a8-91e2-a90f61288450","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"226b95ca-01ae-44ff-9375-93c64684dd6c","name":"226b95ca-01ae-44ff-9375-93c64684dd6c","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"d8d838f4-3ae5-43fa-a198-48411c7afb3b","name":"d8d838f4-3ae5-43fa-a198-48411c7afb3b","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"04861efa-8cac-4722-9b6d-0705facec48e","name":"04861efa-8cac-4722-9b6d-0705facec48e","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"664b34f2-f281-4a30-875b-7c1f36045eaa","name":"664b34f2-f281-4a30-875b-7c1f36045eaa","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"cfecaaa1-d289-4eac-99da-52e26ce290d0","name":"cfecaaa1-d289-4eac-99da-52e26ce290d0","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"d270296e-57df-430f-a08c-fc9dc9428919","name":"d270296e-57df-430f-a08c-fc9dc9428919","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"00277461-cb36-45e0-9a7c-e823b7284ed7","name":"00277461-cb36-45e0-9a7c-e823b7284ed7","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"df2c16b5-720f-4925-8073-daab12bdbb3f","name":"df2c16b5-720f-4925-8073-daab12bdbb3f","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"2ed848e2-e019-462d-86ee-37227d5c9291","name":"2ed848e2-e019-462d-86ee-37227d5c9291","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"cae5f431-0037-44d8-b4bd-50554985c5c7","name":"cae5f431-0037-44d8-b4bd-50554985c5c7","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,
   "height":22,
   "HTile":false,
   "layers":[
+    {"$GMImageLayer":"","%Name":"51ecac96-f296-4678-8e76-b091fabc5721","blendMode":0,"displayName":"Layer 1","isLocked":false,"name":"51ecac96-f296-4678-8e76-b091fabc5721","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
     {"$GMImageLayer":"","%Name":"86dcf7dd-48c4-45a2-bcdd-09123a68a208","blendMode":0,"displayName":"default","isLocked":false,"name":"86dcf7dd-48c4-45a2-bcdd-09123a68a208","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
   ],
   "name":"sTile_PoisonousGrass",
@@ -50,7 +64,7 @@
     },
     "eventStubScript":null,
     "eventToFunction":{},
-    "length":2.0,
+    "length":15.0,
     "lockOrigin":false,
     "moments":{
       "$KeyframeStore<MomentsEventKeyframe>":"",
@@ -73,8 +87,47 @@
                 "0":{"$SpriteFrameKeyframe":"","Id":{"name":"593822fa-399e-4e37-a024-6cc4266d137b","path":"sprites/sTile_PoisonousGrass/sTile_PoisonousGrass.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
               },"Disabled":false,"id":"9859eadf-36b5-4fef-95ad-b78c579aefad","IsCreationKey":false,"Key":0.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"ba624774-5373-475c-be18-acfabf1016b8","path":"sprites/sTile_PoisonousGrass/sTile_PoisonousGrass.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"29dc3b12-5c72-4633-8b30-18ade80f2342","IsCreationKey":false,"Key":1.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
                 "0":{"$SpriteFrameKeyframe":"","Id":{"name":"c2c78541-5e2f-4a63-a5c6-321ff104ab7d","path":"sprites/sTile_PoisonousGrass/sTile_PoisonousGrass.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
-              },"Disabled":false,"id":"1433ecf6-732d-4f40-b000-cf4651e7d1c3","IsCreationKey":false,"Key":1.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+              },"Disabled":false,"id":"1433ecf6-732d-4f40-b000-cf4651e7d1c3","IsCreationKey":false,"Key":2.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"2baa7cff-524d-4a5f-a104-eb21e3ad6783","path":"sprites/sTile_PoisonousGrass/sTile_PoisonousGrass.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"3317562e-d52d-4437-813f-be7095db7365","IsCreationKey":false,"Key":3.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"90dc7df6-489a-49a8-91e2-a90f61288450","path":"sprites/sTile_PoisonousGrass/sTile_PoisonousGrass.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"06f9c288-9d7e-4582-9e39-5c6cfec03e05","IsCreationKey":false,"Key":4.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"226b95ca-01ae-44ff-9375-93c64684dd6c","path":"sprites/sTile_PoisonousGrass/sTile_PoisonousGrass.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"9fb01f1e-bd8b-45af-a58a-54186392d35c","IsCreationKey":false,"Key":5.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"d8d838f4-3ae5-43fa-a198-48411c7afb3b","path":"sprites/sTile_PoisonousGrass/sTile_PoisonousGrass.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"2358b3c8-0ad7-4d0e-a71e-ce4c86c5032d","IsCreationKey":false,"Key":6.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"04861efa-8cac-4722-9b6d-0705facec48e","path":"sprites/sTile_PoisonousGrass/sTile_PoisonousGrass.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"f2a14692-6be1-46a1-9e16-6171d1c30ce4","IsCreationKey":false,"Key":7.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"664b34f2-f281-4a30-875b-7c1f36045eaa","path":"sprites/sTile_PoisonousGrass/sTile_PoisonousGrass.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"3f55d73b-38c7-4016-ad19-d566ce3aad27","IsCreationKey":false,"Key":8.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"cfecaaa1-d289-4eac-99da-52e26ce290d0","path":"sprites/sTile_PoisonousGrass/sTile_PoisonousGrass.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"44488a90-8504-4e53-8daa-219082b1cb12","IsCreationKey":false,"Key":9.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"d270296e-57df-430f-a08c-fc9dc9428919","path":"sprites/sTile_PoisonousGrass/sTile_PoisonousGrass.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"5a7567f4-a6d1-467c-abe0-02cb7bd278e4","IsCreationKey":false,"Key":10.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"00277461-cb36-45e0-9a7c-e823b7284ed7","path":"sprites/sTile_PoisonousGrass/sTile_PoisonousGrass.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"dbb0ca69-eb6a-4509-87f1-6d74f19ee66d","IsCreationKey":false,"Key":11.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"df2c16b5-720f-4925-8073-daab12bdbb3f","path":"sprites/sTile_PoisonousGrass/sTile_PoisonousGrass.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"d4f0bce0-79df-4075-bf96-c7bd9a5f091e","IsCreationKey":false,"Key":12.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"2ed848e2-e019-462d-86ee-37227d5c9291","path":"sprites/sTile_PoisonousGrass/sTile_PoisonousGrass.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"c32d4410-b4a0-4d72-9ae3-ef26e8d65963","IsCreationKey":false,"Key":13.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+            {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"cae5f431-0037-44d8-b4bd-50554985c5c7","path":"sprites/sTile_PoisonousGrass/sTile_PoisonousGrass.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"53c78754-cc25-4062-a362-8595746184dc","IsCreationKey":false,"Key":14.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
           ],"resourceType":"KeyframeStore<SpriteFrameKeyframe>","resourceVersion":"2.0",},"modifiers":[],"name":"frames","resourceType":"GMSpriteFramesTrack","resourceVersion":"2.0","spriteId":null,"trackColour":0,"tracks":[],"traits":0,},
     ],
     "visibleRange":null,

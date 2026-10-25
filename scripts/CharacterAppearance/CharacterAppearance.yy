@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"CharacterAppearance",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"CharacterAppearance",
+  "parent":{
+    "name":"custom",
+    "path":"folders/scr/custom.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

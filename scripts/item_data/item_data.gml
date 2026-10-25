@@ -223,6 +223,12 @@ function item_data(){
 	ITEM.Register(eItemID.BASIC_SOLAR_PANEL, ITEM.Prototype(eItemType.PROP, sItem_BasicSolarPanel, {
 		prop: Prop_BasicSolarPanel,
 		sprite: sProp_SolarPanel,
+		size: [
+			[0, 0],
+			[-1, -1],
+			[0, -1],
+			[0, -2],
+		],
 	}));
 	
 	ITEM.Register(eItemID.BASIC_MINING_DRILL, ITEM.Prototype(eItemType.PROP, sItem_BasicMiningDrill, {

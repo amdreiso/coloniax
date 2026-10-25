@@ -1,4 +1,5 @@
 
+
 lifetime = max(0, lifetime - GameSpeed);
 
 if (lifetime <= 0) {

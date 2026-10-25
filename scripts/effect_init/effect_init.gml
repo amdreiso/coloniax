@@ -16,6 +16,10 @@ function effect_init(){
 		self.time = time;
 		self.timeDefault = time;
 	}
+
+	EFFECT.Exists = function(obj) {
+		return (variable_instance_exists(obj, "effect"));
+	}
 	
 	EFFECT.State = function(parent) constructor {
 		self.list = [];
@@ -95,7 +99,7 @@ function effect_init(){
 				var part = instance_create_depth(e.x, e.y, e.depth, Particle);
 				part.setLifetime(1);
 				part.setAmount(1);
-				part.setParticle(World.particleFlame);
+				part.setParticle(World.particleFlame());
 				part.setRange(6, 6);
 			}
 		},

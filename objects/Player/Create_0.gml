@@ -177,6 +177,7 @@ sprite_index = sPlayer_Idle;
 
 inWater = false;
 onLava = false;
+inPoison = false;
 placeDirection = 1;
 swing = false;
 
@@ -285,11 +286,14 @@ drawHandItem = function(item) {
 	}
 		
 	var swingValue = (sin(current_time * 0.03) + 1) * 0.5;
-	var swingAngle = power(swingValue, 2) * 40 - 20;
+	var swingForce = 100;
+	var swingAngle = power(swingValue, 2) * swingForce - swingForce / 2;
 	var handAngle = swingAngle * swing;
 		
 	draw_sprite_ext(icon, 1, x + righthand.x * xscale, y - righthand.y, xscale, 1, handAngle, c_white, 1);
 }
+
+appearance = new CharacterAppearance();
 
 draw = function() {
 	var spr = sPlayer_Idle;
@@ -298,7 +302,21 @@ draw = function() {
 	state = ePlayerState.IDLE;
 	inWater = false;
 	onLava = false;
-	
+	inPoison = true;
+
+	var eye = appearance.eye;
+	var hair = appearance.hair;
+
+	var head = appearance.head;
+	var headx = x;
+	var heady = y;
+
+	var currentItem = -1;
+	var hand = inventory.Get(slotIndex);
+	if (hand.itemID != -1) {
+		currentItem = ITEM.Get(hand.itemID);
+	}
+
 	moving = (hsp != 0 || vsp != 0);
 	
 	// Check for tile specific sprite states
@@ -334,6 +352,12 @@ draw = function() {
 				spr = (moving) ? sPlayer_Move : sPlayer_Idle;
 				spd = 700;
 				
+			} else if (tile.tileID == eTileID.POISON) {
+				state = ePlayerState.SWIM;
+				spr = sPlayer_Swim;
+				spd = 140;
+				inPoison = true;
+
 			}
 		}
 	} 
@@ -341,28 +365,48 @@ draw = function() {
 		state = ePlayerState.WALK;
 		spr = sPlayer_Move;
 		spd = 150;
+
+		if (floor(frame) == 1) {
+			heady = y + 1;
+		}
 	}
-	
+
+	if (state = ePlayerState.SWIM) {
+		heady = y + 2;
+		if (floor(frame) == 1) {
+			heady = y + 1;
+		}
+	}
+
 	frame = (current_time / spd) % 2;
 	angle = (moving) ? sin(current_time * 0.015) * 4 : 0;
 	if (hsp != 0) xscale = sign(hsp);
-	
+		
 	sprite = spr;
 	
 	if (!inWater) then draw_sprite_ext(sPlayer_Shadow, frame, x, y, xscale, image_yscale, angle, c_white, 0.5);
-	draw_sprite_ext(sprite, frame, x, y, xscale, image_yscale, angle, c_white, 1);
+	draw_sprite_ext(sprite, frame, x, y, xscale, image_yscale, angle, appearance.shirtColor, 1);
 
-	// Item Holding
-	var hand = inventory.Get(slotIndex);
-	if (hand.itemID != -1) {
-		var item = ITEM.Get(hand.itemID);
-		var icon = item.components.icon;
-		
-		// Draw item sprite in hand
-		drawHandItem(item);
-		
-		// Placing Propr
-		handlePlacingProps(item);
+	// Draw item sprite in hand
+	if (currentItem != -1) then drawHandItem(currentItem);
+
+	var blink = (floor(current_time/100) % 30 == 0)
+
+	draw_sprite_ext(head, frame, x, heady-sprite_get_height(sprite), xscale, image_yscale, angle, appearance.skinColor, 1);
+	draw_sprite_ext(hair, frame, x, heady-sprite_get_height(sprite), xscale, image_yscale, angle, appearance.hairColor, 1);
+	draw_sprite_ext(eye, 0, x, heady-sprite_get_height(sprite), xscale, image_yscale, angle, (blink) ? appearance.skinColor : c_white, 1);
+
+	var hy = heady - sprite_get_height(sprite)
+
+	if (sprite_get_number(eye) >= 2 && !blink) {
+		draw_sprite_ext(eye, 1, x, hy, xscale, image_yscale, angle, appearance.eyeColor, 1);
+	}
+	
+	// Placing Props
+	if (currentItem != -1) then handlePlacingProps(currentItem);
+
+	if (keyboard_check_pressed(ord("L"))) {
+		appearance = new CharacterAppearance();
 	}
 }
 
@@ -435,6 +479,11 @@ drawHotbar = function() {
 	}
 }
 
+characterCustomizationUI = ui_create_character_customization();
+
+GUI.Register(function(){
+	characterCustomizationUI.Draw();
+});
 GUI.Register(drawHotbar);
 
 

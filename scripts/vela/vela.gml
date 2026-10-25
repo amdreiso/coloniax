@@ -30,6 +30,18 @@ function vela(){
 	
 	#macro TRANSPARENT -1
 	#macro BUTTON_HOLD_MS 30
+
+	G Vela;
+	Vela = {};
+
+	Vela.navigationMode = "gamepad";
+	Vela.navigation = {x:0,y:0};
+	Vela.nodeY = 0;
+
+	Vela.navigate = function(axis, dir) {
+		Vela.navigation[$ string(axis)] += dir;
+		Vela.lastNavigationMotion = {axis:axis, dir:dir};
+	}
 	
 	// Vela theme
 	//var themefile = "theme.tolin";
@@ -108,10 +120,12 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 	self.children = [];
 	self.length = 0;
 	self.nodeClasses = {};
+	self.isRoot = false;
 	
 	self.x = x;
 	self.y = y;
 	self.initPos = new Vec2(x, y);
+	self.navigation = new Vec2(); // gamepad/keyboard navigation
 	
 	self.width	= 0;
 	self.height = 0;
@@ -217,6 +231,10 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 	static Push = function(node, class=undefined) {
 		node.ApplyStyle(self.defaultChildrenStyle);
 		node.UpdateLayout();
+		if (node.type == eNodeType.PANEL) {
+			Vela.nodeY ++;
+			node.navigation.y = Vela.nodeY;
+		}
 		array_push(self.children, node);
 		self.nodeClasses[$ class] = array_length(self.children)-1;
 		self.Recalculate();
@@ -252,10 +270,29 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 	static Reverse = function() {
 		self.children = array_reverse(self.children);
 	}
+
+	static DrawNavigationSelection = function() {
+		if (self.navigation.x == Vela.navigation.x &&
+		self.navigation.y == Vela.navigation.y) {
+			//draw_circle_color(self.x+self.width/2, self.y+self.height/2, 4, c_white, c_white, false);
+		}
+
+		if (self.isRoot) {
+			var up = (keyboard_check_pressed(vk_up))
+			var down = (keyboard_check_pressed(vk_down));
+			var left = (keyboard_check_pressed(vk_left));
+			var right = (keyboard_check_pressed(vk_right));
+
+			if (up) 	Vela.navigate(y, -1);
+			if (down) 	Vela.navigate(y, 1);
+			if (left) 	Vela.navigate(x, -1);
+			if (right) 	Vela.navigate(x, 1);
+		}
+	}
 	
 	static Draw = function() {
 		if (self.length == 0) {
-			print("Trying to draw panel with no length!");
+			//print("Trying to draw panel with no length!");
 			return;
 		}
 		
@@ -321,7 +358,13 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 						textpos = v_GetNodeAnchorPosition(node, xx, yy);
 						draw_text_color(textpos.x, textpos.y, node.text, node.style.color, node.style.color, node.style.color, node.style.color, node.style.opacity);
 					}
+
+					var bc = node.style.backgroundColor;
 					
+					if (bc != TRANSPARENT) {
+						draw_rectangle_color(xx, yy, xx + node.width - 1, yy + node.height - 1, bc, bc, bc, bc, false);
+					}
+
 					if (sprite_exists(node.sprite)) {
 						draw_sprite(node.sprite, node.spriteIndex, xx + node.width / 2, yy + node.height / 2);
 					}
@@ -333,16 +376,16 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 						window_set_cursor(cr_handpoint);
 						node.selected = true;
 						
-						var bc = node.style.buttonHoverColor;
+						var bhc = node.style.buttonHoverColor;
 						var alpha = 0.25;
 						
 						if (mouse_check_button(mb_left)) {
-							bc = node.style.buttonClickColor;
+							bhc = node.style.buttonClickColor;
 							alpha = 0.10;
 						}
-						
+
 						draw_set_alpha(alpha);
-						draw_rectangle_color(xx, yy, xx + node.width - 1, yy + node.height - 1, bc, bc, bc, bc, false);
+						draw_rectangle_color(xx, yy, xx + node.width - 1, yy + node.height - 1, bhc, bhc, bhc, bhc, false);
 						draw_set_alpha(1);
 						
 						if (mouse_check_button(mb_left) && node.canHold) {
@@ -519,6 +562,8 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 			if (self.style.direction == eNodeDirection.ROW)		then xoff += node.width  + (xmargin);
 			if (self.style.direction == eNodeDirection.COLUMN)	then yoff += node.height + (ymargin);
 		}
+
+		self.DrawNavigationSelection();
 	}
 	
 	static SetPosition = function(x, y) {
@@ -614,7 +659,7 @@ function v_Text(text, styleComponents={}) : v_Node() constructor {
 	self.ApplyStyle(styleComponents);
 	self.UpdateLayout();
 	
-	print($"TEXT NODE: '{text}' dim: {self.width}x{self.height}  with style: '{self.style}'");
+	//print($"TEXT NODE: '{text}' dim: {self.width}x{self.height}  with style: '{self.style}'");
 }
 
 function v_Button(textOrSprite, func=function(){}, styleComponents={}) : v_Node() constructor {
@@ -628,10 +673,13 @@ function v_Button(textOrSprite, func=function(){}, styleComponents={}) : v_Node(
 		self.sprite = textOrSprite;
 	}
 	
+	self.ApplyStyle({
+		backgroundColor: TRANSPARENT,
+	});
 	self.ApplyStyle(styleComponents);
 	self.UpdateLayout();
 	
-	print($"BUTTON NODE: '{textOrSprite}' dim: {self.width}x{self.height}  with style: '{self.style}'");
+	//print($"BUTTON NODE: '{textOrSprite}' dim: {self.width}x{self.height}  with style: '{self.style}'");
 }
 
 function v_Surface(width, height, func=function(x, y, width, height){}, styleComponents={}) : v_Node() constructor {
@@ -644,7 +692,7 @@ function v_Surface(width, height, func=function(x, y, width, height){}, styleCom
 	self.ApplyStyle(styleComponents);
 	self.UpdateLayout();
 	
-	print($"SURFACE NODE: dim: {self.width}x{self.height} with style: '{self.style}'");
+	//print($"SURFACE NODE: dim: {self.width}x{self.height} with style: '{self.style}'");
 }
 
 function v_Meter(width, height, maxvalue, get=function(){}, styleComponents={}) : v_Node() constructor {
@@ -668,7 +716,7 @@ function v_Meter(width, height, maxvalue, get=function(){}, styleComponents={}) 
 	self.ApplyStyle(styleComponents);
 	self.UpdateLayout();
 	
-	print($"METER NODE: dim: {self.width}x{self.height} with style: '{self.style}'");
+	//print($"METER NODE: dim: {self.width}x{self.height} with style: '{self.style}'");
 }
 
 function v_InputBox(str="text here...", styleComponents={}) : v_Node() constructor {
@@ -681,6 +729,6 @@ function v_InputBox(str="text here...", styleComponents={}) : v_Node() construct
 	self.ApplyStyle(styleComponents);
 	self.UpdateLayout();
 	
-	print($"INPUT_BOX NODE: dim: {self.width}x{self.height} with style: '{self.style}'");
+	//print($"INPUT_BOX NODE: dim: {self.width}x{self.height} with style: '{self.style}'");
 }
 

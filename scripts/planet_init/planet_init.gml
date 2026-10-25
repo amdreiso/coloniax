@@ -201,7 +201,7 @@ function planet_init(){
 						water: 0,
 						stone: 0,
 						tree: 0,
-						poison: irandom(30),
+						poison: irandom_range(15, 30),
 						lava: 0,
 						iron: 0,
 						coal: 0,

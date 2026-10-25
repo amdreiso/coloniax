@@ -160,6 +160,7 @@ createJetParticles = function(xoff, yoff, val) {
 	var emitter = part_emitter_create(World.ps);
 	part_emitter_region(World.ps, emitter, xx - r, xx + r, yy - r, yy + r, ps_shape_rectangle, ps_distr_gaussian);
 	part_emitter_burst(World.ps, emitter, World.particleFire, n);
+	part_emitter_destroy(World.ps, emitter);
 }
 
 propellerSound = -1;
@@ -329,10 +330,12 @@ Input.Bind.Set(ord("E"), {}, , function(){
 	menuOpen = !menuOpen;
 });
 
+
 main = new v_Panel(200, 200, {
 	direction: eNodeDirection.COLUMN,
 	draggable: true,
 });
+main.isRoot = true;
 
 main.Push(new v_Text("==============", {color: c_gray}));
 main.Push(new v_InputBox("Spaceship"));

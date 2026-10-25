@@ -14,3 +14,4 @@ if (instance_exists(Player)) {
 		alpha = lerp(alpha, hide, 0.1);
 	}
 }
+

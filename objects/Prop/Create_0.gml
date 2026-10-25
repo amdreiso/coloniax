@@ -53,3 +53,4 @@ drawHealth = function() {
 
 DRAW_index = id;
 DRAW.Register(drawHealth, DRAW_index);
+

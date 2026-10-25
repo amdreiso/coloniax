@@ -83,5 +83,18 @@ function input_mapping(){
 
 	Input.Bind.Set(ord("R"), INPUT_CTRL_SHIFT, , function(){
 		game_restart();
-	})
+	});
+
+	Input.Bind.Set(vk_pagedown, {}, , function(){
+		if (instance_exists(Camera)) {
+			Camera.zoomDown();
+		}
+	});
+
+	Input.Bind.Set(vk_pageup, {}, , function(){
+		if (instance_exists(Camera)) {
+			Camera.zoomUp();
+		}
+	});
+
 }

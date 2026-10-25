@@ -1,11 +1,13 @@
 
+range = new Vec2();
+shape = ps_shape_rectangle;
 lifetime = 1;
 setLifetime = function(val=1) {
 	lifetime = val;
 }
 
 particle = World.particleFire;
-setParticle = function(part = World.particleFire) {
+setParticle = function(part) {
 	particle = part;
 }
 
@@ -21,7 +23,6 @@ setMode = function(m="burst") {
 	mode = m;
 }
 
-range = new Vec2();
 setRange = function(x, y) {
 	range = new Vec2(x, y);
 }
@@ -36,7 +37,11 @@ setAmount = function(val=1) {
 	amount = val;
 }
 
-shape = ps_shape_rectangle;
 setShape = function(val=ps_shape_rectangle) {
 	shape = val;
 }
+
+Await.Register(5 * 60, function(){
+	if (part_emitter_exists(ps, emitter)) 
+		part_emitter_destroy(ps, emitter);
+});

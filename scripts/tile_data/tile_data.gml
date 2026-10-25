@@ -44,7 +44,9 @@ function tile_data(){
 	TILE.Register(eTileID.GRASS, tile(sTile_Grass, {
 		canSpawnMinerals: true,
 		load: function(planet, tile) {
-			if (irandom(100) > 96) then tile.CreateProp(planet, Prop_Tree);
+			if (irandom(100) > 96) then tile.CreateProp(planet, Prop_Tree, {
+				tiltMultiplier: 0.3,
+			});
 		}
 	}));
 	
@@ -74,7 +76,7 @@ function tile_data(){
 		
 		onEntityCollision: function(obj) {
 			if (!instance_exists(obj)) return;
-			if (!variable_instance_exists(obj, "effect")) return;
+			if (!EFFECT.Exists(obj)) return;
 			
 			obj.effect.Add(eEffectID.Flames);
 		},
@@ -103,7 +105,7 @@ function tile_data(){
 	TILE.Register(eTileID.POISON, tile(sTile_Poison, {
 		isLiquid: true,
 		frameSpeed: function(){
-			return irandom_range(100, 200);
+			return irandom_range(100, 400);
 		},
 
 		update: function(obj) {
@@ -118,9 +120,29 @@ function tile_data(){
 	}));
 
 	TILE.Register(eTileID.SHORT_POISONOUS_GRASS, tile(sTile_ShortPoisonousGrass, {
+		load: function(planet, tile) {
+			var c = irandom_range(220, 255);
+			if (irandom(200) < 1) then tile.CreateProp(planet, Prop_Tree, {
+				sprite_index: sProp_DeadTree0,
+				tiltMultiplier: 0.05,
+				image_blend: make_color_rgb(c, c, c),
+			});
+		}
 	}));
 
 	TILE.Register(eTileID.POISONOUS_GRASS, tile(sTile_PoisonousGrass, {
+		load: function(planet, tile) {
+			var c = irandom_range(220, 255);
+			var r = irandom(100);
+			if (r < 1) {
+				tile.CreateProp(planet, Prop_Tree, {
+					sprite_index: choose(sProp_DeadTree0, sProp_DeadTree1),
+					tiltMultiplier: 0.05,
+					image_blend: make_color_rgb(c, c, c),
+				});
+			} else if (r < 2) {
+				tile.CreateProp(planet, Prop_Mushroom, {});
+			}
+		}
 	}));
-
 }

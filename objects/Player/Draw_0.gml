@@ -6,3 +6,4 @@ focusCheck();
 
 effect.Call("draw");
 
+

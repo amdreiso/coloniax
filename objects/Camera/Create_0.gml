@@ -4,8 +4,16 @@ index	= view_camera[0];
 width	= 320;
 height	= 180;
 
+zoomPart = 1;
 zoom	= 2;
 zoomTo	= zoom;
+zoomMax = 30;
+zoomDown = function(){
+	zoom += (zoom < zoomMax) ? zoomPart : 0;
+}
+zoomUp = function(){
+	zoom -= (zoom > zoomPart) ? zoomPart : 0;
+}
 
 target = noone;
 
@@ -38,3 +46,4 @@ inView = function(xx, yy, width, height) {
 		bottom > yy - h && top < yy + h
 	);
 }
+

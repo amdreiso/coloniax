@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"ui_create_character_customization",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"ui_create_character_customization",
+  "parent":{
+    "name":"scr",
+    "path":"folders/scr.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

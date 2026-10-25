@@ -66,13 +66,17 @@ function resolve(val) {
 }
 
 function settings_save() {
-	var file = SETTINGS_FILE;
-	var content = json_stringify(Settings);
-	var buffer = buffer_create(string_byte_length(content)+1, buffer_fixed, 1);
-	buffer_write(buffer, buffer_string, content);
-	buffer_save(buffer, file);
-	buffer_delete(buffer);
+	//var file = SETTINGS_FILE;
+	//var content = json_stringify(Settings);
+	//var buffer = buffer_create(string_byte_length(content)+1, buffer_fixed, 1);
+	//buffer_write(buffer, buffer_string, content);
+	//buffer_save(buffer, file);
+	//buffer_delete(buffer);
 	
+	var file = ini_open("settings.ini");
+	ini_write_real("Audio", "volume", Settings.audio.volume);
+	ini_close();
+
 	Main.showSavingIcon = 4 * 60;
 }
 
