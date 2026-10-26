@@ -338,7 +338,7 @@ main = new v_Panel(200, 200, {
 main.isRoot = true;
 
 main.Push(new v_Text("==============", {color: c_gray}));
-main.Push(new v_InputBox("Spaceship"));
+main.Push(new v_InputText("Spaceship"));
 main.Push(new v_Text("==============", {color: c_gray}));
 
 // surface

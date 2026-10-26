@@ -1,0 +1,3 @@
+
+GUI.Remove("script");
+

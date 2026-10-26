@@ -97,4 +97,9 @@ function input_mapping(){
 		}
 	});
 
+	Input.Bind.Set(ord("S"), INPUT_CTRL_ALT, , function(){
+		if (instance_exists(Menu_Script)) return;
+		instance_create_depth(0, 0, 0, Menu_Script);
+	});
+
 }

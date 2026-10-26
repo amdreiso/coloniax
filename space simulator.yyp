@@ -112,6 +112,7 @@
     {"id":{"name":"ItemDrop","path":"objects/ItemDrop/ItemDrop.yy",},},
     {"id":{"name":"Main","path":"objects/Main/Main.yy",},},
     {"id":{"name":"Menu_ColorPicker","path":"objects/Menu_ColorPicker/Menu_ColorPicker.yy",},},
+    {"id":{"name":"Menu_Script","path":"objects/Menu_Script/Menu_Script.yy",},},
     {"id":{"name":"Mineral","path":"objects/Mineral/Mineral.yy",},},
     {"id":{"name":"Particle_Handler","path":"objects/Particle_Handler/Particle_Handler.yy",},},
     {"id":{"name":"Particle","path":"objects/Particle/Particle.yy",},},

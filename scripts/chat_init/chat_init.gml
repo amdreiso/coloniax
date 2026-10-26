@@ -63,8 +63,9 @@ function chat_init(){
 		
 		while (i <= string_length(str)) {
 			var c = string_char_at(str, i);
+			var delim = "~";
 		
-			if (c == ":") {
+			if (c == delim) {
 				if (text != "") {
 					var char = new CHAT.Char(text, color, font);
 					char.rainbow = rainbow;
@@ -75,7 +76,7 @@ function chat_init(){
 				var asset = "";
 				i++;
 			
-				while (string_char_at(str, i) != ":" && i <= string_length(str)) {
+				while (string_char_at(str, i) != delim && i <= string_length(str)) {
 					asset += string_char_at(str, i);
 					i++;
 				}
@@ -182,7 +183,7 @@ function chat_init(){
 		if (text == "") return;
 		array_insert(CHAT.messages, 0, new CHAT.Token(CHAT.Parse(text)));
 	}
-	
+
 	CHAT.SendTime = function(text) {
 		if (text == "") return;
 		var time = $"$999999[{current_time/1000}]$ffffff ";

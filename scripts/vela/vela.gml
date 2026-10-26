@@ -5,6 +5,7 @@ function vela(){
 		PANEL,
 		SURFACE,
 		METER,
+		INPUT_TEXT,
 		INPUT_BOX,
 	}
 	
@@ -231,12 +232,11 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 	static Push = function(node, class=undefined) {
 		node.ApplyStyle(self.defaultChildrenStyle);
 		node.UpdateLayout();
-		if (node.type == eNodeType.PANEL) {
-			Vela.nodeY ++;
-			node.navigation.y = Vela.nodeY;
-		}
+
 		array_push(self.children, node);
-		self.nodeClasses[$ class] = array_length(self.children)-1;
+
+		var index = array_length(self.children)-1;
+		if (class != undefined) self.nodeClasses[$ class] = index;
 		self.Recalculate();
 	}
 	
@@ -252,6 +252,7 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 		var index = self.nodeClasses[$ class];
 		if (index) {
 			fn(self.children[index]);
+			return true;
 		}
 		return false;
 	}
@@ -277,7 +278,7 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 			//draw_circle_color(self.x+self.width/2, self.y+self.height/2, 4, c_white, c_white, false);
 		}
 
-		if (self.isRoot) {
+		if (self.isRoot && false) {
 			var up = (keyboard_check_pressed(vk_up))
 			var down = (keyboard_check_pressed(vk_down));
 			var left = (keyboard_check_pressed(vk_left));
@@ -353,16 +354,16 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 				}
 				case eNodeType.BUTTON: {
 					
-					if (string_length(node.text) > 0) {
-						ALIGN_MIDDLE_CENTER;
-						textpos = v_GetNodeAnchorPosition(node, xx, yy);
-						draw_text_color(textpos.x, textpos.y, node.text, node.style.color, node.style.color, node.style.color, node.style.color, node.style.opacity);
-					}
-
 					var bc = node.style.backgroundColor;
 					
 					if (bc != TRANSPARENT) {
 						draw_rectangle_color(xx, yy, xx + node.width - 1, yy + node.height - 1, bc, bc, bc, bc, false);
+					}
+
+					if (string_length(node.text) > 0) {
+						ALIGN_MIDDLE_CENTER;
+						textpos = v_GetNodeAnchorPosition(node, xx, yy);
+						draw_text_color(textpos.x, textpos.y, node.text, node.style.color, node.style.color, node.style.color, node.style.color, node.style.opacity);
 					}
 
 					if (sprite_exists(node.sprite)) {
@@ -456,7 +457,7 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 					
 					break;
 				}
-				case eNodeType.INPUT_BOX: {
+				case eNodeType.INPUT_TEXT: {
 					
 					var pos = v_GetNodeAnchorPosition(node, xx, yy);
 					var bc = node.style.borderColor;
@@ -547,6 +548,233 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 					
 					break;
 				}
+				case eNodeType.INPUT_BOX: {
+					var pos = v_GetNodeAnchorPosition(node, xx, yy);
+					var bc = node.style.borderColor;
+					
+					var str = node.text;
+					var len = string_length(str);
+					var linelen = array_length(node.lines);
+					var block = "█";
+					
+					var close = function(node) {
+						node.editing = false;
+						KeyboardBusy = false;
+					}
+					
+					var was_hovered = node.hovered;
+					node.hovered = node.OnMouse(xx, yy);
+					
+					if (was_hovered && !node.hovered) {
+						window_set_cursor(cr_default);
+						CursorBusy = false;
+					}
+					
+					if (node.hovered) {
+						CursorBusy = true;
+						window_set_cursor(cr_beam);
+						
+						if (mouse_check_button_released(mb_left)) {
+							node.editing = true;
+						}
+					}
+
+					var checkKeyboard = function(node) {
+						var last = keyboard_lastkey;
+						var char = keyboard_lastchar;
+						var len = string_length(node.text);
+
+						if (keyboard_check_pressed(vk_anykey) && last != vk_nokey) {
+
+							if (last == vk_backspace) {
+								if (string_length(node.text) <= 0) return;
+
+								// if at first char of line
+								if (node.cursor.x == 0) {
+
+									// if not at first line
+									if (node.cursor.y > 0) {
+										array_delete(node.lines, node.cursor.y, 1);
+										node.cursor.y --;
+										node.cursor.x = node.lines[node.cursor.y].len;
+										node.cursorLength --;
+										return;
+									}
+
+								} else {
+									// if x > 0
+									node.lines[node.cursor.y].len -= 1;
+									node.cursor.x --;
+									node.text = string_delete(node.text, node.cursorLength, 1);
+									node.cursorLength --;
+									return;
+								}
+
+								return;
+							}
+
+							if (last == vk_tab || last == vk_shift || last == vk_escape || last == vk_control || last == vk_lcontrol || 
+							    last == vk_rcontrol ||
+							    last == vk_alt || last == vk_left || last == vk_right || last == vk_up || last == vk_down) {
+								return;
+							}
+
+							if (keyboard_check_pressed(vk_enter)) {
+								var linelen = node.lines[node.cursor.y].len;
+
+								node.text = string_insert("\n", node.text, node.cursorLength + 1)
+
+								var left = node.cursor.x;
+								var right = linelen - left
+
+								// Current line is left thingy
+								node.lines[node.cursor.y].len = left;
+
+								node.cursor.x = 0;
+								node.cursorLength ++;
+								node.cursor.y ++;
+
+								// Insert newline with size of right
+								array_insert(node.lines, node.cursor.y, {len: right});
+								return;
+							}
+
+							var index = node.cursorLength + 1;
+
+							node.text = string_insert(char, node.text, index);
+							node.lines[node.cursor.y].len ++;
+							node.cursorLength ++;
+							node.cursor.x ++;
+						}
+					}
+
+					var cursorMotions = function(node) {
+						if (keyboard_check_pressed(vk_left) && node.cursorLength > 0) {
+							if (node.cursor.x == 0 && node.cursor.y > 0) {
+								node.cursor.y --;
+								node.cursor.x = node.lines[node.cursor.y].len;
+							} else {
+								node.cursor.x -= 1;
+							}
+							node.cursorLength --;
+						}
+
+						if (keyboard_check_pressed(vk_right) && node.cursorLength < string_length(node.text)) {
+							if (node.cursor.x < node.lines[node.cursor.y].len) {
+								node.cursor.x ++;
+							} else {
+								if (node.cursor.y < array_length(node.lines)-1) {
+									node.cursor.y ++;
+									node.cursor.x = 0;
+								}
+							}
+							node.cursorLength ++;
+						}
+
+						if (keyboard_check_pressed(vk_up) && node.cursor.y > 0) {
+							var x0 = node.cursor.x;
+							var lastlen = node.lines[node.cursor.y].len;
+
+							node.cursor.y --;
+							var len = node.lines[node.cursor.y].len;
+
+							var x1 = min(node.cursor.x, len);
+							
+							node.cursor.x = x1;
+							node.cursorLength -= lastlen - node.cursor.x + 1;
+						}
+
+						if (keyboard_check_pressed(vk_down) && node.cursor.y < array_length(node.lines)-1) {
+							var x0 = node.cursor.x;
+							var lastlen = node.lines[node.cursor.y].len;
+
+							node.cursor.y ++;
+							var len = node.lines[node.cursor.y].len;
+
+							var x1 = min(node.cursor.x, len);
+							node.cursor.x = x1;
+
+							node.cursorLength += lastlen - node.cursor.x + 1;
+						}
+					}
+					
+					if (node.editing) {
+						bc = node.style.borderColorSelected;
+						KeyboardBusy = true;
+
+						checkKeyboard(node);
+						cursorMotions(node);
+					}
+					
+					if (node.editing && !node.hovered) {
+						CursorBusy = false;
+						window_set_cursor(cr_default);
+						
+						if (mouse_check_button_pressed(mb_left)) {
+							close(node);
+						}
+					}
+					
+					// Draw
+					draw_rectangle_color(xx, yy, xx + node.width - 1, yy + node.height - 1, bc, bc, bc, bc, true);
+					
+					var gutterSize = 3;
+					var textWidth = (round(node.width / 9) - gutterSize);
+					var final = str;
+					
+					// Prevent text from going outside boundaries
+					//if (len > textWidth) {
+					//	if (node.editing) {
+					//		final = string_copy(str, len - textWidth, textWidth + 1);
+					//	} else {
+					//		var maxOffset = len - textWidth;
+					//		
+					//		var spd = 100; 
+					//		var pause = 1000;
+					//		var cycle = pause + maxOffset * spd + pause + maxOffset * spd;
+					//		var t = current_time % cycle;
+					//		var offset = 0;
+					//		
+					//		if (t < pause) {
+					//		    offset = 0;
+					//		} else if (t < pause + maxOffset * spd) {
+					//		    offset = floor((t - pause) / spd);
+					//		} else if (t < pause + maxOffset * spd + pause) {
+					//		    offset = maxOffset;
+					//		} else {
+					//		    offset = maxOffset - floor(
+					//		        (t - pause - maxOffset * spd - pause) / spd
+					//		    );
+					//		}
+					//		
+					//		final = string_copy(str, offset + 1, textWidth);
+					//	}
+					//}
+					
+					ALIGN_TOP_LEFT;
+					var c = node.style.color;
+					var sw = string_width(" ");
+					var sh = string_height(" ");
+					var gutterx = sw * gutterSize;
+
+					for (var i = 0; i < array_length(node.lines); i++) {
+						var gc = #505050;
+						if (node.cursor.y == i) gc = #cccccc;
+						draw_text_color(pos.x, pos.y + i * sh, string(i+1), gc, gc, gc, gc, node.style.opacity);
+					}
+
+					draw_text_color(pos.x + gutterx, pos.y, node.text, c, c, c, c, node.style.opacity);
+
+					if (node.editing) then draw_text_color(
+						pos.x + node.cursor.x * sw + gutterx, 
+						pos.y + node.cursor.y * sh, 
+						block, 
+						c, c, c, c, node.style.opacity
+					);
+					
+					break;
+				}
+
 			}
 			
 			if (keyboard_check_pressed(vk_escape)) {
@@ -719,12 +947,31 @@ function v_Meter(width, height, maxvalue, get=function(){}, styleComponents={}) 
 	//print($"METER NODE: dim: {self.width}x{self.height} with style: '{self.style}'");
 }
 
-function v_InputBox(str="text here...", styleComponents={}) : v_Node() constructor {
-	self.type = eNodeType.INPUT_BOX;
+function v_InputText(str="text here...", styleComponents={}) : v_Node() constructor {
+	self.type = eNodeType.INPUT_TEXT;
 	self.text = str;
 	
 	self.ApplyStyle({
 		padding: new Dim(20, 0),
+	});
+	self.ApplyStyle(styleComponents);
+	self.UpdateLayout();
+	
+	//print($"INPUT_BOX NODE: dim: {self.width}x{self.height} with style: '{self.style}'");
+}
+
+function v_InputBox(str="text here...", styleComponents={}) : v_Node() constructor {
+	self.type = eNodeType.INPUT_BOX;
+	self.text = str;
+	self.cursor = new Vec2();
+	self.lines = [
+		{len: 0},
+	];
+	self.cursorLength = 0;
+	
+	self.ApplyStyle({
+		padding: new Dim(20, 0),
+		anchor: eNodeAnchor.TOPLEFT,
 	});
 	self.ApplyStyle(styleComponents);
 	self.UpdateLayout();

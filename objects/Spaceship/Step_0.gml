@@ -17,7 +17,7 @@ if (controlling) {
 
 turretSpriteShootingCooldown = max(0, turretSpriteShootingCooldown - 1);
 
-canMove = (!player.ejected && !Debug.console && !CHAT.open);
+canMove = (!player.ejected && !Debug.console && !CHAT.open && !KeyboardBusy);
 pilot();
 shoot();
 
