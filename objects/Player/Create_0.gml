@@ -479,13 +479,9 @@ drawHotbar = function() {
 	}
 }
 
-characterCustomizationUI = ui_create_character_customization();
+//characterCustomizationUI = ui_create_character_customization();
 
-GUI.Register(function(){
-	characterCustomizationUI.Draw();
-});
 GUI.Register(drawHotbar);
-
 
 // Crafting system
 G RECIPE;

@@ -88,6 +88,11 @@ function tolin_add_code(state, str) {
 	state.code += str;
 }
 
+function tolin_set_code(state, str) {
+	state.code = "";
+	state.code = str;
+}
+
 function tolin_assert(con, msg="no message") {
 	if (!con) {
 		show_error("TOLIN ERR: "+msg, false);

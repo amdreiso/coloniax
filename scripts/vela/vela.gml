@@ -43,17 +43,6 @@ function vela(){
 		Vela.navigation[$ string(axis)] += dir;
 		Vela.lastNavigationMotion = {axis:axis, dir:dir};
 	}
-	
-	// Vela theme
-	//var themefile = "theme.tolin";
-	//fopen(themefile);
-	//if (file_exists(themefile)) {
-	//	var tolinState = new TolinState();
-	//	tolin_load_builtin_functions(tolinState, Tolin_BuiltInFunctions);
-	//	tolin_load_constants(tolinState);
-	//	tolin_load_file(tolinState, themefile);
-	//	tolin_run(tolinState);
-	//}
 }
 
 function v_GetDefaultStyle() {
@@ -584,48 +573,48 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 						var char = keyboard_lastchar;
 						var len = string_length(node.text);
 
-						if (keyboard_check_pressed(vk_anykey) && last != vk_nokey) {
+						if (keyboard_check_pressed(vk_anykey) && last != vk_nokey && char != "") {
 
 							if (last == vk_backspace) {
 								if (string_length(node.text) <= 0) return;
 
-								// if at first char of line
 								if (node.cursor.x == 0) {
-
-									// if not at first line
-									if (node.cursor.y > 0) {
-										array_delete(node.lines, node.cursor.y, 1);
-										node.cursor.y --;
-										node.cursor.x = node.lines[node.cursor.y].len;
-										node.cursorLength --;
+									if (node.cursor.y <= 0) {
+										node.cursorLength = 0;
 										return;
 									}
+									var prevLen = node.lines[node.cursor.y - 1].len;
 
-								} else {
-									// if x > 0
-									node.lines[node.cursor.y].len -= 1;
-									node.cursor.x --;
 									node.text = string_delete(node.text, node.cursorLength, 1);
-									node.cursorLength --;
-									return;
-								}
 
+									node.lines[node.cursor.y - 1].len += node.lines[node.cursor.y].len;
+									array_delete(node.lines, node.cursor.y, 1);
+
+									node.cursor.y--;
+									node.cursor.x = prevLen;
+									node.cursorLength--;
+								} else {
+									node.text = string_delete(node.text, node.cursorLength, 1);
+									node.lines[node.cursor.y].len--;
+									node.cursor.x--;
+									node.cursorLength--;
+								}
 								return;
 							}
 
-							if (last == vk_tab || last == vk_shift || last == vk_escape || last == vk_control || last == vk_lcontrol || 
-							    last == vk_rcontrol ||
-							    last == vk_alt || last == vk_left || last == vk_right || last == vk_up || last == vk_down) {
-								return;
+							var weirdos = [vk_tab, vk_lshift, vk_shift, vk_rshift, vk_escape, vk_control, vk_lcontrol, vk_rcontrol, vk_alt, vk_lalt, vk_ralt, vk_right, vk_left, vk_up, vk_down];
+
+							for (var i = 0; i < array_length(weirdos); i++) {
+								if (last == weirdos[i]) return;
 							}
 
 							if (keyboard_check_pressed(vk_enter)) {
 								var linelen = node.lines[node.cursor.y].len;
 
-								node.text = string_insert("\n", node.text, node.cursorLength + 1)
+								node.text = string_insert("\n", node.text, node.cursorLength + 1);
 
 								var left = node.cursor.x;
-								var right = linelen - left
+								var right = linelen - left;
 
 								// Current line is left thingy
 								node.lines[node.cursor.y].len = left;
@@ -653,39 +642,41 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 							if (node.cursor.x == 0 && node.cursor.y > 0) {
 								node.cursor.y --;
 								node.cursor.x = node.lines[node.cursor.y].len;
+								node.cursorLength --;
 							} else {
 								node.cursor.x -= 1;
+								node.cursorLength --;
 							}
-							node.cursorLength --;
 						}
 
 						if (keyboard_check_pressed(vk_right) && node.cursorLength < string_length(node.text)) {
 							if (node.cursor.x < node.lines[node.cursor.y].len) {
 								node.cursor.x ++;
+								node.cursorLength ++;
 							} else {
 								if (node.cursor.y < array_length(node.lines)-1) {
 									node.cursor.y ++;
 									node.cursor.x = 0;
+									node.cursorLength ++;
 								}
 							}
-							node.cursorLength ++;
 						}
 
 						if (keyboard_check_pressed(vk_up) && node.cursor.y > 0) {
-							var x0 = node.cursor.x;
+							var lastx = node.cursor.x;
 							var lastlen = node.lines[node.cursor.y].len;
 
 							node.cursor.y --;
 							var len = node.lines[node.cursor.y].len;
 
-							var x1 = min(node.cursor.x, len);
+							var newx = min(node.cursor.x, len);
 							
-							node.cursor.x = x1;
-							node.cursorLength -= lastlen - node.cursor.x + 1;
+							node.cursor.x = newx;
+							node.cursorLength -= lastx + 1 + len - newx;
 						}
 
 						if (keyboard_check_pressed(vk_down) && node.cursor.y < array_length(node.lines)-1) {
-							var x0 = node.cursor.x;
+							var lastx = node.cursor.x;
 							var lastlen = node.lines[node.cursor.y].len;
 
 							node.cursor.y ++;
@@ -693,8 +684,7 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 
 							var x1 = min(node.cursor.x, len);
 							node.cursor.x = x1;
-
-							node.cursorLength += lastlen - node.cursor.x + 1;
+							node.cursorLength += lastlen - lastx + 1 + x1;
 						}
 					}
 					
@@ -705,7 +695,7 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 						checkKeyboard(node);
 						cursorMotions(node);
 					}
-					
+
 					if (node.editing && !node.hovered) {
 						CursorBusy = false;
 						window_set_cursor(cr_default);
@@ -714,43 +704,14 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 							close(node);
 						}
 					}
-					
+
 					// Draw
 					draw_rectangle_color(xx, yy, xx + node.width - 1, yy + node.height - 1, bc, bc, bc, bc, true);
 					
 					var gutterSize = 3;
 					var textWidth = (round(node.width / 9) - gutterSize);
 					var final = str;
-					
-					// Prevent text from going outside boundaries
-					//if (len > textWidth) {
-					//	if (node.editing) {
-					//		final = string_copy(str, len - textWidth, textWidth + 1);
-					//	} else {
-					//		var maxOffset = len - textWidth;
-					//		
-					//		var spd = 100; 
-					//		var pause = 1000;
-					//		var cycle = pause + maxOffset * spd + pause + maxOffset * spd;
-					//		var t = current_time % cycle;
-					//		var offset = 0;
-					//		
-					//		if (t < pause) {
-					//		    offset = 0;
-					//		} else if (t < pause + maxOffset * spd) {
-					//		    offset = floor((t - pause) / spd);
-					//		} else if (t < pause + maxOffset * spd + pause) {
-					//		    offset = maxOffset;
-					//		} else {
-					//		    offset = maxOffset - floor(
-					//		        (t - pause - maxOffset * spd - pause) / spd
-					//		    );
-					//		}
-					//		
-					//		final = string_copy(str, offset + 1, textWidth);
-					//	}
-					//}
-					
+
 					ALIGN_TOP_LEFT;
 					var c = node.style.color;
 					var sw = string_width(" ");
@@ -774,12 +735,12 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 					
 					break;
 				}
-
 			}
 			
 			if (keyboard_check_pressed(vk_escape)) {
 				node.editing = false;
-			}
+				KeyboardBusy = false;
+	 		}
 			
 			if (Debug.velaUI) then draw_rectangle_color(
 				self.x + xoff, self.y + yoff,
@@ -960,7 +921,7 @@ function v_InputText(str="text here...", styleComponents={}) : v_Node() construc
 	//print($"INPUT_BOX NODE: dim: {self.width}x{self.height} with style: '{self.style}'");
 }
 
-function v_InputBox(str="text here...", styleComponents={}) : v_Node() constructor {
+function v_InputBox(str="", styleComponents={}) : v_Node() constructor {
 	self.type = eNodeType.INPUT_BOX;
 	self.text = str;
 	self.cursor = new Vec2();

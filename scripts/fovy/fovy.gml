@@ -40,7 +40,7 @@ function settings_get(){
 		},
 		
 		graphics : {
-			lighting: true,
+			lighting: false,
 		},
 		
 		audio: {

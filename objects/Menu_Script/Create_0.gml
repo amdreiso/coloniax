@@ -1,8 +1,9 @@
 
 ts = tolin_state();
+tolin_register(ts, "print", CHAT.Send);
 
 // Root
-root = new v_Panel(1000, 400, {
+root = new v_Panel(300, 300, {
 	direction: eNodeDirection.COLUMN,
 	draggable: true,
 	anchor: eNodeAnchor.MIDDLELEFT,
@@ -19,8 +20,14 @@ buttons.PushDefaultChildrenStyle({
 	padding: new Dim(10, 0),
 });
 
+input = new v_InputBox("", {
+	padding: new Dim(200, 125),
+});
+
 buttons.Push(new v_Button("Run", function(){
+	tolin_set_code(ts, input.text);
 	tolin_run(ts);
+
 }, {
 	backgroundColor: #ff7777,
 	color: c_black,
@@ -33,10 +40,6 @@ buttons.Push(new v_Button("Close", function(){
 }));
 
 inputPanel = new v_Panel(0, 0, {});
-
-input = new v_InputBox("", {
-	padding: new Dim(200, 125),
-});
 
 inputPanel.Push(input);
 
