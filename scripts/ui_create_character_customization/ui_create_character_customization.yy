@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"ui_create_character_customization",
   "parent":{
-    "name":"scr",
-    "path":"folders/scr.yy",
+    "name":"ui",
+    "path":"folders/scr/ui.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

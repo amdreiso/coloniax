@@ -21,19 +21,21 @@ createMeter = function(name, maxvalue, get=function(){return 100;}, left=functio
 	return panel;
 }
 
-function createSettingMeter(_struct, _name, _step = 0.05, _min=0, _max=1) {
+function createSettingMeter(_struct, _name, text, _step = 0.05, _min=0, _max=1) {
 	var ctx = { target: _struct, key: _name, step: _step, minimum: _min, maximum: _max };
 
 	return createMeter(
-		_name,
+		text,
 		_max,
 		method(ctx, function() {
 			return target[$ key];
 		}),
+
 		method(ctx, function(_node, _held) {
 			var s = (_held) ? (step / 5) : step;
 			target[$ key] = max(minimum, target[$ key] - s);
 		}),
+
 		method(ctx, function(_node, _held) {
 			var s = (_held) ? (step / 5) : step;
 			target[$ key] = min(maximum, target[$ key] + s);
@@ -87,19 +89,19 @@ sep = function(panel) {
 #region main
 
 main = page();
-title(main, "Game Paused");
+title(main, T.Getc("game_paused"));
 
-main.Push(new v_Button("Resume", function(node){
+main.Push(new v_Button(T.Getc("resume"), function(node){
 	PauseMenu.close();
 }));
 
-main.Push(new v_Button("Settings", function(node){
+main.Push(new v_Button(T.Getc("settings"), function(node){
 	PauseMenu.index = PauseMenu.settings;
 }));
 
 main.Push(v_Separator());
 
-main.Push(new v_Button("Quit to Desktop", function(node){
+main.Push(new v_Button(T.Getc("quit_desktop"), function(node){
 	game_end();
 }));
 
@@ -110,23 +112,33 @@ sep(main);
 #region settings
 
 settings = page();
-title(settings, "Settings");
+title(settings, T.Getc("settings"));
 
-settings.Push(new v_Button("Go Back", function(node){
+settings.Push(new v_Button(T.Getc("go_back"), function(node){
 	PauseMenu.index = PauseMenu.main;
 }));
 
 settings.Push(v_Separator());
 
-settings.Push(new v_Button("Graphics", function(node){
+languagePrefix = T.Getc("language")+": "
+settings.Push(new v_Button(languagePrefix + T.Get("lang"), function(node){
+	settings.Edit("language_button", function(node){
+		T.Cycle();
+		node.text = languagePrefix + T.Getc("lang");
+	});
+}), "language_button");
+
+settings.Push(v_Separator());
+
+settings.Push(new v_Button(T.Getc("graphics"), function(node){
 	PauseMenu.index = PauseMenu.graphicSettings;
 }));
 
-settings.Push(new v_Button("Audio", function(node){
+settings.Push(new v_Button(T.Getc("audio"), function(node){
 	PauseMenu.index = PauseMenu.audioSettings;
 }));
 
-settings.Push(new v_Button("Controls", function(node){
+settings.Push(new v_Button(T.Getc("controls"), function(node){
 	PauseMenu.index = PauseMenu.audioSettings;
 }));
 
@@ -137,19 +149,19 @@ sep(settings);
 #region audio settings
 
 audioSettings = page();
-title(audioSettings, "Audio Settings");
+title(audioSettings, T.Getc("audio_settings"));
 
-audioSettings.Push(new v_Button("Go Back", function(node){
+audioSettings.Push(new v_Button(T.Getc("go_back"), function(node){
 	PauseMenu.index = PauseMenu.settings;
 }));
 
 audioSettings.Push(v_Separator());
 
-createSettingMeters(audioSettings, Settings.audio, "volume");
-createSettingMeters(audioSettings, Settings.audio, "music");
-createSettingMeters(audioSettings, Settings.audio, "sfx");
-createSettingMeters(audioSettings, Settings.audio, "ui");
-createSettingMeters(audioSettings, Settings.audio, "zoomFalloff", 0.02, 0.00, 1.00);
+audioSettings.Push(createSettingMeter(Settings.audio, "volume", 		T.Getc("volume"), 		0.05, 0, 1));
+audioSettings.Push(createSettingMeter(Settings.audio, "music", 			T.Getc("music"), 		0.05, 0, 1));
+audioSettings.Push(createSettingMeter(Settings.audio, "sfx", 			T.Getc("sfx"), 			0.05, 0, 1));
+audioSettings.Push(createSettingMeter(Settings.audio, "ui", 			T.Getc("ui"), 			0.05, 0, 1));
+audioSettings.Push(createSettingMeter(Settings.audio, "zoomFalloff", 	T.Getc("zoom_falloff"), 0.02, 0, 2));
 
 sep(audioSettings);
 
@@ -158,28 +170,56 @@ sep(audioSettings);
 #region graphic settings
 
 graphicSettings = page();
-title(graphicSettings, "Graphic Settings");
+title(graphicSettings, T.Getc("graphics_settings"));
 
-graphicSettings.Push(new v_Button("Go Back", function(node){
+	graphicSettings.Push(new v_Button(T.Getc("go_back"), function(node){
 	PauseMenu.index = PauseMenu.settings;
 }));
 
 graphicSettings.Push(v_Separator());
 
-graphicSettings.Push(new v_Button("Lighting: "+bool_string(Settings.graphics.lighting), function(node){
+graphicSettings.Push(new v_Button(T.Getc("resolution")+": "+Resolution.value, function(){
+	Resolution.Cycle();
+	graphicSettings.Edit("resolution_button", function(e){
+		e.text = T.Getc("resolution")+": "+Resolution.value;
+		e.UpdateLayout();
+	});
+}), "resolution_button");
+
+graphicSettings.Push(new v_Button(T.Getc("lighting")+": "+bool_string(Settings.graphics.lighting), function(node){
 	graphicSettings.Edit("lighting_button", function(e){
 		Settings.graphics.lighting = !Settings.graphics.lighting;
 		var str = (Settings.graphics.lighting) ? "true" : "false";
-		e.text = "Lighting: " + bool_string(Settings.graphics.lighting);
+		e.text = T.Getc("lighting")+": " + bool_string(Settings.graphics.lighting);
 		e.UpdateLayout();
 	});
 }), "lighting_button");
+
+graphicSettings.Push(new v_Button(T.Getc("ui_scale")+": "+string(Settings.graphics.uiScale), function(node){
+
+	graphicSettings.Edit("gui_scale_button", function(e){
+		Settings.graphics.uiScale += (Settings.graphics.uiScale == 0.5) ? 0.5 : 1;
+
+		if (Settings.graphics.uiScale >= 4) {
+			Settings.graphics.uiScale = 0.5;
+		}
+
+		e.text = T.Getc("ui_scale")+": "+string(Settings.graphics.uiScale);
+		e.UpdateLayout();
+	});
+
+}), "gui_scale_button");
 
 sep(graphicSettings);
 
 #endregion
 
-
-
-
 index = main;
+show = false;
+
+Process.Push(function(){
+	index.SetPosition(WIDTH / 2 - index.width/2, HEIGHT / 2 - index.height/2);
+	show = true;
+	return true;
+});
+

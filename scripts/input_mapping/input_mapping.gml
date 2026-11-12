@@ -59,7 +59,7 @@ function input_mapping(){
 		}
 	}
 		
-	Input.Bind.Set(192, {}, true, function(){
+	Input.Bind.Set(vk_f1, {}, true, function(){
 		keyboard_string = "";
 		if (Debug.console) {
 			KeyboardBusy = false;
@@ -67,13 +67,18 @@ function input_mapping(){
 		Debug.console = !Debug.console;
 	});
 	
-	Input.Bind.Set(vk_f3, {}, , function(){
-		Debug.showDebugUI = !Debug.showDebugUI;
-	});
-	
 	Input.Bind.Set(vk_f2, {}, , function(){
 		screenshot();
 	});
+
+	//Input.Bind.Set(vk_f3, {}, , function(){
+	//	Debug.showDebugUI = !Debug.showDebugUI;
+	//});
+
+	Input.Bind.Set(vk_f4, {}, , function(){
+		Debug.showMessages = !Debug.showMessages;
+	});
+	
 	
 	Input.Bind.Set(ord("T"), {}, , function(){
 		if (CHAT.open) return;
@@ -81,7 +86,9 @@ function input_mapping(){
 		CHAT.open = true;
 	});
 
-	Input.Bind.Set(ord("R"), INPUT_CTRL_SHIFT, , function(){
+	Input.Bind.Set(ord("R"), INPUT_CTRL, , function(){
+		while (instance_exists(Host)) instance_destroy(Host);
+		while (instance_exists(Client)) instance_destroy(Client);
 		game_restart();
 	});
 

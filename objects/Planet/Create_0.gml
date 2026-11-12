@@ -1,5 +1,9 @@
 event_inherited();
 
+/*
+populates planet with tiles -> generate surface -> draw surface
+*/
+
 sun = instance_nearest(x, y, Sun);
 orbitRadius = point_distance(sun.x, sun.y, x, y);
 orbitAngle = point_direction(sun.x, sun.y, x, y);	
@@ -26,15 +30,12 @@ vsp = 0;
 hovering = false;
 outlineSize = 0;
 
-seed = irandom(1000000);
-noise = new perlin(seed);
-
-randomize();
+noise = new perlin(irandom(10000));
 
 type				= irandom(ePlanetType.COUNT - 1);
-planet				= PLANET.Generate(type);
-chunkSizes			= planet.parameters.getChunkSizes();
-geologyChunkSizes	= planet.parameters.getGeologyChunkSizes();
+generation			= PLANET.Generate(type);
+chunkSizes			= generation.parameters.getChunkSizes();
+geologyChunkSizes	= generation.parameters.getGeologyChunkSizes();
 
 name = planet_generate_name(type);
 
@@ -45,21 +46,21 @@ if (type == ePlanetType.EARTH) {
 	iconIndex = ePlanetIcon.EARTH;
 }
 
-function TileData(this, planet, x, y) constructor {
-	self.parent = this;
-	var params = planet.parameters;
+function TileData(parent, generation, x, y) constructor {
+	self.parent = parent;
 	self.noise = {};
+	var params = generation.parameters;
 	
 	if (irandom(100) < params.chunkInfluence) {
-		this.chunkSizes = planet.parameters.getChunkSizes();
+		parent.chunkSizes = generation.parameters.getChunkSizes();
 	}
 	
 	if (irandom(100) < params.geologyInfluence) {
-		this.geologyChunkSizes = planet.parameters.getGeologyChunkSizes();
+		parent.geologyChunkSizes = generation.parameters.getGeologyChunkSizes();
 	}
 	
-	self.noise.terrain		= this.noise.calculate((x div TILE_WIDTH) + x, (y div (TILE_HEIGHT / 2)) + y, this.chunkSizes);
-	self.noise.geology		= this.noise.calculate((x div TILE_WIDTH) + x, (y div (TILE_HEIGHT / 2)) + y, this.geologyChunkSizes);
+	self.noise.terrain = parent.noise.calculate((x div TILE_WIDTH) + x, (y div (TILE_HEIGHT / 2)) + y, parent.chunkSizes);
+	self.noise.geology = parent.noise.calculate((x div TILE_WIDTH) + x, (y div (TILE_HEIGHT / 2)) + y, parent.geologyChunkSizes);
 	
 	var t = self.noise.terrain;
 	var g = self.noise.geology
@@ -70,8 +71,8 @@ function TileData(this, planet, x, y) constructor {
 	self.occupied = false;
 	
 	var tile;
-	var terrain = planet.terrain;
-	var waterlevel = -(struct_get(planet.resources, params.base) ?? 0);
+	var terrain = generation.terrain;
+	var waterlevel = -(struct_get(generation.resources, params.base) ?? 0);
 	
 	var pos = isometric_position(x, y);
 	self.index = new Vec2(x, y);
@@ -87,12 +88,14 @@ function TileData(this, planet, x, y) constructor {
 		}
 	}
 	
-	static CreateProp = function(this, obj, components = {}, occupy=true) {
+	static CreateProp = function(parent, obj, components = {}, occupy=true) {
+		// TODO: check occupied tiles depending on prop size
 		if (self.occupied) return false;
 		
-		var prop = prop_create(this, obj, self.x, self.y, self.index);
-		struct_merge_recursive(prop, components);
-		self.parent.children.Append(prop);
+		var prop = prop_create(parent, obj, self.x, self.y, self.index);
+		struct_merge(prop, components);
+
+		parent.children.Append(prop);
 		
 		var size = variable_instance_get(prop, "size") ?? [[0, 0]];
 		self.occupied = occupy;
@@ -111,11 +114,12 @@ function TileData(this, planet, x, y) constructor {
 				}
 			}
 			
-			var tile = self.parent.grid[# xx, yy];
+			var tile = parent.grid[# xx, yy];
 			if (tile != undefined) {
 				tile.occupied = true;
 			}
 		}
+
 		return true;
 	}
 	
@@ -125,11 +129,11 @@ function TileData(this, planet, x, y) constructor {
 	var components = TILE.Get(self.tileID).components;
 	
 	if (components.canSpawnMinerals) {
-		for (var i = 0; i < array_length(planet.parameters.mineralSpawnTable); i++) {
-			var m = planet.parameters.mineralSpawnTable[i];
+		for (var i = 0; i < array_length(generation.parameters.mineralSpawnTable); i++) {
+			var m = generation.parameters.mineralSpawnTable[i];
 			var gmin = m.geologyMin, gmax = m.geologyMax;
 			var tmin = m.terrainMin, tmax = m.terrainMax;
-			var value = struct_get(planet.resources, m.resource);
+			var value = struct_get(generation.resources, m.resource);
 			
 			var spr = sMineral_Coal;
 			if (m.resource == "iron") {
@@ -150,7 +154,7 @@ function TileData(this, planet, x, y) constructor {
 	
 	self.canPlaceProps = components.canPlaceProps;
 	
-	components.load(this, self);
+	components.load(parent, self);
 }
 
 size = 60;
@@ -167,28 +171,14 @@ right	= x + width / 2;
 top		= y - height / 2;
 bottom	= y + height / 2;
 
-var cx = w / 2;
-var cy = h / 2;
 radius = (h * TILE_HEIGHT) / 2;
-
-for (var i = 0; i < w; i++) {
-    for (var j = 0; j < h; j++) {
-        var pos  = isometric_position(i - cx, j - cy);
-        var dist = point_distance(0, 0, pos.x, pos.y * 2);
-
-        if (dist <= radius) {
-            grid[# i, j] = new TileData(self, planet, i, j);
-        }
-    }
-}
-
 surface = -1;
 
 generateSurface = function() {
 	if (!surface_exists(surface)) {
 		surface = surface_create(width, height + TILE_TAIL);
 	}
-	
+
 	for (var j = 0; j < ds_grid_height(grid); j++)
 	for (var i = 0; i < ds_grid_width(grid); i++) {
 		var tile = grid[# i, j];
@@ -258,14 +248,9 @@ createStructure = function(x, y, structureID) {
 	}
 }
 
-//createStructure(size/2, size/2, eStructureID.RUINS_0);
-
 drawPlanet = function() {
-	var dx = Spaceship.x - x;
-	var dy = Spaceship.y - y;
-	var rx = radius;
-	var ry = radius / 2;
-	
+	if (!surface_exists(surface)) return;
+	if (!instance_exists(Camera)) return;
 	if (!Camera.inView(x, y, width, width)) return;
 	
 	draw_surface(surface, left, top);
@@ -273,5 +258,54 @@ drawPlanet = function() {
 
 inBoundary = function(x, y) {
 	return (x > left && x < right && y > top && y < bottom);
+}
+
+create = function(t) {
+	children.DestroyAll();
+
+	type				= t;
+	generation			= PLANET.Generate(type);
+	chunkSizes			= generation.parameters.getChunkSizes();
+	geologyChunkSizes	= generation.parameters.getGeologyChunkSizes();
+
+	size = 60;
+	grid = ds_grid_create(size, size);
+	ds_grid_clear(grid, undefined);
+
+	var w = ds_grid_width(grid);
+	var h = ds_grid_height(grid);
+
+	width	= w * TILE_WIDTH / 2;
+	height	= h * floor(TILE_HEIGHT / 2);
+
+	// center axis
+	var cx = w / 2;
+	var cy = h / 2;
+
+	name = planet_generate_name(type);
+
+	iconIndex = choose(ePlanetIcon.DEFAULT, ePlanetIcon.RING);
+	iconColor = PLANET.GetColor(type);
+
+	if (type == ePlanetType.EARTH) {
+		iconIndex = ePlanetIcon.EARTH;
+	}
+
+	for (var i = 0; i < w; i++)
+	for (var j = 0; j < h; j++) {
+		var pos  = isometric_position(i - cx, j - cy);
+		var dist = point_distance(0, 0, pos.x, pos.y * 2);
+
+		if (dist <= radius) {
+			grid[# i, j] = new TileData(self, generation, i, j);
+		}
+	}
+
+	surface_destroy(surface);
+
+	Process.Push(function(){
+		if (surface_exists(surface)) return true;
+		generateSurface();
+	});
 }
 

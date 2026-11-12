@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"game_get_build",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"game_get_build",
+  "parent":{
+    "name":"custom",
+    "path":"folders/scr/custom.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

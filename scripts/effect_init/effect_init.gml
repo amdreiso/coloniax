@@ -99,7 +99,7 @@ function effect_init(){
 				var part = instance_create_depth(e.x, e.y, e.depth, Particle);
 				part.setLifetime(1);
 				part.setAmount(1);
-				part.setParticle(World.particleFlame());
+				part.setParticle(World.particleFlame);
 				part.setRange(6, 6);
 			}
 		},

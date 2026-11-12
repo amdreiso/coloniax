@@ -64,7 +64,7 @@ function item_data(){
 				c = {
 					type: eItemType.BLANK,
 				}
-				struct_merge_recursive(c, components);
+				struct_merge(c, components);
 				return c;
 			}
 			
@@ -73,7 +73,7 @@ function item_data(){
 					type: eItemType.PICKAXE,
 					miningSpeed: 1,
 				}
-				struct_merge_recursive(c, components);
+				struct_merge(c, components);
 				return c;
 			}
 			
@@ -83,7 +83,7 @@ function item_data(){
 					prop: noone,
 					size: [[0, 0]],
 				}
-				struct_merge_recursive(c, components);
+				struct_merge(c, components);
 				return c;
 			}
 			
@@ -102,7 +102,7 @@ function item_data(){
 					magazine: 0,
 					sprite: -1,
 				};
-				struct_merge_recursive(c, components);
+				struct_merge(c, components);
 				return c;
 			}
 			
@@ -113,7 +113,7 @@ function item_data(){
 					damage: 10,
 					firerate: 0,
 				}
-				struct_merge_recursive(c, components);
+				struct_merge(c, components);
 				return c;
 			}
 			
@@ -124,7 +124,7 @@ function item_data(){
 					deceleration: 0,
 					maxSpeed: 0,
 				}
-				struct_merge_recursive(c, components);
+				struct_merge(c, components);
 				return c;
 			}
 			
@@ -132,7 +132,7 @@ function item_data(){
 				c = {
 					type: eItemType.SPACESHIP_MODULE_ARMOR,
 				}
-				struct_merge_recursive(c, components);
+				struct_merge(c, components);
 				return c;
 			}
 			
@@ -144,7 +144,7 @@ function item_data(){
 
 					independent: false,
 				}
-				struct_merge_recursive(c, components);
+				struct_merge(c, components);
 				return c;
 			}
 			
@@ -157,7 +157,7 @@ function item_data(){
 					sprite: -1,
 					piercing: 0,
 				}
-				struct_merge_recursive(c, components);
+				struct_merge(c, components);
 				return c;
 			}
 		}
@@ -169,7 +169,7 @@ function item_data(){
 		}
 		
 		var typeComponents = ITEM.GetTypeComponents(type, components);
-		struct_merge_recursive(c, typeComponents);
+		struct_merge(c, typeComponents);
 		return c;
 	}
 	

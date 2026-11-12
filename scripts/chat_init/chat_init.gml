@@ -179,15 +179,54 @@ function chat_init(){
 		self.time = CHAT_FALLOFF;
 	}
 	
-	CHAT.Send = function(text) {
+	CHAT.Send = function(text, local=false) {
+		text = string_trim(text);
 		if (text == "") return;
-		array_insert(CHAT.messages, 0, new CHAT.Token(CHAT.Parse(text)));
+		
+		if (local) {
+			array_insert(CHAT.messages, 0, new CHAT.Token(CHAT.Parse(text)));
+			return;
+		}
+		
+		if (network_client_exists()) {
+			// Send message to host
+			var buffer = buffer_create(256, buffer_grow, 1);
+			buffer_write(buffer, buffer_u8, NET.CHAT_MESSAGE);
+			buffer_write(buffer, buffer_string, text);
+			network_send_packet(Client.socket, buffer, buffer_tell(buffer));
+			buffer_delete(buffer);
+			
+		} else {
+		    array_insert(CHAT.messages, 0, new CHAT.Token(CHAT.Parse(text)));
+
+		    var b = buffer_create(256, buffer_grow, 1);
+		    buffer_write(b, buffer_u8, NET.CHAT_MESSAGE);
+		    buffer_write(b, buffer_u8, 0);
+		    buffer_write(b, buffer_string, text);
+		    network_broadcast(b, -1);
+		    buffer_delete(b);
+		}
 	}
 
 	CHAT.SendTime = function(text) {
 		if (text == "") return;
 		var time = $"$999999[{current_time/1000}]$ffffff ";
-		array_insert(CHAT.messages, 0, new CHAT.Token(CHAT.Parse(time+text)));
+		
+		CHAT.Send(time+text, true);
+	}
+
+	CHAT.Debug = function(text) {
+		if (text == "" || !Debug.showMessages) return;
+		var prefix = $"$42ee80[DEBUG]$ffffff ";
+		
+		CHAT.Send(prefix+text, true);
+	}
+
+	CHAT.DebugNetwork = function(text) {
+		if (text == "" || !Debug.showMessages) return;
+		var prefix = $"$42ee80[DEBUG]$ffffff %b$ff2222[NETWORK]%n$ffffff: ";
+		
+		CHAT.Send(prefix+text, true);
 	}
 	
 	CHAT.DrawString = function(yy, token, alpha=1) {
@@ -211,6 +250,7 @@ function chat_init(){
 				}
 				draw_text_color(pos, yy, char.value, c, c, c, c, alpha);
 				pos += string_width(char.value);
+				draw_set_font(fnt_main);
 			}
 			
 			if (char.type == eChatCharType.SPRITE) {
@@ -221,6 +261,8 @@ function chat_init(){
 	}
 	
 	CHAT.Draw = function() {
+		if (room == rmMenu) return;
+		
 		var yoff = 200;
 		var sep = 20;
 		var length = CHAT.height div sep;
@@ -239,7 +281,7 @@ function chat_init(){
 			}
 			
 			draw_set_alpha(CHAT.backgroundAlpha);
-			draw_rectangle_color(0, yy+sep, CHAT.width, yy-1, c_black, c_black, c_black, c_black, false);
+			draw_rectangle_color(0, yy+sep, CHAT.width, yy, c_black, c_black, c_black, c_black, false);
 			draw_set_alpha(1);
 			
 			draw_text(

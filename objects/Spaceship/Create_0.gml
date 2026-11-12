@@ -1,23 +1,36 @@
 
 event_inherited();
 
+// Network schtuff
+if (!variable_instance_exists(id, "isPuppet")) isPuppet = false;
+if (!variable_instance_exists(id, "networkControllerID")) networkControllerID = 0;
+
+newx = 0;
+newy = 0;
+
+//if (isPuppet) {
+//	spaceship = sSpaceship_Default;
+//	color = c_white;
+//	scale = 1;
+//	alpha = 1;
+//	dir = 0;
+//	turretAngle = 0;
+//	exit;
+//}
+
 sun = instance_nearest(x, y, Sun);
 orbitRadius = point_distance(sun.x, sun.y, x, y);
 orbitAngle  = point_direction(sun.x, sun.y, x, y);
-controlling = true;
+controlling = false;
 
 shadowSurface = surface_create(64, 64);
 visionDistance = 512;
 
-// Camera
-cam = instance_create_depth(x, y, depth, Camera);
-cam.target = self;
-
 // Modules
 modules = {
-	turret:			eItemID.BASIC_TURRET,
-	gyro:			eItemID.IMPROVED_GYRO,
-	propeller:		eItemID.IMPROVED_PROPELLER,
+	turret:	eItemID.BASIC_TURRET,
+	gyro: eItemID.IMPROVED_GYRO,
+	propeller: eItemID.IMPROVED_PROPELLER,
 };
 
 // Player
@@ -107,18 +120,21 @@ ejectPlayer = function() {
 	var con = isPlayerEjectable();
 	if (!con) return;
 	
-	Player.controlling = true;
-	Camera.target = Player;
+	var p = Controller.player;
+	Controller.control(p);
+	
+	Camera.target = p;
+	
 	player.ejected = true;
 	
 	var planet = instance_nearest(x, y, Planet);
 	planet.riderPush(id);
-	planet.riderPush(Player);
+	planet.riderPush(p);
 	
-	Player.planet = planet;
-	Player.planetPosition = new Vec2(
-		Player.x - planet.x,
-		Player.y - planet.y,
+	p.planet = planet;
+	p.planetPosition = new Vec2(
+		p.x - planet.x,
+		p.y - planet.y,
 	);
 	
 	stationed = true;
@@ -134,17 +150,19 @@ boardPlayer = function() {
 	var con = (distance_to_object(Player) < 32);
 	if (!con) return;
 	
-	Camera.target = Spaceship;
+	Camera.target = self;
 	player.ejected = false;
 	
 	stationed = false;
 	
-	Player.controlling = false;
-	Player.planet.riderRemove(id);
-	Player.planet.riderRemove(Player);
-	Player.planet = noone;
+	var p = Controller.player;
 	
-	controlling = true;
+	p.controlling = false;
+	p.planet.riderRemove(id);
+	p.planet.riderRemove(p);
+	p.planet = noone;
+	
+	Controller.control(self);
 	
 	onPlayerEnter();
 }
@@ -249,9 +267,6 @@ shoot = function() {
 	}
 }
 
-x = room_width  / 2;
-y = room_height / 2;
-
 // Draw
 spaceship = sSpaceship_Default;
 sprite_index = spaceship;
@@ -260,13 +275,15 @@ scale = 1;
 color = c_white;
 alpha = 1;
 mouseAngle = 0;
+spriteStackingOffset = 1;
 
 drawSpaceship = function(spr, x, y, scale, angle, color, alpha, offsetFactor = 1) {
 	var s = scale;
 	var c = c_red;
+	var o = spriteStackingOffset;
 	
 	var ty = y+4;
-	if (controlling && !Paused && point_distance(x, y, mouse_x, mouse_y) > 5) {
+	if (controlling && !Paused && point_distance(x, y, mouse_x, mouse_y) > 5 && !isPuppet) {
 		turretAngle = point_direction(x, y, mouse_x, mouse_y);
 	}
 	
@@ -279,21 +296,21 @@ drawSpaceship = function(spr, x, y, scale, angle, color, alpha, offsetFactor = 1
 		} else {
 			surface_set_target(shadowSurface);
 			draw_clear_alpha(c_black, 0);
-			draw_sprite_stacked(ts, 32, 32, SPRITE_STACKED_OFFSET, scale, scale, turretAngle, c_black, alpha);
-			draw_sprite_stacked(spr, 32, 32, SPRITE_STACKED_OFFSET * offsetFactor, scale, scale, angle, c_black, alpha);
+			draw_sprite_stacked(ts, 32, 32, o, scale, scale, turretAngle, c_black, alpha);
+			draw_sprite_stacked(spr, 32, 32, o * offsetFactor, scale, scale, angle, c_black, alpha);
 			surface_reset_target();
 		}
 	
 		draw_surface_ext(shadowSurface, x - 32, y - 32 + 4, 1, 1, 0, c_white, 0.33);
 	}
 	
-	draw_sprite_stacked(ts, x, ty, SPRITE_STACKED_OFFSET, s, s, turretAngle, color, alpha);
-	draw_sprite_stacked(spr, x, y, SPRITE_STACKED_OFFSET * offsetFactor, s, s, angle, color, alpha);
+	draw_sprite_stacked(ts, x, ty, o, s, s, turretAngle, color, alpha);
+	draw_sprite_stacked(spr, x, y, o * offsetFactor, s, s, angle, color, alpha);
 	
 	if (hp.value < 20) {
 		var a = sin(current_time / 300) * 0.25;
 		draw_set_alpha(a);
-		draw_sprite_stacked(spr, x, y, SPRITE_STACKED_OFFSET * offsetFactor, s, s, angle, c_red, a);
+		draw_sprite_stacked(spr, x, y, o * offsetFactor, s, s, angle, c_red, a);
 		draw_set_alpha(1);
 	}
 }
@@ -320,16 +337,21 @@ drawSpeedometer = function(x, y, height) {
 }
 
 // Inventory
-inventory = new Inventory();
+inventory = inventory_create(10);
+inventory_add(inventory, 0, 99*2);
 
 // Spaceship Menu
 menuOpen = false;
 
 Input.Bind.Set(ord("E"), {}, , function(){
 	if (!controlling) return;
-	menuOpen = !menuOpen;
+	
+	if (!instance_exists(Menu_Spaceship)){
+		instance_create_depth(200, 200, 0, Menu_Spaceship);
+	} else {
+		instance_destroy(Menu_Spaceship);
+	}
 });
-
 
 main = new v_Panel(200, 200, {
 	direction: eNodeDirection.COLUMN,
@@ -366,11 +388,16 @@ section1.PushDefaultChildrenStyle({
 section1.Push(new v_Button("button1", function(){
 	menuOpen = false;
 }));
-section1.Push(new v_Button("button2"));
 
-section1.Push(new v_Button("button3", function(){
+testButton = new v_Button("button3", function(){
 	window_set_fullscreen(!window_get_fullscreen());
+});
+
+section1.Push(new v_Button("button2", function(){
+	section1.Remove(testButton);
 }));
+
+section1.Push(testButton);
 section1.Push(new v_Button("false", function(){
 	section1.Edit("false_button", function(e){
 		var str = (e.text == "true") ? "false" : "true";
@@ -424,7 +451,6 @@ main.Push(section4);
 main.Push(v_Separator());
 
 GUI.Register(function(){
-	if (menuOpen) then main.Draw();
 	MINIMAP.Draw();
 });
 

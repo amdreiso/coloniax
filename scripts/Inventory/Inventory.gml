@@ -1,134 +1,177 @@
 
-function ItemStack(itemID = -1, quantity = 0) constructor {
-	self.itemID		= itemID;
-	self.quantity	= quantity;
+// Crafting system
+G RECIPE;
+RECIPE = {};
+RECIPE.data = {};
+RECIPE.Register = function(result, amount=1) {
+	var recipe = {};
+	recipe.result = result;
+	recipe.amount = amount;
+	recipe.ingredients = [];
+	for (var i = 2; i < argument_count; i++) {
+		array_push(recipe.ingredients, argument[i]);
+	}
+	RECIPE.data[$ result] = recipe;
+}
+RECIPE.Find = function(itemID) {
+	var r = RECIPE.data[$ itemID];
+	if (r == undefined) return -1;
+	return r;
 }
 
-function Inventory(slots = 10, capacityPerSlot = 100) constructor {
-	self.slots = [];
-	repeat (slots) {
-		array_push(self.slots, new ItemStack());
-	}
-	self.length = slots;
-	self.capacityPerSlot = capacityPerSlot;
-	self.capacity = self.length * capacityPerSlot;
-	
-	static Add = function(itemID, quantity=1) {
-		var found = -1;
-		var free = -1;
-		var amt = 0;
-		
-		for (var i = 0; i < self.length; i++) {
-			var slot = self.slots[i];
-			
-			if (slot.itemID == -1 && free == -1) {
-				free = i;
-			}
-			
-			if (slot.itemID == itemID && (slot.quantity + quantity) < self.capacityPerSlot) {
-				found = i;
-				amt = quantity;
-				break;
-			}
+RECIPE.Register(
+	eItemID.PISTOL, 1,
+	inventory_slot(eItemID.WOOD, 2),
+	inventory_slot(eItemID.URANIUM, 2),
+);
+
+#macro INVENTORY_MAX_AMOUNT 100
+
+function inventory_create(slots) {
+	var inv = {};
+	inv.slots = array_create(slots);
+	inv.length = slots;
+	return inv;
+}
+
+function inventory_slot(itemID = -1, amount = 0) {
+	return {
+		itemID: itemID,
+		amount: amount,
+	};
+}
+
+function inventory_find_free_slot(inv) {
+	var freeSlot = -1;
+	for (var i = 0; i < inv.length; i++) {
+		var slot = inv.slots[i];
+		if (!slot) {
+			if (freeSlot == -1) then freeSlot = i;
+			continue;
 		}
-		
-		if (found != -1) {
-			self.slots[found].quantity += amt;
+	}
+	return freeSlot;
+}
+
+function inventory_add(inv, itemID, amount) {
+	if (inv.length <= 0) return;
+
+	var freeSlot = inventory_find_free_slot(inv);
+
+	for (var i = 0; i < inv.length; i++) {
+		var slot = inv.slots[i];
+		if (!slot) continue;
+
+		if (slot.itemID == itemID && slot.amount < INVENTORY_MAX_AMOUNT) {
+			slot.amount += amount;
+
+			if (slot.amount > INVENTORY_MAX_AMOUNT) {
+				var overflow = (slot.amount - INVENTORY_MAX_AMOUNT);
+				slot.amount = INVENTORY_MAX_AMOUNT;
+				
+				inventory_add(inv, itemID, overflow);
+			}
+			return true;
+		}
+	}
+
+	if (freeSlot != -1) {
+		if (amount > INVENTORY_MAX_AMOUNT) {
+			// adding more than 99
+			var overflow = (amount - INVENTORY_MAX_AMOUNT);
+			inv.slots[freeSlot] = inventory_slot(itemID, INVENTORY_MAX_AMOUNT);
+
+			inventory_add(inv, itemID, overflow);
+
 		} else {
-			self.slots[free].itemID		= itemID;
-			var q;
-			
-			if (quantity > 99) {
-				q = quantity - 99;
-				self.slots[free].quantity = 99;
-				self.Add(itemID, q);
-			} else {
-				self.slots[free].quantity = quantity;
-			}
+			inv.slots[freeSlot] = inventory_slot(itemID, amount);
+		}
+
+		return true;
+	}
+	return false;
+}
+
+function inventory_has_amount(inv, itemID, amount) {
+	var finalAmount = 0;
+	for (var i = 0; i < inv.length; i++) {
+		var slot = inv.slots[i];
+		if (!slot) continue;
+		if (slot.itemID == itemID) {
+			finalAmount += slot.amount;
 		}
 	}
-	
-	static Get = function(index) {
-		return self.slots[index];
-	}
-	
-	static RemoveItem = function(itemID, quantity) {
-		var index = self.Has(itemID, quantity);
-		self.slots[index].quantity -= quantity;
-		if (self.slots[index].quantity <= 0) {
-			self.slots[index].itemID = -1;
-			self.slots[index].quantity = 0;
-		}
-	}
-	
-	static Remove = function(index, quantity) {
-		self.slots[index].quantity -= quantity;
-		if (self.slots[index].quantity <= 0) {
-			self.slots[index].itemID = -1;
-			self.slots[index].quantity = 0;
-		}
-	}
-	
-	static Has = function(itemID, quantity=1) {
-		for (var i = 0; i < self.length; i++) {
-			var s = self.slots[i];
-			if (s.itemID == itemID && s.quantity >= quantity) {
-				return i;
-			}
-		}
-		return false;
-	}
-	
-	static SlotPush = function(itemID = -1, quantity = 0) {
-		array_push(self.slots, new ItemStack(itemID, quantity));
-		self.length = array_length(self.slots);
-		self.capacity = self.length * capacityPerSlot;
-	}
-	
-	static SlotInsert = function(index, itemID = -1, quantity = 0) {
-		array_insert(self.slots, index, new ItemStack(itemID, quantity));
-		self.length = array_length(self.slots);
-		self.capacity = self.length * capacityPerSlot;
-	}
-	
-	static SlotRemove = function(index) {
-		array_delete(self.slots, index, 1);
-		self.length = array_length(self.slots);
-	}
-	
-	static SetCapacityPerSlot = function(value) {
-		self.capacityPerSlot = value;
-		self.capacity = slots * value;
-	}
-	
-	static Log = function() {
-		for (var i = 0; i < self.length; i++) {
-			var slot = self.slots[i];
-			log($"slot '{i}' : '{slot}'");
+	return (finalAmount >= amount);
+}
+
+function inventory_has(inv, itemID) {
+	if (inv.length <= 0) return;
+
+	for (var i = 0; i < inv.length; i++) {
+		var slot = inv.slots[i];
+		if (!slot) continue;
+		if (slot.itemID == slot.itemID) {
+			return i;
 		}
 	}
 
-	static Craft = function(itemID) {
-		var recipe = RECIPE.Find(itemID);
-		if (recipe == -1) return;
+	return -1;
+}
 
-		var indices = [];
+function inventory_remove_by_index(inv, index, amount) {
+	if (index > inv.length-1) return;
+	if (!inv.slots[index]) return;
+	if (inv.slots[index].amount < amount) return;
 
-		for (var i = 0; i < array_length(recipe.ingredients); i++) {
-			var e = recipe.ingredients[i];
-			var has = self.Has(e.itemID, e.quantity)
-			if (!has){
-				CHAT.Send("You don't have enough items to craft this.");
-				return;
-			}
-			array_push(indices, {index:has, quantity:e.quantity});
+	inv.slots[index].amount -= amount;
+	if (inv.slots[index].amount == 0) then inv.slots[index] = 0;
+	return true;
+}
+
+function inventory_remove(inv, itemID, amount) {
+	if (inv.length <= 0) return;
+
+	if (!inventory_has_amount(inv, itemID, amount)) return;
+
+	var amt = amount;
+
+	for (var i = 0; i < inv.length; i++) {
+		var slot = inv.slots[i];
+		if (!slot) continue;
+		if (slot.itemID == itemID && amt > 0) {
+			var value = min(amt, INVENTORY_MAX_AMOUNT);
+			slot.amount -= value;
+			amt -= value;
+
+			if (slot.amount == 0) then inv.slots[i] = 0;
 		}
-
-		for (var i = 0; i < array_length(indices); i++) {
-			self.Remove(indices[i].index, indices[i].quantity);
-		}
-
-		self.Add(itemID);
 	}
+	return true;
+}
+
+function inventory_get(inv, index) {
+	return inv.slots[index];
+}
+
+function inventory_craft(inv, itemID) {
+	var recipe = RECIPE.Find(itemID);
+	if (recipe == -1) return;
+
+	for (var i = 0; i < array_length(recipe.ingredients); i++) {
+		var ingredient = recipe.ingredients[i];
+		var has = inventory_has_amount(inv, ingredient.itemID, ingredient.amount);
+
+		if (!has) {
+			CHAT.Send("You don't have enough items to craft this.");
+			return;
+		}
+	}
+
+	for (var i = 0; i < array_length(recipe.ingredients); i++) {
+		var ingredient = recipe.ingredients[i];
+		inventory_remove(inv, ingredient.itemID, ingredient.amount);
+	}
+
+	inventory_add(inv, itemID, recipe.amount);
 }
 

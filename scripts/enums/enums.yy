@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"enums",
   "parent":{
-    "name":"scr",
-    "path":"folders/scr.yy",
+    "name":"custom",
+    "path":"folders/scr/custom.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

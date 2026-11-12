@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"network_receive_packet",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"network_receive_packet",
+  "parent":{
+    "name":"scr",
+    "path":"folders/NETWORK/scr.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

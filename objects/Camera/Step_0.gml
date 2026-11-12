@@ -17,7 +17,6 @@ camera_set_view_size(index, zoomWidth, zoomHeight);
 
 if (Paused) return;
 
-
 zoom += (mouse_wheel_down() && zoom < 30) ? zoomPart : 0;
 zoom -= (mouse_wheel_up() && zoom > zoomPart) ? zoomPart : 0;
 

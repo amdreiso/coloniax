@@ -1,8 +1,14 @@
 
 index	= view_camera[0];
 
-width	= 320;
+width	= 320; //640 960 1280 1600 | res*4
 height	= 180;
+
+setResolution = function(w, h) {
+	width = w;
+	height = h;
+	CHAT.Debug("Camera resolution set to: "+$"{w}x{h}");
+}
 
 zoomPart = 1;
 zoom	= 2;

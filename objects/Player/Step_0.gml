@@ -1,7 +1,7 @@
 
 if (Paused) return;
-
 if (!controlling) return;
+if (isPuppet) return;
 
 event_inherited();
 

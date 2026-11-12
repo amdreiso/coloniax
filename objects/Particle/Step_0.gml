@@ -1,10 +1,12 @@
 
-
 lifetime = max(0, lifetime - GameSpeed);
 
 if (lifetime <= 0) {
 	instance_destroy();
 }
+
+if (!part_system_exists(ps)) return;
+if (!part_emitter_exists(ps, emitter)) return;
 
 image_speed = animationSpeed;
 

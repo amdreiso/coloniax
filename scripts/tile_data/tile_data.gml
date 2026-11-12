@@ -1,5 +1,4 @@
 function tile_data(){
-	
 	enum eTileID {
 		DEFAULT,
 		WATER,
@@ -25,6 +24,10 @@ function tile_data(){
 		canSpawnMinerals: false,
 		isLiquid: false,
 		frameSpeed: irandom_range(300, 500),
+
+		canCreateParticles: true,
+		particleCreate: function(obj){},
+		particleCooldown: function(){return 0},
 		
 		onEntityCollision: function(obj) {
 		},
@@ -34,7 +37,7 @@ function tile_data(){
 		var c = {
 			sprite: sprite,
 		}
-		struct_merge_recursive(c, components);
+		struct_merge(c, components);
 		return c;
 	}
 	
@@ -44,9 +47,11 @@ function tile_data(){
 	TILE.Register(eTileID.GRASS, tile(sTile_Grass, {
 		canSpawnMinerals: true,
 		load: function(planet, tile) {
-			if (irandom(100) > 96) then tile.CreateProp(planet, Prop_Tree, {
-				tiltMultiplier: 0.3,
-			});
+			if (irandom(100) < 4) {
+				tile.CreateProp(planet, Prop_Tree, {
+					tiltMultiplier: 0.3,
+				});
+			} 
 		}
 	}));
 	
@@ -108,24 +113,30 @@ function tile_data(){
 			return irandom_range(100, 400);
 		},
 
-		update: function(obj) {
-			if (irandom(1000)>995) {
-				var part = instance_create_depth(obj.x, obj.y, obj.depth, Particle);
-				part.setLifetime(1);
-				part.setAmount(1);
-				part.setParticle(World.particlePoison);
-				part.setRange(TILE_HEIGHT, TILE_HEIGHT);
-			}
-		}
+		canCreateParticles: function() {
+			return (irandom(10)>9);
+		},
+
+		particleCreate: function(obj) {
+			var part = instance_create_depth(obj.x, obj.y, obj.depth, Particle);
+			part.setLifetime(1);
+			part.setAmount(1);
+			part.setParticle(World.particlePoison);
+			part.setRange(TILE_HEIGHT, TILE_HEIGHT);
+		},
+
+		particleCooldown: function() {
+			return irandom_range(5 * 60, 10 * 60);
+		},
 	}));
 
 	TILE.Register(eTileID.SHORT_POISONOUS_GRASS, tile(sTile_ShortPoisonousGrass, {
 		load: function(planet, tile) {
 			var c = irandom_range(220, 255);
-			if (irandom(200) < 1) then tile.CreateProp(planet, Prop_Tree, {
-				sprite_index: sProp_DeadTree0,
-				tiltMultiplier: 0.05,
+			if (irandom(50) < 1) then tile.CreateProp(planet, Prop_Tree, {
+				sprite_index: choose(sProp_DeadTree0, sProp_DeadTree1),
 				image_blend: make_color_rgb(c, c, c),
+				tiltMultiplier: 0.05,
 			});
 		}
 	}));

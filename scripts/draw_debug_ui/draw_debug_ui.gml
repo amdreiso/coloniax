@@ -1,26 +1,27 @@
 function draw_debug_ui(){
 	if (!Debug.showDebugUI) return;
 	content = [];
-	maxstrlen = 0;
-	_ = function(str, color=c_white) {
+	maxstrlen = 120;
+	_ = function(str, color=c_white, ignore=false) {
 		str = " " + str + " ";
-		maxstrlen = max(maxstrlen, string_length(str));
+		if (!ignore) maxstrlen = max(maxstrlen, string_length(str));
 		array_push(content, {str:str, color:color});
 	}
-	var line = function(title="", color=c_gray) {
-		var size = 50;
+	var line = function(title="", color=#7777a7) {
+		var size = maxstrlen;
 		title = string_upper(title);
 		var len = string_length(title);
+		
 		if (len == 0) {
 			_(string_repeat("=", size), color);
 			return;
 		}
 		
-		var left  = size / 2 - ceil(len / 2);
-		var right = size / 2 - floor(len / 2);
+		var left  = size / 2 - floor(len / 2);
+		var right = size / 2 - ceil(len / 2);
 		
 		var final = string_repeat("=", left) + title + string_repeat("=", right);
-		_(final, color);
+		_(final, color, true);
 	}
 	
 	line("info");
@@ -30,9 +31,27 @@ function draw_debug_ui(){
 	_($"kbs: {bool_string(KeyboardBusy)} mbs: {bool_string(CursorBusy)}");
 	_($"velax: {Vela.navigation.x} velay: {Vela.navigation.y}");
 	
+	if (instance_exists(Host)) {
+		line("Host");
+		_($"clients: {ds_map_size(Host.clients)}");
+	}
+	
+	if (instance_exists(World)) {
+		line("World");
+		_($"seed: {World.seed}");
+		_($"planets: {instance_number(Planet)}");
+	}
+	
+	if (instance_exists(Controller)) {
+		line("Controller");
+		var inst = Controller.controlledInstance;
+		if (inst != noone) then _($"inst: {object_get_name(inst.object_index)}");
+	}
+	
 	if (instance_exists(Spaceship)) {
 		line("Spaceship");
 		var p = Spaceship;
+		_($"netID: {p.networkControllerID}");
 		_($"x: {p.x} | y: {p.y}");
 		_($"dir: {p.dir} | speed: {p.spd} | turnSpeed: {p.turnSpeed} | angle: {abs(p.angle)}");
 		var ppos = World.getChunkPosition(p.x, p.y);
@@ -65,7 +84,7 @@ function draw_debug_ui(){
 	draw_set_alpha(0.75);
 	draw_rectangle_colour(
 		0, 0, 
-		maxstrlen * fw,
+		(maxstrlen + 2) * fw,
 		len*sep, c_black, c_black, c_black, c_black, false
 	);
 	draw_set_alpha(1);

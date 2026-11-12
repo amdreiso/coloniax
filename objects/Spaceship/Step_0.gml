@@ -1,12 +1,24 @@
 
-if (Paused) return;
+
+if (isPuppet) {
+	// Interpolate position
+	var lerpAmount = 0.1;
+	
+	x = lerp(x, newx, lerpAmount);
+	y = lerp(y, newy, lerpAmount);
+}
+
+
+if (Paused || isPuppet) return;
 
 event_inherited();
 
 // Controls
 if (controlling) {
-	Player.x = x;
-	Player.y = y;
+	if (instance_exists(Player)) {
+		Player.x = x;
+		Player.y = y;
+	}
 	
 	SOUND.ListenerPosition(x, y);
 	
@@ -27,7 +39,9 @@ angle = dir;
 hsp = lengthdir_x(spd, dir);
 vsp = lengthdir_y(spd, dir);
 
-if (!stationed) orbit_set();
+if (!stationed) {
+	orbit_set();
+}
 
 x += hsp + knockback.x;
 y += vsp + knockback.y;
@@ -56,11 +70,10 @@ if (keyboard_check_pressed(vk_space)) {
 	}
 }
 
-
 if (keyboard_check(vk_control)) {
-	if (mouse_check_button_pressed(mb_left)) {
-		x = mouse_x;
-		y = mouse_y;
+	if (mouse_check_button(mb_left)) {
+		x += (x - mouse_x) * 0.1 * -1;
+		y += (y - mouse_y) * 0.1 * -1;
 	}
 }
 

@@ -9,6 +9,9 @@ tick = irandom(1000);
 cooldown = irandom(3 * 60);
 
 update = function(){}
+particleCreate = function(){}
+particleCooldown = function(){}
+canCreateParticles = true;
 
 set = function(tileid) {
 	var t 			= TILE.Get(tileid);
@@ -16,8 +19,15 @@ set = function(tileid) {
 	sprite 			= t.components.sprite;
 	isLiquid 		= t.components.isLiquid;
 	update 			= t.components.update;
+	particleCreate	= t.components.particleCreate;
+	particleCooldown = t.components.particleCooldown;
 	frameSpeed		= resolve(t.components.frameSpeed);
 	sprite_index 	= sprite;
+
+	canCreateParticles = resolve(t.components.canCreateParticles);
+	if (canCreateParticles) {
+		alarm[0] = particleCooldown();
+	}
 	
 	if (tileid == eTileID.LAVA) {
 		tick = 0;

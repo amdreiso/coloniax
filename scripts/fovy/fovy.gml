@@ -25,37 +25,160 @@ function fovy(){
 	}
 }
 
-function settings_init() {
-	G Settings;
-	Settings = settings_get();
-	
-	#macro SETTINGS_FILE "settings.json"
+function spawn(x, y, depthOrLayer, obj, vars={}){
+	var fn;
+	if (is_numeric(depthOrLayer)) {
+		return instance_create_depth(x, y, depthOrLayer, obj, vars);
+	} else if (is_string(depthOrLayer)) {
+		return instance_create_layer(x, y, depthOrLayer, obj, vars);
+	} else {
+		return instance_create_depth(x, y, depthOrLayer, obj, vars);
+	}
 }
 
-function settings_get(){
-	// Default settings
-	var stt = {
-		camera : {
-			shakeIntensity: 1,
-		},
-		
-		graphics : {
-			lighting: false,
-		},
-		
-		audio: {
-			volume: 1,
-			music: 0.75,
-			sfx: 1,
-			ui: 1,
-			zoomFalloff: 2,
-		},
-	};
+function hex_to_dec(hex) {
+	var dec = 0;
+	var dig = "0123456789ABCDEF";
+	var len = string_length(hex);
+	for (var pos = 1; pos <= len; pos += 1) {
+		dec = dec << 4 | (string_pos(string_char_at(hex, pos), dig) - 1);
+	}
+	return dec;
+}
+
+function ord_to_dec(hex) {
+	var dec = 0;
+	var dig = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	var len = string_length(hex);
+	for (var pos = 1; pos <= len; pos += 1) {
+		dec = dec << 4 | (string_pos(string_char_at(hex, pos), dig) - 1);
+	}
+	return dec;
+}
+
+function string_int(str) {
+	var integer = "";
 	
-	var load = settings_load();
-	struct_merge_recursive(stt, load);
+	var i = 1;
+	while (i <= string_length(str)) {
+		var char = string_lower(string_char_at(str, i));
+		
+		if (char == "0") integer += "0";
+		if (char == "1") integer += "1";
+		if (char == "2") integer += "2";
+		if (char == "3") integer += "3";
+		if (char == "4") integer += "4";
+		if (char == "5") integer += "5";
+		if (char == "6") integer += "6";
+		if (char == "7") integer += "7";
+		if (char == "8") integer += "8";
+		if (char == "9") integer += "9";
+		if (char == "a") integer += "10";
+		if (char == "b") integer += "11";
+		if (char == "c") integer += "12";
+		if (char == "d") integer += "13";
+		if (char == "e") integer += "14";
+		if (char == "f") integer += "15";
+		if (char == "g") integer += "16";
+		if (char == "h") integer += "17";
+		if (char == "i") integer += "18";
+		if (char == "j") integer += "19";
+		if (char == "k") integer += "20";
+		if (char == "l") integer += "21";
+		if (char == "m") integer += "22";
+		if (char == "n") integer += "23";
+		if (char == "o") integer += "24";
+		if (char == "p") integer += "25";
+		if (char == "q") integer += "26";
+		if (char == "r") integer += "27";
+		if (char == "s") integer += "28";
+		if (char == "t") integer += "29";
+		if (char == "u") integer += "30";
+		if (char == "v") integer += "31";
+		if (char == "w") integer += "32";
+		if (char == "x") integer += "33";
+		if (char == "y") integer += "34";
+		if (char == "z") integer += "35";
+		
+		i++;
+	}
 	
-	return stt;
+	return integer;
+}
+
+function surface_destroy(surface) {
+	if (!surface_exists(surface)) return;
+	surface_free(surface);
+}
+
+function directory_get_files(dir, mask = "*.*") {
+	var results = [];
+	if (string_char_at(dir, string_length(dir)) != "/") dir += "/";
+
+	var name = file_find_first(dir + mask, fa_none);
+	while (name != "") {
+		array_push(results, name);
+		name = file_find_next();
+	}
+	file_find_close();
+	return results;
+}
+
+function resolution_init() {
+	G Resolution;
+	Resolution = {};
+
+	Resolution.table = [
+		{window: new Dim(800, 600)},
+		{window: new Dim(1600, 1200)},
+		{window: new Dim(1200, 900)},
+		{window: new Dim(1280, 720)},
+		{window: new Dim(1366, 768)},
+		{window: new Dim(1600, 900)},
+		{window: new Dim(1920, 1080)},
+		{window: new Dim(2560, 1440)},
+		{window: new Dim(3840, 2160)},
+	];
+
+	Resolution.index = 0;
+	Resolution.value = "";
+	Resolution.Set = function(index) {
+		Settings.graphics.resolution = Resolution.index;
+		var res = Resolution.table[Resolution.index];
+		var w = res.window.width;
+		var h = res.window.height;
+		window_set_size(w, h);
+		if (instance_exists(Camera)) then Camera.setResolution(w/5, h/5);
+
+		if (instance_exists(World) && part_system_exists(World.ps)) {
+			part_system_clear(World.ps);
+		}
+
+		Resolution.value = $"{res.window.width}x{res.window.height}";
+		print("Resolution set to: "+Resolution.value);
+	}
+
+	Resolution.Cycle = function() {
+		Resolution.index ++;
+		if (Resolution.index >= array_length(Resolution.table)) {
+			Resolution.index = 0;
+		}
+		Resolution.Set(Resolution.index);
+	}
+
+	Resolution.GetHighest = function() {
+		var w,h;
+		for (var i = 0; i < array_length(Resolution.table); i++) {
+			var res = Resolution.table[i];
+			if (display_get_width() >= res.window.width) {
+				Resolution.index = i;
+				w = res.window.width;
+				h = res.window.height;
+			}
+		}
+		print($"Highest possible resolution was {w}x{h}");
+		return Resolution.index;
+	}
 }
 
 function resolve(val) {
@@ -63,29 +186,6 @@ function resolve(val) {
 		return val();
 	}
 	return val;
-}
-
-function settings_save() {
-	//var file = SETTINGS_FILE;
-	//var content = json_stringify(Settings);
-	//var buffer = buffer_create(string_byte_length(content)+1, buffer_fixed, 1);
-	//buffer_write(buffer, buffer_string, content);
-	//buffer_save(buffer, file);
-	//buffer_delete(buffer);
-	
-	var file = ini_open("settings.ini");
-	ini_write_real("Audio", "volume", Settings.audio.volume);
-	ini_close();
-
-	Main.showSavingIcon = 4 * 60;
-}
-
-function settings_load() {
-	var file = SETTINGS_FILE;
-	if (!file_exists(file)) return {};
-	
-	var content = fread(fopen(file), buffer_string);
-	return json_parse(content);
 }
 
 function await_init() {
@@ -140,7 +240,7 @@ function sound_init() {
 				break;
 
 			case eSoundType.UI:
-				gainType = Settings.audio.UI;
+				gainType = Settings.audio.ui;
 				break;
 		}
 
@@ -168,7 +268,7 @@ function sound_init() {
 				break;
 
 			case eSoundType.UI:
-				gainType = Settings.audio.UI;
+				gainType = Settings.audio.ui;
 				break;
 		}
 
@@ -193,7 +293,7 @@ function sound_init() {
 				break;
 
 			case eSoundType.UI:
-				gainType = Settings.audio.UI;
+				gainType = Settings.audio.ui;
 				break;
 		}
 
@@ -219,7 +319,7 @@ function sound_init() {
 				break;
 
 			case eSoundType.UI:
-				gainType = Settings.audio.UI;
+				gainType = Settings.audio.ui;
 				break;
 		}
 
@@ -242,6 +342,7 @@ function draw_on_surface(surface, func=function(){}) {
 	surface_reset_target();
 }
 
+// vibe coded bullscheise
 function perlin(_seed = 0) constructor {
 
     static seed = function(_s = 0) {
@@ -485,7 +586,7 @@ function Maybe(value) constructor {
 
 function fopen(filename) {
 	if (!file_exists(filename)) {
-		var buf = buffer_create(1, buffer_fixed, 1);
+		var buf = buffer_create(1, buffer_grow, 1);
 		buffer_save(buf, filename);
 		buffer_delete(buf);
 	}
@@ -507,7 +608,7 @@ function fclose(buffer) {
 	buffer_delete(buffer);
 }
 
-function Node(value, children=[]) constructor {
+function TreeNode(value, children=[]) constructor {
 	self.value = value;
 	self.children = children;
 	self.width = 0;
@@ -536,7 +637,7 @@ function tree_measure(node, spacing = 10) {
 
 /**
  * Function Description
- * @param {Struct.Node} root
+ * @param {Struct.TreeNode} root
  * @param {Real} x
  * @param {Real} y
  */
@@ -643,39 +744,16 @@ function process_init() {
 
 			if (ret) {
 				array_delete(Process.list, i, 1);
-				print($"PROCESS: completed ID '{i}'");
+				print($"Process: completed ID '{i}'");
 			}
 		}
 	}
 	Process.Push = function(fn) {
+		print("Process: created new process");
 		if (!is_callable(fn)) return;
 		array_push(Process.list, fn);
+		return array_length(Process.list);
 	}
-}
-
-enum MENU_BUTTON_TYPE {
-	Method,
-	Slider,
-}
-
-function Button(name, backgroundColor, textColor, fn, goback = false) constructor {
-	self.type = MENU_BUTTON_TYPE.Method;
-	self.name = name;
-	self.fn = fn;
-	self.backgroundColor = backgroundColor;
-	self.textColor = textColor;
-	self.goback = goback;
-}
-
-function ButtonSlider(name, backgroundColor, textColor, get, set, variabledefault, slope=0.1) constructor {
-	self.type = MENU_BUTTON_TYPE.Slider;
-	self.name = name;
-	self.backgroundColor = backgroundColor;
-	self.textColor = textColor;
-	self.get = get;
-	self.set = set;
-	self.variabledefault = variabledefault;
-	self.slope = slope;
 }
 
 function bool_string(val) {
@@ -867,12 +945,9 @@ function Registry() constructor {
 		var entry = {};
 		entry.components = {};
 
-		struct_merge(entry.components, self.defaultComponents);
-		struct_merge(entry.components, components);
+		struct_merge(entry.components, self.defaultComponents, components);
 
 		self.entries[? val] = entry;
-
-		print($"{val} : {components}");
 
 		onRegister( val );
 	}
@@ -1163,25 +1238,16 @@ function randvec2(x=0, y=0, range=0) {
 	);
 }
 
-function irandvec2(x=0, y=0, range=0) {
+function irandvec2(x=0, y=0, range=0, multiplier=1) {
 	return {
-		x: x + irandom_range(-range, range),
-		y: y + irandom_range(-range, range),
+		x: (x + irandom_range(-range, range)) * multiplier,
+		y: (y + irandom_range(-range, range)) * multiplier,
 	}
 }
 
 function Dim(width=0, height=0) constructor {
 	self.width = width;
 	self.height = height;
-}
-
-function sound3D(emitter, x, y, snd, loop, gain, pitch, offset = 0){
-	if (emitter == -1) {
-		return audio_play_sound_at(snd, x, y, 0, Sound.distance, Sound.dropoff, Sound.multiplier,
-			loop, -1, random_array_argument(gain), offset, random_array_argument(pitch));
-	}
-
-	return audio_play_sound_on(emitter, snd, loop, 0, random_array_argument(gain), offset, random_array_argument(pitch));
 }
 
 function Color(r, g, b) constructor { self.r = r; self.g = g; self.b = b; }
@@ -1426,81 +1492,6 @@ function color_lerp(col1, col2, t) {
     return make_color_rgb(r, g, b);
 }
 
-
-// Code from Arend Peter Teaches
-function get_perlin_noise_1D(xx, range){
-	var noise = 0;
-	var chunkSize = 8;
-	var chunkIndex = xx div chunkSize;
-	var prog = (xx % chunkSize) / chunkSize;
-
-	var leftRandom = random_seed(chunkIndex, range);
-	var rightRandom = random_seed(chunkIndex + 1, range);
-
-	noise = (1-prog)*leftRandom + prog*rightRandom;
-
-	return round(noise);
-}
-
-
-// Code from Arend Peter Teaches
-function get_perlin_noise_2D(xx, yy, range, r = false, chunksize = 1){
-	var chunkSize = 64 * chunksize;
-	var noise = 0;
-
-	range = range div 2;
-
-	while (chunkSize > 0){
-	  var index_x = xx div chunkSize;
-	  var index_y = yy div chunkSize;
-
-	  var t_x = (xx % chunkSize) / chunkSize;
-	  var t_y = (yy % chunkSize) / chunkSize;
-
-	  var r_00 = random_seed(range, index_x,   index_y);
-	  var r_01 = random_seed(range, index_x,   index_y + 1);
-	  var r_10 = random_seed(range, index_x+1, index_y);
-	  var r_11 = random_seed(range, index_x+1, index_y + 1);
-
-		var r_0 = lerp(r_00, r_01, t_y);
-	  var r_1 = lerp(r_10, r_11, t_y);
-
-	  noise += lerp(r_0, r_1, t_x);
-
-	  chunkSize = chunkSize div 2;
-	  range = range div 2;
-	  range = max(1, range);
-	}
-
-	if (r) {
-		return round(noise);
-	}
-
-	return noise;
-}
-
-// Code from Arend Peter Teaches
-function random_seed(range){
-	var num = 0;
-
-	switch(argument_count) {
-		case 2:
-			num = argument[1];
-			break;
-		case 3:
-			num = argument[1] + argument[2] * 12409172;
-			break;
-	}
-
-	var seed = 0;
-	seed += World.seed + num;
-
-	random_set_seed(seed);
-	var rand = random_range(0, range);
-
-	return rand;
-}
-
 function rect(x, y, width, height, color = c_white, outline = false, alpha = 1, size = 1) {
 	for (var i = 0; i < size; i++) {
 		var step = size * 2;
@@ -1562,27 +1553,57 @@ function mkdir(path) {
 	directory_create(path);
 }
 
-function struct_merge(dest, src) {
-	var keys = struct_get_names(src);
-	for (var i = 0; i < array_length(keys); i++) {
-		var key = keys[i];
-		var val = variable_struct_get(src, key);
-		struct_set(dest, key, val);
+//function struct_merge(dest, src) {
+//	var keys = struct_get_names(src);
+//	for (var i = 0; i < array_length(keys); i++) {
+//		var key = keys[i];
+//		var val = variable_struct_get(src, key);
+//		struct_set(dest, key, val);
+//	}
+//}
+
+function struct_merge_recursive(default_struct, loaded_struct) {
+	print($"MERGING {default_struct} WITH {loaded_struct}");
+	
+	var names = struct_get_names(loaded_struct);
+	for (var i = 0; i < array_length(names); i++) {
+		var key = names[i];
+		var loaded_val = struct_get(loaded_struct, key);
+		var default_value = struct_get(default_struct, key);
+		
+		if (variable_struct_exists(default_struct, key) && is_struct(default_value) && is_struct(loaded_val) && !is_method(default_value)) {
+			struct_merge_recursive(default_value, loaded_val);
+		} else {
+			struct_set(default_struct, key, loaded_val);
+		}
 	}
 }
 
-function struct_merge_recursive(default_struct, loaded_struct) {
-  var names = struct_get_names(loaded_struct);
-  for (var i = 0; i < array_length(names); i++) {
-    var key = names[i];
-    var loaded_val = struct_get(loaded_struct, key);
-
-    if (variable_struct_exists(default_struct, key) && is_struct(struct_get(default_struct, key)) && is_struct(loaded_val)) {
-      struct_merge_recursive(struct_get(default_struct, key), loaded_val);
-    } else {
-      struct_set(default_struct, key, loaded_val);
-    }
-  }
+/**
+ * 
+ * @param {struct} struct0 default struct
+ * @param {struct} ... loaded structs
+ * @returns {struct} struct0
+ */
+function struct_merge(struct0) {
+	for (var i = 1; i < argument_count; i++) {
+		var loaded = argument[i];
+		//struct_merge_recursive(struct0, loaded);
+		
+		var names = struct_get_names(loaded);
+		
+		for (var j = 0; j < array_length(names); j++) {
+			var key		= names[j];
+			var value	= struct_get(loaded, key);
+			
+			if (is_struct(value) && is_struct(struct_get(struct0, key)) && struct_exists(struct0, key) && !is_method(struct_get(struct0, key))) {
+				struct_merge(struct_get(struct0, key), value);
+			} else {
+				struct_set(struct0, key, value);
+			}
+		}
+	}
+	return struct0;
 }
 
 function raycast_to_collisions(x1, y1, x2, y2) {

@@ -3,9 +3,10 @@ Input.Bind.Run();
 Await.Run();
 Process.Run();
 
-Paused = (instance_exists(PauseMenu) || instance_exists(Menu_Script));
+Paused = (instance_exists(Menu_Pause));
 
 audio_group_set_gain(audiogroup_music, Settings.audio.music * Settings.audio.volume);
 
-layer_set_visible(layer_get_id("Glow"), Settings.graphics.lighting);
+if (layer_exists("flow")) layer_set_visible(layer_get_id("Glow"), Settings.graphics.lighting);
 
+debug_get_input();

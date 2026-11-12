@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"structure_init",
   "parent":{
-    "name":"scr",
-    "path":"folders/scr.yy",
+    "name":"planet",
+    "path":"folders/scr/planet.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

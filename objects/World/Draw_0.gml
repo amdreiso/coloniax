@@ -1,4 +1,6 @@
 
+if (!instance_exists(Spaceship)) return;
+
 var size = 1;
 var pos = getChunkPosition(Spaceship.x, Spaceship.y);
 
@@ -9,7 +11,6 @@ for (var i = -1; i <= size; i++) {
 		yy = pos.y + j;
 		
 		var keypos = chunkGetKey(xx, yy);
-		
 		if (chunks[$ keypos] == undefined) {
 			array_push(job, {x: xx, y: yy});
 			continue;

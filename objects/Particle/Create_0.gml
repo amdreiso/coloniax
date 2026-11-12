@@ -42,6 +42,8 @@ setShape = function(val=ps_shape_rectangle) {
 }
 
 Await.Register(5 * 60, function(){
+	if (!part_system_exists(ps)) return;
 	if (part_emitter_exists(ps, emitter)) 
 		part_emitter_destroy(ps, emitter);
 });
+

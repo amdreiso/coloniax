@@ -16,6 +16,7 @@ dropTable = new Table();
 offset = new Vec2();
 
 emitter = audio_emitter_create();
+brokenByPlayer = false;
 
 hitCooldown = 0;
 hit = function() {
@@ -37,6 +38,7 @@ hit = function() {
 	audio_play_sound(choose(snd_punch0, snd_punch1, snd_punch2, snd_punch3), 0, false, 0.4, 0, random_range(0.90, 1.05));
 	
 	if (hp.value <= 0) {
+		brokenByPlayer = true;
 		instance_destroy();
 	}
 }

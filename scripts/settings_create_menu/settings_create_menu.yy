@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"settings_create_menu",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"settings_create_menu",
+  "parent":{
+    "name":"settings",
+    "path":"folders/scr/settings.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"world_particle_init",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"world_particle_init",
+  "parent":{
+    "name":"world",
+    "path":"folders/scr/world.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

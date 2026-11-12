@@ -1,6 +1,12 @@
 
 event_inherited();
 
+if (!variable_instance_exists(id, "isPuppet")) isPuppet = false;
+if (!variable_instance_exists(id, "networkControllerID")) networkControllerID = 0;
+
+newx = 0;
+newy = 0;
+
 controlling = false;
 
 sun = instance_nearest(x, y, Sun);
@@ -88,7 +94,7 @@ applyCollisions = function() {
 	
 	if (drop != noone) {
 		audio_play_sound(snd_item_picked_up, 0, false, 0.25, 0, random_range(0.80, 1.00));
-		inventory.Add(drop.itemID);
+		inventory_add(inventory, drop.itemID, 1);
 		instance_destroy(drop);
 	}
 }
@@ -227,7 +233,7 @@ handlePlacingProps = function(item) {
 			}, false, true); 
 
 			if (thisprop) {
-				inventory.Remove(slotIndex, 1);
+				inventory_remove_by_index(inventory, slotIndex, 1);
 			}
 		}
 	}
@@ -312,7 +318,7 @@ draw = function() {
 	var heady = y;
 
 	var currentItem = -1;
-	var hand = inventory.Get(slotIndex);
+	var hand = inventory_get(inventory, slotIndex);
 	if (hand.itemID != -1) {
 		currentItem = ITEM.Get(hand.itemID);
 	}
@@ -401,7 +407,7 @@ draw = function() {
 	if (sprite_get_number(eye) >= 2 && !blink) {
 		draw_sprite_ext(eye, 1, x, hy, xscale, image_yscale, angle, appearance.eyeColor, 1);
 	}
-	
+
 	// Placing Props
 	if (currentItem != -1) then handlePlacingProps(currentItem);
 
@@ -411,15 +417,15 @@ draw = function() {
 }
 
 // Inventory
-inventory = new Inventory(20);
-inventory.Add(eItemID.BASIC_PICKAXE, 1);
-inventory.Add(eItemID.BASIC_SOLAR_PANEL, 99);
-inventory.Add(eItemID.BASIC_MINING_DRILL, 99);
-inventory.Add(eItemID.WOOD, 99);
-inventory.Add(eItemID.STEEL, 99);
-inventory.Add(eItemID.URANIUM, 99);
-inventory.Add(eItemID.PISTOL, 1);
-inventory.Add(eItemID.LMG, 1);
+inventory = inventory_create(20);
+inventory_add(inventory, eItemID.BASIC_PICKAXE, 1);
+inventory_add(inventory, eItemID.BASIC_SOLAR_PANEL, 99);
+inventory_add(inventory, eItemID.BASIC_MINING_DRILL, 99);
+inventory_add(inventory, eItemID.WOOD, 99);
+inventory_add(inventory, eItemID.STEEL, 99);
+inventory_add(inventory, eItemID.URANIUM, 99);
+inventory_add(inventory, eItemID.PISTOL, 1);
+inventory_add(inventory, eItemID.LMG, 1);
 
 slotIndex = 0;
 slotSet = function(index){
@@ -427,7 +433,8 @@ slotSet = function(index){
 };
 
 getHand = function() {
-	return inventory.Get(slotIndex).itemID;
+	var i = inventory_get(inventory, slotIndex);
+	return (i) ? i.itemID : -1;
 }
 
 Input.Bind.Set(ord("1"), , , function(){slotSet(0)});
@@ -445,14 +452,15 @@ Input.Bind.Set(ord("0"), , , function(){slotSet(9)});
 drawHotbar = function() {
 	if (!controlling || Paused) return;
 	
-	var scale = 1;
+	var scale = Settings.graphics.uiScale;
 	var spacing = 1.1;
-	var size = (64) * scale;
-	var size2 = (64 * spacing) * scale;
-	var num = 10;
-	var half = (num * size2) / 2;
+	var size = 32 * scale;
+	var size2 = (32 * spacing) * scale;
 	var yy = HEIGHT - size2 / 2;
 	
+	var num = 10;
+	var half = (num * size2) / 2;
+
 	for (var i = 0; i < num; i++) {
 		var xx = WIDTH / 2 + (i * size2) - half;
 		rect(xx, yy, size, size, #202020, false);
@@ -464,18 +472,19 @@ drawHotbar = function() {
 			rect(xx, yy, size, size, #303030, true);
 		}
 		
-		var inv			= inventory.Get(i);
-		var item		= inv.itemID;
-		var quantity	= inv.quantity;
-		
-		if (item != -1) {
-			var icon = ITEM.Get(item).components.icon;
-			if (icon != -1) {
-				draw_sprite_ext(icon, 0, xx, yy, scale*2, scale*2, 0, c_white, 1);
-				ALIGN_BOTTOM_RIGHT;
-				if (quantity > 1) draw_text(xx + size/2 - 5, yy + size/2, quantity);
-			}
-		}
+		var slot = inventory_get(inventory, i);
+		if (!slot) continue;
+
+		var item 	= slot.itemID;
+		var amount	= slot.amount;
+		var icon 	= ITEM.Get(item).components.icon;
+
+		if (icon == -1) continue;
+
+		draw_sprite_ext(icon, 0, xx, yy, scale, scale, 0, c_white, 1);
+
+		ALIGN_BOTTOM_RIGHT;
+		if (amount > 1) draw_text(xx + size/2 - 5, yy + size/2, amount);
 	}
 }
 
@@ -484,40 +493,5 @@ drawHotbar = function() {
 GUI.Register(drawHotbar);
 
 // Crafting system
-G RECIPE;
-RECIPE = {};
-
-RECIPE.data = {};
-
-RECIPE.Register = function(result) {
-	var recipe = {};
-	recipe.result = result;
-	recipe.ingredients = [];
-	for (var i = 1; i < argument_count; i++) {
-		array_push(recipe.ingredients, argument[i]);
-	}
-	RECIPE.data[$ result] = recipe;
-}
-
-RECIPE.Find = function(itemID) {
-	var r = RECIPE.data[$ itemID];
-	if (r == undefined) return -1;
-	return r;
-}
-
-// RECIPE.Register(
-// 	eItemID.PISTOL, 
-// 	new ItemStack(eItemID.WOOD, 	2),
-// 	new ItemStack(eItemID.URANIUM, 	2),
-// );
+inventory_craft(inventory, eItemID.PISTOL);
  
-// RECIPE.Register(
-// 	eItemID.LMG,
-// 	new ItemStack(eItemID.URANIUM, 30),
-// 	new ItemStack(eItemID.BASIC_MINING_DRILL, 2),
-// 	new ItemStack(eItemID.BASIC_SOLAR_PANEL, 5),
-// 	new ItemStack(eItemID.STEEL, 99),
-// );
-
-//inventory.Craft(eItemID.LMG);
-

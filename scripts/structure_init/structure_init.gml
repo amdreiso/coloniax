@@ -20,7 +20,7 @@ function structure_init() {
 		t.propComponents = {};
 		t.propComponents.sprite_index = sprite;
 		t.propComponents.image_index = propImageIndex;
-		struct_merge_recursive(t.propComponents, propComponents);
+		struct_merge(t.propComponents, propComponents);
 
 		return t;
 	}

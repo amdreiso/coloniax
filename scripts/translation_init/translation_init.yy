@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"translation_init",
   "parent":{
-    "name":"translation",
-    "path":"folders/scr/translation.yy",
+    "name":"localization",
+    "path":"folders/scr/localization.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",
