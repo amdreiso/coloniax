@@ -1,6 +1,4 @@
 
-currentBuild = game_get_build();
-
 stars = [];
 starSpeed = 0.5;
 createStar = function(){
@@ -71,7 +69,7 @@ main.Push(new v_Button(T.Getc("host"), function(node){
 	room_goto(rmWorld);
 	
 	var txt = seed.text;
-	var int = string_int(txt);
+	var int = ord_to_dec(txt);
 	Seed = (txt == "seed") ? irandom_range(1000000, 10000000000) : real(int);
 	
 	Process.Push(function(){

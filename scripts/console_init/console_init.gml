@@ -1,7 +1,6 @@
 
 function console_init() 
 {
-	#macro log CONSOLE.Log
 	#macro err CONSOLE.Err
 	
 	enum eLogType {
@@ -311,6 +310,10 @@ function console_init()
 		draw_set_halign(fa_center);
 		draw_set_valign(fa_middle);
 	}
+}
+
+function log(str, color = c_ltgray, font = fnt_console) {
+	CONSOLE.Log(str,color,font);
 }
 
 function command_data(){

@@ -22,13 +22,14 @@ function handle_escape(){
 		//	return;
 		//}
 		
-		if (instance_exists(Menu)) {
+		if (instance_exists(Menu) && Menu.object_index != Menu_Start) {
 			instance_destroy(Menu);
+			window_set_cursor(cr_default);
 			KeyboardBusy = false;
 			CursorBusy = false;
 			return;
 		}
-			
+		
 		if (room != rmMenu) {
 			instance_create_depth(0, 0, depth, Menu_Pause);
 		}

@@ -5,6 +5,8 @@ var cx = w/2;
 var cy = h/2;
 var spd = starSpeed;
 
+
+
 for (var i = 0; i < array_length(stars); i++) {
 	var s = stars[i];
 	var alpha = 1;
@@ -28,9 +30,9 @@ for (var i = 0; i < array_length(stars); i++) {
 	} else {
 		draw_circle_color(s.x, s.y, 1, s.color, s.color, false);
 	}
+	
 	draw_set_alpha(1);
 }
-
 
 var sw = sprite_get_width(sIcon_Logo_1);
 var sh = sprite_get_height(sIcon_Logo_1);
@@ -44,6 +46,4 @@ draw_sprite_ext(sIcon_Logo_1, 0, WIDTH/2, yy, logoscale, logoscale, 0, c_white, 
 
 index.Draw();
 
-ALIGN_BOTTOM_LEFT;
-draw_text(0, HEIGHT, currentBuild);
 

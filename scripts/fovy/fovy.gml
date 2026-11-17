@@ -25,6 +25,97 @@ function fovy(){
 	}
 }
 
+function xml_parse(str) {
+	var root = { name: "root", children: [], text: "" };
+	var stack = [root];
+	var len = string_length(str);
+	var i = 1;
+	var text = "";
+	
+	while (i <= len) {
+		var char = string_char_at(str, i);
+		
+		if (char != "<") {
+			text += char;
+			i++;
+			continue;
+		}
+		
+		var current = stack[array_length(stack) - 1];
+		text = string_trim(text);
+		
+		if (text != "") current.text = text;
+		text = "";
+		
+		var close = string_pos_ext(">", str, i);
+		if (close == 0) {
+			show_debug_message("xml_parse: unclosed '<' at " + string(i));
+			break;
+		}
+		
+		var name = string_copy(str, i + 1, close - i - 1);
+		i = close + 1;
+		
+		if (string_char_at(name, 1) == "/") {
+			if (array_length(stack) > 1) array_pop(stack);
+			
+		} else {
+			var selfClosing = string_char_at(name, string_length(name)) == "/";
+			if (selfClosing) {
+				name = string_delete(name, string_length(name), 1);
+			}
+			
+			// parse name for properties
+			var items = string_split(name, " ");
+			var properties = {};
+			
+			for (var j = 1; j < array_length(items); j++) {
+				var p = items[j];
+				var values = string_split(p, "=");
+				
+				if (array_length(values) < 2) {
+					var boolean = (string_char_at(p, 0) == "!") ? false : true
+					if (!boolean) then p = string_delete(p, 1, 1);
+					properties[$ p] = boolean;
+					continue;
+				}
+				
+				var key = values[0];
+				var value = values[1];
+				
+				if (string_char_at(value, 1) == "\"") {
+					value = string_replace_all(value, "\"", "");
+					var words = string_split(value, ",");
+					
+					if (array_length(words) > 1) value = words;
+					
+				} else {
+					// resolve non string
+					value = real(value);
+				}
+				
+				properties[$ key] = value;
+			}
+			
+			name = items[0];
+			
+			var node = {
+				name: name,
+				children: [],
+				text: "",
+				properties: properties,
+			};
+			
+			array_push(current.children, node);
+			
+			if (!selfClosing) array_push(stack, node);
+		}
+	}
+	
+	return root;
+}
+
+
 function spawn(x, y, depthOrLayer, obj, vars={}){
 	var fn;
 	if (is_numeric(depthOrLayer)) {
@@ -46,64 +137,14 @@ function hex_to_dec(hex) {
 	return dec;
 }
 
-function ord_to_dec(hex) {
+function ord_to_dec(str) {
 	var dec = 0;
 	var dig = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	var len = string_length(hex);
+	var len = string_length(str);
 	for (var pos = 1; pos <= len; pos += 1) {
-		dec = dec << 4 | (string_pos(string_char_at(hex, pos), dig) - 1);
+		dec = dec << 4 | (string_pos(string_char_at(str, pos), dig) - 1);
 	}
 	return dec;
-}
-
-function string_int(str) {
-	var integer = "";
-	
-	var i = 1;
-	while (i <= string_length(str)) {
-		var char = string_lower(string_char_at(str, i));
-		
-		if (char == "0") integer += "0";
-		if (char == "1") integer += "1";
-		if (char == "2") integer += "2";
-		if (char == "3") integer += "3";
-		if (char == "4") integer += "4";
-		if (char == "5") integer += "5";
-		if (char == "6") integer += "6";
-		if (char == "7") integer += "7";
-		if (char == "8") integer += "8";
-		if (char == "9") integer += "9";
-		if (char == "a") integer += "10";
-		if (char == "b") integer += "11";
-		if (char == "c") integer += "12";
-		if (char == "d") integer += "13";
-		if (char == "e") integer += "14";
-		if (char == "f") integer += "15";
-		if (char == "g") integer += "16";
-		if (char == "h") integer += "17";
-		if (char == "i") integer += "18";
-		if (char == "j") integer += "19";
-		if (char == "k") integer += "20";
-		if (char == "l") integer += "21";
-		if (char == "m") integer += "22";
-		if (char == "n") integer += "23";
-		if (char == "o") integer += "24";
-		if (char == "p") integer += "25";
-		if (char == "q") integer += "26";
-		if (char == "r") integer += "27";
-		if (char == "s") integer += "28";
-		if (char == "t") integer += "29";
-		if (char == "u") integer += "30";
-		if (char == "v") integer += "31";
-		if (char == "w") integer += "32";
-		if (char == "x") integer += "33";
-		if (char == "y") integer += "34";
-		if (char == "z") integer += "35";
-		
-		i++;
-	}
-	
-	return integer;
 }
 
 function surface_destroy(surface) {
@@ -1562,47 +1603,35 @@ function mkdir(path) {
 //	}
 //}
 
-function struct_merge_recursive(default_struct, loaded_struct) {
-	print($"MERGING {default_struct} WITH {loaded_struct}");
-	
-	var names = struct_get_names(loaded_struct);
-	for (var i = 0; i < array_length(names); i++) {
-		var key = names[i];
-		var loaded_val = struct_get(loaded_struct, key);
-		var default_value = struct_get(default_struct, key);
-		
-		if (variable_struct_exists(default_struct, key) && is_struct(default_value) && is_struct(loaded_val) && !is_method(default_value)) {
-			struct_merge_recursive(default_value, loaded_val);
-		} else {
-			struct_set(default_struct, key, loaded_val);
-		}
-	}
-}
-
-/**
- * 
- * @param {struct} struct0 default struct
- * @param {struct} ... loaded structs
- * @returns {struct} struct0
- */
 function struct_merge(struct0) {
+
 	for (var i = 1; i < argument_count; i++) {
-		var loaded = argument[i];
-		//struct_merge_recursive(struct0, loaded);
+		// struct from argument
+		var arg = argument[i];
+		var names = struct_get_names(arg);
 		
-		var names = struct_get_names(loaded);
-		
+		// looping through structs names for fucks sake
 		for (var j = 0; j < array_length(names); j++) {
-			var key		= names[j];
-			var value	= struct_get(loaded, key);
+			var key = names[j];
+			var value = struct_get(arg, key);
 			
-			if (is_struct(value) && is_struct(struct_get(struct0, key)) && struct_exists(struct0, key) && !is_method(struct_get(struct0, key))) {
+			// if struct already exists in struct0, merge that one too
+			// so it's recursive
+			if (variable_struct_exists(struct0, key) 
+				&& is_struct(struct_get(struct0, key))
+				&& is_struct(value)
+				&& !is_method(value)) {
+
 				struct_merge(struct_get(struct0, key), value);
+			
+			// If not, set it as a value
 			} else {
 				struct_set(struct0, key, value);
+
 			}
 		}
 	}
+
 	return struct0;
 }
 

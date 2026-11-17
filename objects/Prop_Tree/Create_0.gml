@@ -8,7 +8,7 @@ dropTable.Set(inventory_slot(eItemID.STEEL, [3,4]), 10);
 hp.UpdateValue(100);
 
 sprite_index = choose(sProp_Tree0, sProp_Tree1);
-if (irandom(100)<1) {
+if (irandom(100) > 99) {
 	sprite_index = sProp_Tree2;
 }
 image_xscale = choose(-1, 1);

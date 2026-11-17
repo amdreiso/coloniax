@@ -3,12 +3,27 @@ function tolin_init(){
 }
 
 enum eOperation {
-	PUSH, POP,
-	ADD, SUB, MUL, DIV,
-	LT, LE, GT, GE,
-	AND, OR, NOT, 
-	STORE, LOAD,
-	NEG, CALL, GET_MEMBER, SET_MEMBER, CALL_MEMBER
+	PUSH,
+	POP,
+	ADD,
+	SUB,
+	MUL,
+	DIV,
+	LT,
+	LE,
+	GT,
+	GE,
+	AND,
+	OR,
+	NOT,
+	STORE,
+	LOAD,
+	NEG,
+	CALL,
+	GET_MEMBER,
+	SET_MEMBER,
+	CALL_MEMBER,
+	JUMP,
 }
 
 enum eToken {
@@ -18,11 +33,19 @@ enum eToken {
 	OPEN_PAR,
 	CLOSE_PAR,
 	ASSIGN,
-	LE, LT,
-	GE, GT,
-	PLUS, MINUS, DIV, MUL,
-	AND, NOT, OR,
-	DOT, COMMA,
+	LE, 
+	LT,
+	GE, 
+	GT,
+	PLUS, 
+	MINUS, 
+	DIV, 
+	MUL,
+	AND, 
+	NOT, 
+	OR,
+	DOT, 
+	COMMA,
 }
 
 function tolin_get_operation_name(type) {
@@ -47,6 +70,7 @@ function tolin_get_operation_name(type) {
 		case eOperation.GET_MEMBER:		return "GET_MEMBER";
 		case eOperation.SET_MEMBER:		return "SET_MEMBER";
 		case eOperation.CALL_MEMBER:	return "CALL_MEMBER";
+		case eOperation.JUMP:			return "JUMP";
 	}
 }
 
@@ -102,6 +126,7 @@ function tolin_state() {
 	state.program = [];
 	state.stack = [];
 	state.tokens = [];
+	
 	state.env = {};
 	state.funcs = {};
 	state.pos = 0;
@@ -112,16 +137,17 @@ function tolin_state() {
 
 function tolin_load_builtin_functions(state) {
 	var fns = [
+		// Gamemaker built-in functions
 		["print", show_debug_message],
 		["game_end", game_end],
 		["typeof", typeof],
-		["call", script_execute],
 		["string", string],
 		["json_stringify", json_stringify],
 		["surface_exists", surface_exists],
 		["destroy", instance_destroy],
 		["instance_number", instance_number],
-
+		
+		// Custom functions
 		["call", function(m){
 			if (!is_method(m)) return;
 			var args = [];
@@ -168,7 +194,7 @@ function tolin_tokenizer(state) {
 	while (i <= len) {
 		var char = string_char_at(code, i);
 
-		// NL
+		// New line
 		if (char == "\n") {
 			i++;
 			line++;
@@ -223,10 +249,7 @@ function tolin_tokenizer(state) {
 		}
 
 		// Numbers
-		if (
-			string_digits(char) != ""
-			|| (char == "-" && i < len && string_digits(string_char_at(code, i + 1)) != "")
-		) {
+		if (string_digits(char) != "" || (char == "-" && i < len && string_digits(string_char_at(code, i + 1)) != "")) {
 			var start = i;
 			var negative = false;
 
@@ -406,6 +429,7 @@ function tolin_emit(state, op) {
 	array_push(state.program, op);
 }
 
+// Resolve non-keyword identifiers
 function tolin_resolve(state, name) {
 	if (name == "true") return true;
 	if (name == "false") return false;
@@ -419,6 +443,7 @@ function tolin_resolve(state, name) {
 	return asset;
 }
 
+// Struct access
 function tolin_get_member(target, member) {
 	if (is_struct(target)) {
 		tolin_assert(variable_struct_exists(target, member), $"No member '{member}'.");
@@ -442,6 +467,15 @@ function tolin_set_member(target, member, value) {
 	with (target) variable_instance_set(id, member, value);
 }
 
+function tolin_call_member(target, member, args) {
+	var fn = tolin_get_member(target, member);
+	tolin_assert(is_callable(fn), $"'{member}' is not callable.");
+
+	if (is_struct(target)) fn = method(target, fn);
+	return script_execute_ext(fn, args);
+}
+
+// Exec functions
 function tolin_call(state, name, args) {
 	var fn = state.funcs[$ name];
 
@@ -453,14 +487,6 @@ function tolin_call(state, name, args) {
 	}
 
 	tolin_assert(fn != undefined, $"Unknown function '{name}'.");
-	return script_execute_ext(fn, args);
-}
-
-function tolin_call_member(target, member, args) {
-	var fn = tolin_get_member(target, member);
-	tolin_assert(is_callable(fn), $"'{member}' is not callable.");
-
-	if (is_struct(target)) fn = method(target, fn);
 	return script_execute_ext(fn, args);
 }
 
@@ -564,6 +590,13 @@ function tolin_parse_expr(state, min_power) {
 function tolin_parse_identifier(state, tok) {
 	var nxt = tolin_peek(state);
 
+	if (tok.value == "goto" && nxt != undefined && nxt.type == eToken.NUMBER) {
+		state.pos++;
+		var jump = T_OP(eOperation.JUMP, nxt.value);
+		tolin_emit(state, jump);
+		return;
+	}
+
 	// assignment: x = ...
 	if (nxt != undefined && nxt.type == eToken.ASSIGN) {
 		state.pos++;
@@ -580,28 +613,7 @@ function tolin_parse_identifier(state, tok) {
 		tolin_emit(state, op);
 		return;
 	}
-	//if (nxt != undefined && nxt.type == eToken.OPEN_PAR) {
-	//	state.pos++;
-	//	var argc = 0;
-
-	//	if (tolin_peek(state).type == eToken.CLOSE_PAR) {
-	//		state.pos++;
-	//	} else {
-	//		while (true) {
-	//			tolin_parse_expr(state, 0);
-	//			argc++;
-	//			var t = tolin_next(state);
-	//			if (t.type == eToken.CLOSE_PAR) break;
-	//			tolin_assert(t.type == eToken.COMMA, $"Expected ',' or ')' at line {t.line}.");
-	//		}
-	//	}
-
-	//	var op = T_OP(eOperation.CALL, tok.value);
-	//	op.argc = argc;
-	//	tolin_emit(state, op);
-	//	return;
-	//}
-
+	
 	tolin_emit(state, T_OP(eOperation.LOAD, tok.value));
 }
 
@@ -640,6 +652,10 @@ function tolin_run(state, verbose=false) {
 		switch (op.type) {
 			case eOperation.PUSH: array_push(stack, op.value); break;
 			case eOperation.POP:  array_pop(stack); break;
+
+			case eOperation.JUMP:
+				i = op.value;
+				break;
 
 			case eOperation.LOAD:
 				array_push(stack, tolin_resolve(state, op.value));
@@ -686,7 +702,6 @@ function tolin_run(state, verbose=false) {
 			case eOperation.GE:  tolin_binary(stack, function(a, b) { return a >= b; }); break;
 			case eOperation.AND: tolin_binary(stack, function(a, b) { return a && b; }); break;
 			case eOperation.OR:  tolin_binary(stack, function(a, b) { return a || b; }); break;
-
 			case eOperation.NEG: array_push(stack, -array_pop(stack)); break;
 			case eOperation.NOT: array_push(stack, !array_pop(stack)); break;
 		}

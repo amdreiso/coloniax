@@ -57,7 +57,7 @@ buttons.Push(new v_Button("Close", function(){
 
 inputPanel = new v_Panel(0, 0, defaultStyle);
 
-var factor = 20;
+var factor = 50;
 input = new v_InputBox("", {
 	width: 16*factor,
 	height: 9*factor,
@@ -72,7 +72,7 @@ inputPanel.Push(input);
 root.Push(buttons);
 root.Push(inputPanel);
 
-GUI.Register(function(){
-	root.Draw();
-}, "script");
+//GUI.Register(function(){
+//	root.Draw();
+//}, "script");
 

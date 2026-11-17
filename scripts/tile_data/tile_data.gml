@@ -47,7 +47,7 @@ function tile_data(){
 	TILE.Register(eTileID.GRASS, tile(sTile_Grass, {
 		canSpawnMinerals: true,
 		load: function(planet, tile) {
-			if (irandom(100) < 4) {
+			if (irandom(100) > 96) {
 				tile.CreateProp(planet, Prop_Tree, {
 					tiltMultiplier: 0.3,
 				});

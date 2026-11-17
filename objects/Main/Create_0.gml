@@ -25,7 +25,6 @@ minimap_init();
 structure_init();
 enemy_init();
 
-
 // Draw
 draw_set_font(fnt_main);
 display_set_gui_maximise();
@@ -46,6 +45,8 @@ Manifest = {
 	build	: "INDEV",
 	author	: "Andrei Scatolin (c) lowqualitypictures",
 }
+
+currentBuild = game_get_build();
 
 G Debug;
 Debug = {
@@ -85,10 +86,8 @@ function debug_get_input() {
 	}
 
 	if (keyboard_check_released(vk_f3)) {
-		if (!used)
-			Debug.showDebugUI = !Debug.showDebugUI;
-		else
-			used = false;
+		if (!used) Debug.showDebugUI = !Debug.showDebugUI;
+		else       used = false;
 	}
 }
 
@@ -127,6 +126,5 @@ audio_group_load(audiogroup_default);
 audio_group_load(audiogroup_music);
 
 showSavingIcon = 0;
-
 
 print(working_directory);

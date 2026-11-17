@@ -453,4 +453,3 @@ main.Push(v_Separator());
 GUI.Register(function(){
 	MINIMAP.Draw();
 });
-

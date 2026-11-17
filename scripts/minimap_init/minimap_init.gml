@@ -14,7 +14,7 @@ function minimap_init(){
 	var stt = MINIMAP.settings;
 
 	MINIMAP.Draw = function() {
-		if (!instance_exists(Player)) return;
+		if (instance_exists(Menu)) return;
 		
 		var Track 	= MINIMAP.Track;
 		var stt 	= MINIMAP.settings;
@@ -43,6 +43,10 @@ function minimap_init(){
 
 		Track(Sun, , function(){
 			draw_sprite_ext(sIcon_Minimap_Sun, 0, x, y, scale, scale, 0, c_white, 1);
+		});
+
+		Track(Enemy, , function(){
+			draw_sprite_ext(sIcon_Minimap_Enemy, 0, x, y, scale, scale, 0, c_white, 1);
 		});
 
 		surface_set_target(stt.surface);

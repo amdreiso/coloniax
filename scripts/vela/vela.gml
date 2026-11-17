@@ -492,8 +492,8 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 	self.initPos = new Vec2(x, y);
 	self.navigation = new Vec2(); // gamepad/keyboard navigation
 	
-	// width/height = final panel size (never smaller than style.width/height)
-	// contentWidth/contentHeight = size of the block the children take up
+	// width / height = final panel size (never smaller than style.width/height)
+	// contentWidth / contentHeight = size of the block the children take up
 	self.width	= 0;
 	self.height = 0;
 	self.contentWidth  = 0;
@@ -540,8 +540,8 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 		
 		self.maximum.width  = 0;
 		self.maximum.height = 0;
-		self.maximum.marginWidth	= 0;
-		self.maximum.marginHeight	= 0;
+		self.maximum.marginWidth  = 0;
+		self.maximum.marginHeight = 0;
 		self.length = array_length(self.children);
 		
 		var isRow = (self.style.direction == eNodeDirection.ROW);

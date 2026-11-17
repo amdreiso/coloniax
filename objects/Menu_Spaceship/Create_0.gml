@@ -2,6 +2,7 @@
 defaultStyle = {
 	draggable: false,
 	border: false,
+	backgroundColor: TRANSPARENT,
 }
 
 root = new v_Panel(WIDTH/2, HEIGHT/2, {
@@ -10,13 +11,16 @@ root = new v_Panel(WIDTH/2, HEIGHT/2, {
 	draggable: false,
 	width: WIDTH / 1.2,
 	height: HEIGHT / 1.2,
+	
+	opacity: 0.9,
+	backgroundColor: #181818,
 });
 root.isRoot = true;
 root.SetDefaultChildrenStyle(defaultStyle);
 
 var sep = string_repeat("=", 50);
 
-// NAVBAR<
+// NAVBAR
 navbar = new v_Panel(0, 0, {
 	direction: eNodeDirection.COLUMN,
 	anchor: eNodeAnchor.MIDDLECENTER,
