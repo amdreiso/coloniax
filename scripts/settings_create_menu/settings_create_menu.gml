@@ -1,35 +1,32 @@
-function settings_create_menu(obj, x, y, style={}){
-	
+function settings_create_menu(obj, x, y, separator=new v_Text(), style={}){
 	_obj = obj;
 	defaultStyle = {
+		draggable: false,
+		border: false,
+		backgroundColor: TRANSPARENT,
 	};
 	
 	struct_merge(defaultStyle, style);
 	
 	var page = function(x, y) {
-		var panel = new v_Panel(x, y, {
+		var panel = new v_Panel(x, y, struct_merge({}, defaultStyle, {
 			direction: eNodeDirection.COLUMN,
-			draggable: false,
-			backgroundColor: TRANSPARENT,
-			border: false,
-		});
+		}));
 
 		panel.PushDefaultChildrenStyle(defaultStyle);
 		return panel;
 	}
 	
 	createMeter = function(name, maxvalue=100, get=function(){return 100;}, left=function(node, held){}, right=function(node, held){}) {
-		var panel = new v_Panel(0, 0, {
+		var panel = new v_Panel(0, 0, struct_merge({}, defaultStyle, {
 			direction: eNodeDirection.ROW,
-			draggable: false,
-			border: false,
-		});
+		}));
 		panel.PushDefaultChildrenStyle(defaultStyle);
-	
+		
 		var len = 20 - string_length(name);
 		var str = name + ":" + string_repeat(" ", len);
-		var btncomp = {padding: new Dim(5, 0), margin: new Dim(5, 0)}
-	
+		var btncomp = {padding: new Dim(5, 0), margin: new Dim(5, 0)};
+		
 		panel.Push(new v_Text(str));
 		panel.Push(new v_Button("<", left, btncomp));
 		panel.Push(new v_Meter(80, 8, maxvalue, get, {margin: new Dim(5, 0)}));
@@ -63,6 +60,10 @@ function settings_create_menu(obj, x, y, style={}){
 	#region Settings
 	
 	settings = page(x, y);
+
+	settings.Push(separator);
+	settings.Push(new v_Text(T.Getc("settings")));
+	settings.Push(separator);
 	
 	settings.Push(new v_Button(T.Getc("go_back"), function(node){
 		_obj.index = _obj.root;
@@ -91,12 +92,18 @@ function settings_create_menu(obj, x, y, style={}){
 	settings.Push(new v_Button(T.Getc("controls"), function(node){
 		_obj.index = _obj.audioSettings;
 	}));
+
+	settings.Push(separator);
 	
 	#endregion
 	
 	#region Audio settings
 
 	audioSettings = page(x, y);
+
+	audioSettings.Push(separator);
+	audioSettings.Push(new v_Text(T.Getc("audio_settings")));
+	audioSettings.Push(separator);
 
 	audioSettings.Push(new v_Button(T.Getc("go_back"), function(node){
 		_obj.index = _obj.settings;
@@ -110,11 +117,17 @@ function settings_create_menu(obj, x, y, style={}){
 	audioSettings.Push(createSettingMeter(Settings.audio, "ui", 			T.Getc("ui"), 			0.05, 0, 1));
 	audioSettings.Push(createSettingMeter(Settings.audio, "zoomFalloff", 	T.Getc("zoom_falloff"), 0.02, 0, 2));
 
+	audioSettings.Push(separator);
+
 	#endregion
 	
 	#region Graphics settings
 
 	graphicSettings = page(x, y);
+
+	graphicSettings.Push(separator);
+	graphicSettings.Push(new v_Text(T.Getc("graphics_settings")));
+	graphicSettings.Push(separator);
 
 	graphicSettings.Push(new v_Button(T.Getc("go_back"), function(node){
 		_obj.index = _obj.settings;
@@ -140,19 +153,17 @@ function settings_create_menu(obj, x, y, style={}){
 	}), "lighting_button");
 
 	graphicSettings.Push(new v_Button(T.Getc("ui_scale")+": "+string(Settings.graphics.uiScale), function(node){
-
 		graphicSettings.Edit("gui_scale_button", function(e){
-			Settings.graphics.uiScale += (Settings.graphics.uiScale == 0.5) ? 0.5 : 1;
+			Settings.graphics.uiScale += 1;
 
-			if (Settings.graphics.uiScale >= 4) {
-				Settings.graphics.uiScale = 0.5;
-			}
+			if (Settings.graphics.uiScale > 3) Settings.graphics.uiScale = 1;
 
 			e.text = T.Getc("ui_scale")+": "+string(Settings.graphics.uiScale);
 			e.UpdateLayout();
 		});
-
 	}), "gui_scale_button");
+
+	graphicSettings.Push(separator);
 
 	#endregion
 	

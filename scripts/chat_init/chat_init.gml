@@ -1,27 +1,5 @@
 function chat_init(){
-	
 	#macro CHAT_FALLOFF 5 * 60
-	
-	/*
-	
-	String(
-		Char(
-			value: "this text is white and this is gonna be red: "
-			color: #FFFFFF
-		),
-		
-		Char(
-			value: "I AM RED"
-			color: #FF0000
-		),
-		
-		Char(
-			value: sEmoji_Alien
-			color: #FFFFFF
-		)
-	)
-	
-	*/
 	
 	G CHAT;
 	CHAT = {
@@ -31,14 +9,14 @@ function chat_init(){
 		width: 1000,
 		height: 600,
 		textScale: 1,
-		backgroundAlpha: 0.67,
+		backgroundAlpha: 0.33,
 	};
 	
 	enum eChatCharType {
 		TEXT,
 		SPRITE,
 	}
-	
+
 	CHAT.Char = function(value, color=c_white, font=fnt_console) constructor {
 		self.type = eChatCharType.TEXT;
 		if (is_string(value)) {
@@ -65,6 +43,7 @@ function chat_init(){
 			var c = string_char_at(str, i);
 			var delim = "~";
 		
+			// emojis
 			if (c == delim) {
 				if (text != "") {
 					var char = new CHAT.Char(text, color, font);
@@ -88,6 +67,7 @@ function chat_init(){
 				continue;
 			}
 		
+			// hex color
 			if (c == "$") {
 				if (text != "") {
 					var char = new CHAT.Char(text, color, font);
@@ -110,6 +90,7 @@ function chat_init(){
 				continue;
 			}
 			
+			// formatting
 			if (c == "%") {
 				if (text != "") {
 					var char = new CHAT.Char(text, color, font);
@@ -210,21 +191,21 @@ function chat_init(){
 
 	CHAT.SendTime = function(text) {
 		if (text == "") return;
-		var time = $"$999999[{current_time/1000}]$ffffff ";
+		var time = $"$999999[{current_time/1000}]$ffffff%n ";
 		
 		CHAT.Send(time+text, true);
 	}
 
 	CHAT.Debug = function(text) {
 		if (text == "" || !Debug.showMessages) return;
-		var prefix = $"$42ee80[DEBUG]$ffffff ";
+		var prefix = $"$ffd700%b[DEBUG]$ffffff%n ";
 		
 		CHAT.Send(prefix+text, true);
 	}
 
 	CHAT.DebugNetwork = function(text) {
 		if (text == "" || !Debug.showMessages) return;
-		var prefix = $"$42ee80[DEBUG]$ffffff %b$ff2222[NETWORK]%n$ffffff: ";
+		var prefix = $"$ffd700%b[DEBUG]$ffffff $ff2222[NETWORK]%n$ffffff: ";
 		
 		CHAT.Send(prefix+text, true);
 	}

@@ -30,6 +30,7 @@ function translation_init(){
 
 	#region PORTUGUESE
 	
+	var buffer;
 	var portuguese = translation_get_portuguese();
 	buffer = buffer_create(string_byte_length(portuguese) + 1, buffer_fixed, 1);
 	buffer_write(buffer, buffer_text, portuguese);

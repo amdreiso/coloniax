@@ -30,5 +30,17 @@ join = join
 name = name
 planet_menu = planet info
 type = type
+singleplayer = singleplayer
+multiplayer = multiplayer
+item_wood = wood
+item_steel = steel
+item_uranium = uranium
+item_pistol = pistol
+item_lmg = lmg
+item_pickaxe = pickaxe
+item_basicsolarpanel = basic solar panel
+item_basicminingdrill = basic mining drill
+item_basicturret = basic turret
+item_doubleturret = double barrel turret
 ";
 }

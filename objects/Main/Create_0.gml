@@ -7,6 +7,7 @@ fovy();
 console_init();
 input_mapping();
 vela();
+rich_text_init();
 
 translation_init();
 settings_init();

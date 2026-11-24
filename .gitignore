@@ -59,6 +59,7 @@ Temporary Items
 *.old
 
 .gm
+.glim
 
 # GMRT build directory
 Build

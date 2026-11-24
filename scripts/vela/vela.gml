@@ -8,6 +8,7 @@ function vela(){
 		INPUT_TEXT,
 		INPUT_BOX,
 		SLIDER,
+		INVENTORY,
 	}
 	
 	enum eNodeAnchor {
@@ -57,9 +58,11 @@ function vela(){
 		
 		fclose(f);
 	} else {
-		var f = fopen(themefile);
-		fwrite(f, "{}", buffer_string);
-		fclose(f);
+		var content = "{}";
+		var buffer = buffer_create(string_byte_length(content), buffer_fixed, 1);
+		buffer_write(buffer, buffer_text, content);
+		buffer_save(buffer, themefile);
+		buffer_delete(buffer);
 	}
 	
 	#macro TRANSPARENT -1
@@ -67,6 +70,7 @@ function vela(){
 
 	G Vela;
 	Vela = {};
+	Vela.selectedItem = 0;
 
 	Vela.navigationMode = "gamepad";
 	Vela.navigation = {x:0,y:0};
@@ -84,6 +88,7 @@ function v_GetDefaultStyle() {
 		padding: 0,
 		margin: new Dim(),
 		direction: eNodeDirection.ROW,
+		spacing: 0,
 		
 		opacity: 1,
 		backgroundColor: #181818,
@@ -109,12 +114,6 @@ function v_GetDefaultStyle() {
 	return defaults;
 }
 
-// ---------------------------------------------------------------------------
-// Anchoring
-// ---------------------------------------------------------------------------
-
-/// Offset (from the box's top-left) of an item of size itemW x itemH
-/// placed inside a box of size boxW x boxH according to `anchor`.
 function v_AnchorOffset(anchor, boxW, boxH, itemW, itemH) {
 	var col = anchor mod 3;	// 0 left, 1 center, 2 right
 	var row = anchor div 3;	// 0 top,  1 middle, 2 bottom
@@ -124,16 +123,12 @@ function v_AnchorOffset(anchor, boxW, boxH, itemW, itemH) {
 	);
 }
 
-/// Padding of a node as a Vec2 (total horizontal, total vertical).
 function v_GetNodePadding(node) {
 	var p = node.style.padding;
 	if (is_struct(p)) return new Vec2(p.width, p.height);
 	return new Vec2(p, p);
 }
 
-/// Top-left corner of the node's content (text/sprite/etc) block, placed by
-/// node.style.anchor inside the node's padded box.
-/// itemW/itemH default to node.textWidth/textHeight.
 function v_GetNodeAnchorTopLeft(node, xx, yy, itemW=undefined, itemH=undefined) {
 	itemW ??= node.textWidth;
 	itemH ??= node.textHeight;
@@ -150,7 +145,6 @@ function v_GetNodeAnchorTopLeft(node, xx, yy, itemW=undefined, itemH=undefined) 
 	return new Vec2(xx + pad.x / 2 + off.x, yy + pad.y / 2 + off.y);
 }
 
-/// CENTER of the node's content block (use with ALIGN_MIDDLE_CENTER).
 function v_GetNodeAnchorPosition(node, xx, yy, itemW=undefined, itemH=undefined) {
 	itemW ??= node.textWidth;
 	itemH ??= node.textHeight;
@@ -158,10 +152,6 @@ function v_GetNodeAnchorPosition(node, xx, yy, itemW=undefined, itemH=undefined)
 	var tl = v_GetNodeAnchorTopLeft(node, xx, yy, itemW, itemH);
 	return new Vec2(tl.x + itemW / 2, tl.y + itemH / 2);
 }
-
-// ---------------------------------------------------------------------------
-// Debug helpers
-// ---------------------------------------------------------------------------
 
 function v_DebugRect(x1, y1, x2, y2, col) {
 	draw_set_alpha(1);
@@ -523,7 +513,6 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 	
 	static Destroy = function() {
 		self.children = [];
-		self.length = 0;
 	}
 	
 	static ApplyStyle = function(style={}) {
@@ -700,6 +689,7 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 		
 		var xoff = 0;
 		var yoff = 0;
+		var hoveredItem = 0; // shows which item the mouse is on (inventory only)
 		
 		for (var i = 0; i < self.length; i++) {
 			var node = self.children[i];
@@ -849,9 +839,7 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 					break;
 				}
 				case eNodeType.INPUT_TEXT: {
-					
 					var bc = node.style.borderColor;
-					
 					var str = node.text;
 					
 					var close = function(node) {
@@ -957,7 +945,104 @@ function v_Panel(x=0, y=0, styleComponents={}) constructor {
 					var pos = v_GetNodeAnchorPosition(node, xx, yy);
 					break;
 				}
+				case eNodeType.INVENTORY: {
+					var pos = v_GetNodeAnchorPosition(node, xx, yy);
+
+					var inv = node.inventory;
+					var slotSize = node.inventorySlotSize;
+					var rowCount = node.inventoryRowCount;
+
+					var spacing = node.style.spacing;
+					var bc = node.style.borderColor;
+					var bhc = node.style.buttonHoverColor;
+
+					rect(pos.x, pos.y, node.width, node.height, node.style.borderColor, true);
+
+					var left = pos.x - node.width / 2;
+					var top = pos.y - node.height / 2;
+
+					var s = slotSize - spacing;
+
+					for (var j = 0; j < inv.length; j++) {
+						var sx = left + (j % rowCount) * slotSize + slotSize / 2;
+						var sy = top + floor(j / rowCount) * slotSize + slotSize / 2;
+
+						var slot = inventory_get(inv, j);
+						if (slot && slot.itemID != -1) {
+							var item = ITEM.Get(slot.itemID);
+							var icon = item.components.icon;
+							var amount = slot.amount;
+
+							if (icon != -1) {
+								var scale = slotSize / sprite_get_width(icon);
+								draw_sprite_ext(
+									icon, 0,
+									sx, sy,
+									scale, scale, 0, c_white, 1
+								);
+							}
+
+							ALIGN_BOTTOM_RIGHT;
+							if (amount > 1) draw_text(sx + s/2 - 5, sy + s/2, amount);
+						}
+
+						var box = rect(sx, sy, s, s, bc, true);
+						if (box.onCursor) {
+							rect(sx, sy, s, s, bhc, false, 0.25);
+
+							if (!Vela.selectedItem && slot) {
+								var key = ITEM.Get(slot.itemID).components.translationKey ?? "DIDNT FIND ANY TRANSLATION DUMBASS";
+								var name = T.Getc(key);
+								hoveredItem = {
+									name: name,
+								};
+							}
+
+							if (mouse_check_button_pressed(mb_left)) {
+								// selected item
+								if (!Vela.selectedItem && slot) {
+									Vela.selectedItem = slot;
+									Vela.selectedItem.index = j;
+									inventory_clear_slot(inv, j);
+
+								} else if (Vela.selectedItem) {
+									// put selected item in empty slot
+									if (!slot) {
+										inventory_set(inv, j, Vela.selectedItem);
+										Vela.selectedItem = 0;
+
+									// swap if slot is not empty
+									} else {
+										var oldslot = slot;
+										inventory_set(inv, j, Vela.selectedItem);
+										Vela.selectedItem = slot;
+										Vela.selectedItem.index = j;
+									}
+								}
+							}
+						}
+					} 
+
+					break;
+				}
 			}
+
+			if (Vela.selectedItem) {
+				var itemID = Vela.selectedItem.itemID;
+				var item = ITEM.Get(itemID);
+				var icon = item.components.icon;
+				var scale = 2;
+				draw_sprite_ext(icon, 0, mx, my, scale, scale, 0, c_white, 1);
+			} else {
+
+				if (hoveredItem) {
+					ALIGN_MIDDLE_LEFT;
+					var off = 25;
+					draw_text(mx + off, my + off, hoveredItem.name);
+					ALIGN_MIDDLE_CENTER;
+				}
+			}
+
 			
 			if (keyboard_check_pressed(vk_escape)) {
 				node.editing = false;
@@ -1268,3 +1353,25 @@ function v_Slider(width, minvalue, maxvalue, get, styleComponents={}) : v_Node()
 	self.ApplyStyle(styleComponents);
 	self.UpdateLayout();
 }
+
+function v_Inventory(inventory, slotSize, rowCount, styleComponents={}) : v_Node() constructor {
+	self.type = eNodeType.INVENTORY;
+	self.inventory = inventory;
+	self.inventorySlotSize = slotSize;
+	self.inventoryRowCount = rowCount;
+
+	self.width = slotSize * rowCount;
+	self.height = slotSize * floor(self.inventory.length / rowCount);
+
+	self.ApplyStyle({
+		background: #181818,
+	});
+
+	self.ApplyStyle(styleComponents);
+	self.UpdateLayout();
+}
+
+
+
+
+

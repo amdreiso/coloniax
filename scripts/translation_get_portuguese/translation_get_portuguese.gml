@@ -31,5 +31,17 @@ join = entrar
 name = nome
 planet_menu = informação do planeta
 type = tipo
+singleplayer = solo
+multiplayer = multijogador
+item_wood = madeira
+item_steel = aço
+item_uranium = urânio
+item_pistol = pistola
+item_lmg = lmg
+item_pickaxe = picareta
+item_basicsolarpanel = painel solar básico
+item_basicminingdrill = perfuradora básica
+item_basicturret = torreta básica
+item_doubleturret = torreta dupla
 ";
 }

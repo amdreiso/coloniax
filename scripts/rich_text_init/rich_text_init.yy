@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"rich_text_init",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"rich_text_init",
+  "parent":{
+    "name":"libs",
+    "path":"folders/scr/libs.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

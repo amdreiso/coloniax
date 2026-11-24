@@ -1,4 +1,9 @@
 
+event_inherited();
+
+blurBackground = true;
+backgroundOpacity = 0.4;
+
 settings_save();
 
 close = function() {
@@ -12,15 +17,7 @@ separatorStyle = {
 }
 
 defaultStyle = {
-	direction: eNodeDirection.COLUMN,
-	draggable: false,
 	backgroundColor: #181818,
-}
-
-page = function() {
-	var panel = new v_Panel(WIDTH / 2, HEIGHT / 2, defaultStyle);
-	panel.PushDefaultChildrenStyle(defaultStyle);
-	return panel;
 }
 
 title = function(panel, name) {
@@ -33,12 +30,16 @@ sep = function(panel) {
 	panel.Push(new v_Text(separator, separatorStyle));
 }
 
-#region root
-
-root = page();
+root = new v_Panel(WIDTH/2, HEIGHT/2, struct_merge({}, defaultStyle, {
+	direction: eNodeDirection.COLUMN,
+}));
+root.SetDefaultChildrenStyle(defaultStyle);
 root.isRoot = true;
 
-main = page();
+main = new v_Panel(,,{
+	direction: eNodeDirection.COLUMN,
+});
+
 title(main, T.Getc("game_paused"));
 
 main.Push(new v_Button(T.Getc("resume"), function(node){
@@ -57,7 +58,7 @@ main.Push(new v_Button(T.Getc("quit_desktop"), function(node){
 
 sep(main);
 
-var stt = settings_create_menu(self, WIDTH / 2, HEIGHT / 2, defaultStyle);
+var stt = settings_create_menu(self, WIDTH / 2, HEIGHT / 2, new v_Text(separator, separatorStyle), defaultStyle);
 
 settings = stt.settings;
 audioSettings = stt.audioSettings;
@@ -75,3 +76,4 @@ Process.Push(function(){
 	show = true;
 	return true;
 });
+

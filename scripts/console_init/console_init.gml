@@ -6,7 +6,7 @@ function console_init()
 	enum eLogType {
 		ERROR,
 		LOG,
-		LINK
+		LINK,
 	}
 	
 	globalvar CONSOLE;
@@ -68,11 +68,10 @@ function console_init()
 				var arglen = array_length(arguments);
 				if (arglen < 2) {
 					var asset = asset_get_index(slices[0]);
-			
 					var sliceofslice = string_split(slices[1], "=");
 					var name = sliceofslice[0];
 				
-					if (object_exists(asset)) CONSOLE.Log( struct_get(asset, name) );
+					if (object_exists(asset)) then CONSOLE.Log( struct_get(asset, name) );
 				
 					found = true;
 					break;
@@ -131,7 +130,7 @@ function console_init()
 		CONSOLE.logs = [];
 	}
 	
-	CONSOLE.Log = function(str, color = c_ltgray, font = fnt_console) {
+	CONSOLE.Log = function(str, color = c_ltgray, font = fnt_terminal) {
 		var slices = string_split(str, "\n");
 	
 		for (var i = 0; i < array_length(slices); i++) {
@@ -148,7 +147,7 @@ function console_init()
 		array_insert(CONSOLE.logs, 0, {
 			str: "Err: "+str,
 			color: c_red,
-			font: fnt_console_bold,
+			font: fnt_terminal,
 			type: eLogType.ERROR,
 		});
 	}
@@ -157,7 +156,7 @@ function console_init()
 		array_insert(CONSOLE.logs, 0, {
 			str: str,
 			color: #4444ff,
-			font: fnt_console_bold,
+			font: fnt_terminal,
 			type: eLogType.LINK,
 		});
 	}
@@ -167,6 +166,7 @@ function console_init()
 		static pastCommand = 0;
 	
 		if (keyboard_check_pressed(vk_enter)) {
+			input = string_replace_all(input, "\n", "");
 			CONSOLE.Run(input, true);
 			array_push(CONSOLE.commands, input);
 			keyboard_string = "";
@@ -253,21 +253,11 @@ function console_init()
 		var height = 500;
 		var xx = CONSOLE.pos.x;
 		var yy = CONSOLE.pos.y;
-		var c0 = #141414;
-		var c1 = c_white;
-		
-		draw_set_alpha(0.95);
+		var c0 = #101010;
 		
 		draw_rectangle_color(
 			xx, yy, xx + width, yy + height, 
 			c0, c0, c0, c0, false
-		);
-		
-		draw_set_alpha(1);
-		
-		draw_rectangle_color(
-			xx, yy, xx + width, yy + height, 
-			c1, c1, c1, c1, true
 		);
 		
 		// Draw logs
@@ -282,28 +272,24 @@ function console_init()
 	
 		for (var i = CONSOLE.scroll; i < count + CONSOLE.scroll; i++) {
 			var sep = 18;
+			var yo = 50;
+			var c = CONSOLE.logs[i].color;
 	
 			draw_set_font(CONSOLE.logs[i].font);
-		
-			var yo = 50;
 			
 			draw_text_color(
-				xx + 5, 
-				(yy - yo + height) - (i - CONSOLE.scroll) * sep, 
-			
-				CONSOLE.logs[i].str, 
-				CONSOLE.logs[i].color, CONSOLE.logs[i].color, CONSOLE.logs[i].color, CONSOLE.logs[i].color, 1
-			);
+				xx + 5, (yy - yo + height) - (i - CONSOLE.scroll) * sep, 
+				CONSOLE.logs[i].str, c, c, c, c, 1);
 		}
 	
-		draw_set_font(fnt_console);
+		draw_set_font(fnt_terminal);
 		
 		var bar = "|";
 		draw_text(xx + 5, yy - 20 + height, "> " + input + bar);
 	
 		draw_set_font(defaultFont);
 	
-		var scale = 0.5;
+		var scale = 1;
 		var yyy = yy + 5;
 		draw_sprite_ext(sCats, 0, xx + width - 10 * scale, yyy + height, scale, scale, 0, c_white, 1);
 		
@@ -312,7 +298,7 @@ function console_init()
 	}
 }
 
-function log(str, color = c_ltgray, font = fnt_console) {
+function log(str, color = c_ltgray, font = fnt_terminal) {
 	CONSOLE.Log(str,color,font);
 }
 
@@ -349,14 +335,14 @@ function command_data(){
 		_log("|  |.'.|  | |  .--'(|  '__ | ||  |OO ) \\|  |)|  ||  |   |  | |  .--'        |  |    \\|  |)|  |", make_color_hsv(80, 255, 255));
 		_log("|   ,'.   | |  `---.|     |'(_'  '--'\\  '  '-'  '|  |   |  | |  `---.       |  |     '  '-'  '", make_color_hsv(96, 255, 255));
 		_log("`--'   '--' `------'`-----'    `-----'   `-----' `--'   `--' `------'       `--'      `-----' ", make_color_hsv(112, 255, 255));
-		_log("                                 <-. (`-')_  (`-').->                    (`-')  _             ", make_color_hsv(128, 255, 255), fnt_console_bold);
-		_log("             _             .->      \\( OO) ) ( OO)_      .->      <-.    ( OO).-/             ", make_color_hsv(144, 255, 255), fnt_console_bold);
-		_log("             \\-,-----.(`-')----. ,--./ ,--/ (_)--\\_)(`-')----.  ,--. )  (,------.             ", make_color_hsv(160, 255, 255), fnt_console_bold);
-		_log("              |  .--./( OO).-.  '|   \\ |  | /    _ /( OO).-.  ' |  (`-') |  .---'             ", make_color_hsv(176, 255, 255), fnt_console_bold);
-		_log("             /_) (`-')( _) | |  ||  . '|  |)\\_..`--.( _) | |  | |  |OO )(|  '--.              ", make_color_hsv(192, 255, 255), fnt_console_bold);
-		_log("             ||  |OO ) \\|  |)|  ||  |\\    | .-._)   \\\\|  |)|  |(|  '__ | |  .--'              ", make_color_hsv(208, 255, 255), fnt_console_bold);
-		_log("            (_'  '--'\\  '  '-'  '|  | \\   | \\       / '  '-'  ' |     |' |  `---.             ", make_color_hsv(224, 255, 255), fnt_console_bold);
-		_log("               `-----'   `-----' `--'  `--'  `-----'   `-----'  `-----'  `------'             ", make_color_hsv(240, 255, 255), fnt_console_bold);
+		_log("                                 <-. (`-')_  (`-').->                    (`-')  _             ", make_color_hsv(128, 255, 255));
+		_log("             _             .->      \\( OO) ) ( OO)_      .->      <-.    ( OO).-/             ", make_color_hsv(144, 255, 255));
+		_log("             \\-,-----.(`-')----. ,--./ ,--/ (_)--\\_)(`-')----.  ,--. )  (,------.             ", make_color_hsv(160, 255, 255));
+		_log("              |  .--./( OO).-.  '|   \\ |  | /    _ /( OO).-.  ' |  (`-') |  .---'             ", make_color_hsv(176, 255, 255));
+		_log("             /_) (`-')( _) | |  ||  . '|  |)\\_..`--.( _) | |  | |  |OO )(|  '--.              ", make_color_hsv(192, 255, 255));
+		_log("             ||  |OO ) \\|  |)|  ||  |\\    | .-._)   \\\\|  |)|  |(|  '__ | |  .--'              ", make_color_hsv(208, 255, 255));
+		_log("            (_'  '--'\\  '  '-'  '|  | \\   | \\       / '  '-'  ' |     |' |  `---.             ", make_color_hsv(224, 255, 255));
+		_log("               `-----'   `-----' `--'  `--'  `-----'   `-----'  `-----'  `------'             ", make_color_hsv(240, 255, 255));
 		_log("ascii art from: https://patorjk.com/software/taag/", c_gray);
 		_log("");
 	});

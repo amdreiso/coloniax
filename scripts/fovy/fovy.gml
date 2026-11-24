@@ -44,7 +44,9 @@ function xml_parse(str) {
 		var current = stack[array_length(stack) - 1];
 		text = string_trim(text);
 		
-		if (text != "") current.text = text;
+		if (text != "") {
+			current.text = text;
+		}
 		text = "";
 		
 		var close = string_pos_ext(">", str, i);
@@ -74,7 +76,8 @@ function xml_parse(str) {
 				var values = string_split(p, "=");
 				
 				if (array_length(values) < 2) {
-					var boolean = (string_char_at(p, 0) == "!") ? false : true
+					var first = string_char_at(p, 1);
+					var boolean = (first == "!") ? false : true
 					if (!boolean) then p = string_delete(p, 1, 1);
 					properties[$ p] = boolean;
 					continue;
@@ -1534,6 +1537,9 @@ function color_lerp(col1, col2, t) {
 }
 
 function rect(x, y, width, height, color = c_white, outline = false, alpha = 1, size = 1) {
+	var mx = window_mouse_get_x();
+	var my = window_mouse_get_y();
+	
 	for (var i = 0; i < size; i++) {
 		var step = size * 2;
 		draw_set_alpha(alpha);
@@ -1545,6 +1551,10 @@ function rect(x, y, width, height, color = c_white, outline = false, alpha = 1, 
 			color, color, color, color, outline
 		);
 		draw_set_alpha(1);
+	}
+
+	return {
+		onCursor: (mx > x - width / 2 && mx < x + width / 2 && my > y - height / 2 && my < y + height / 2),
 	}
 }
 

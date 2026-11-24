@@ -49,10 +49,8 @@ focusCheck = function() {
 	if (mouse_check_button(mb_left) && focus != noone && !holdingGun) {
 		focus.hit();
 		swing = min(1, swing + 0.1);
-		
 	} else {
 		swing = max(0, swing - 0.1);
-		
 	}
 }
 
@@ -448,26 +446,37 @@ Input.Bind.Set(ord("8"), , , function(){slotSet(7)});
 Input.Bind.Set(ord("9"), , , function(){slotSet(8)});
 Input.Bind.Set(ord("0"), , , function(){slotSet(9)});
 
+// Health
+hp = new Stat(100);
+
+
+
+
 // Draw hotbar
 drawHotbar = function() {
 	if (!controlling || Paused) return;
 	
 	var scale = Settings.graphics.uiScale;
+	var rs = 32; // rect size
 	var spacing = 1.1;
-	var size = 32 * scale;
-	var size2 = (32 * spacing) * scale;
+	var size = rs * scale;
+	var size2 = (rs * spacing) * scale;
 	var yy = HEIGHT - size2 / 2;
+
+	var cx = (WIDTH/2);
 	
 	var num = 10;
 	var half = (num * size2) / 2;
+	var left = cx - half - (size2/2);
+	var top = yy - (size2/2);
 
 	for (var i = 0; i < num; i++) {
-		var xx = WIDTH / 2 + (i * size2) - half;
+		var xx = cx + (i * size2) - half;
 		rect(xx, yy, size, size, #202020, false);
 		
 		if (slotIndex == i) {
-			var o = 1.1;
-			rect(xx, yy, size/o, size/o, #aaaaaa, true, 1, 2);
+			var o = 1.05;
+			rect(xx, yy, size/o, size/o, #aaaaaa, true, 1, 4);
 		} else {
 			rect(xx, yy, size, size, #303030, true);
 		}
@@ -486,9 +495,18 @@ drawHotbar = function() {
 		ALIGN_BOTTOM_RIGHT;
 		if (amount > 1) draw_text(xx + size/2 - 5, yy + size/2, amount);
 	}
-}
 
-//characterCustomizationUI = ui_create_character_customization();
+	// Draw healthbar
+	var hbColorMin = #440000;
+	var hbColorMax = #ff3333;
+	var hbAmt = hp.GetPercentage() * 100;
+	var hbSpacing = 4;
+	draw_healthbar(
+		left + hbSpacing, top - hbSpacing, 
+		cx - (size/2) - hbSpacing, top - (size/2) + hbSpacing, 
+		hbAmt, c_black, hbColorMin, hbColorMax, 0, true, true
+	);
+}
 
 GUI.Register(drawHotbar);
 

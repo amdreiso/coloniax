@@ -11,8 +11,6 @@ function minimap_init(){
 		surface: undefined,
 	}
 
-	var stt = MINIMAP.settings;
-
 	MINIMAP.Draw = function() {
 		if (instance_exists(Menu)) return;
 		
@@ -77,16 +75,18 @@ function minimap_init(){
 
 	MINIMAP.Track = function(obj, fixed=false, fn=function(){}) {
 		var scale = Settings.graphics.uiScale;
+		var controller = MINIMAP.settings.controller;
+		var distance = MINIMAP.settings.distance / scale;
+		var s = MINIMAP.settings.size * scale;
 
 		for (var i = 0; i < instance_number(obj); i++) {
 			var inst = instance_find(obj, i);
-			var px = inst.x - MINIMAP.settings.controller.x;
-			var py = inst.y - MINIMAP.settings.controller.y;
-			px /= MINIMAP.settings.distance;
-			py /= MINIMAP.settings.distance;
 			var num = 1.75;
 
-			var s = MINIMAP.settings.size * scale;
+			var px = inst.x - controller.x;
+			var py = inst.y - controller.y;
+			px /= distance;
+			py /= distance;
 
 			if (fixed) {
 				var ss = s/2;

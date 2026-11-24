@@ -336,9 +336,12 @@ drawSpeedometer = function(x, y, height) {
 	draw_line_width_color(x, y, x + xx, y + yy, 2, c_red, c_red);
 }
 
-// Inventory
+// Inventories
 inventory = inventory_create(10);
-inventory_add(inventory, 0, 99*2);
+equipmentInventory = inventory_create(6);
+
+inventory_add(inventory, eItemID.WOOD, 10);
+inventory_add(inventory, eItemID.STEEL, 10);
 
 // Spaceship Menu
 menuOpen = false;
@@ -353,103 +356,7 @@ Input.Bind.Set(ord("E"), {}, , function(){
 	}
 });
 
-main = new v_Panel(200, 200, {
-	direction: eNodeDirection.COLUMN,
-	draggable: true,
-});
-main.isRoot = true;
-
-main.Push(new v_Text("==============", {color: c_gray}));
-main.Push(new v_InputText("Spaceship"));
-main.Push(new v_Text("==============", {color: c_gray}));
-
-// surface
-section0 = new v_Panel(0, 0, {
-	border: false, 
-	backgroundColor: #141414,
-	direction: eNodeDirection.COLUMN,
-});
-section0.Push(new v_Surface(100, 100, function(xx, yy, width, height){
-	var theta = -current_time / 30;
-	drawSpaceship(spaceship, xx, yy, 1.5, theta, color, alpha, 3);
-}));
-
-main.Push(section0);
-
-// buttons
-section1 = new v_Panel(0, 0, {
-	direction: eNodeDirection.ROW,
-	border: false,
-});
-section1.PushDefaultChildrenStyle({
-	padding: new Dim(10, 0),
-});
-
-section1.Push(new v_Button("button1", function(){
-	menuOpen = false;
-}));
-
-testButton = new v_Button("button3", function(){
-	window_set_fullscreen(!window_get_fullscreen());
-});
-
-section1.Push(new v_Button("button2", function(){
-	section1.Remove(testButton);
-}));
-
-section1.Push(testButton);
-section1.Push(new v_Button("false", function(){
-	section1.Edit("false_button", function(e){
-		var str = (e.text == "true") ? "false" : "true";
-		e.text = str;
-	});
-}), "false_button");
-main.Push(section1);
-main.Push(v_Separator());
-
-section3 = new v_Panel(0, 0, {
-	direction: eNodeDirection.ROW,
-	border: false,
-});
-section3.PushDefaultChildrenStyle({
-	padding: new Dim(0, 0),
-});
-
-section3.Push(new v_Button(sUI_Switch0, function(e){
-	e.spriteIndex = (e.spriteIndex == 0) ? 1 : 0;
-}));
-section3.Push(new v_Button(sUI_Switch0, function(e){
-	e.spriteIndex = (e.spriteIndex == 0) ? 1 : 0;
-}));
-section3.Push(new v_Button(sUI_Switch0_Green, function(e){
-	e.spriteIndex = (e.spriteIndex == 0) ? 1 : 0;
-}));
-section3.Push(new v_Button(sUI_Switch0_Green, function(e){
-	e.spriteIndex = (e.spriteIndex == 0) ? 1 : 0;
-}));
-main.Push(section3);
-main.Push(v_Separator());
-
-section2 = new v_Panel(0, 0, {
-	direction: eNodeDirection.ROW,
-	border: false,
-});
-section2.Push(new v_Text("hp:     "));
-section2.Push(new v_Meter(80, 8, 100, function(){return hp.value}));
-main.Push(section2);
-main.Push(v_Separator());
-
-section4 = new v_Panel(0, 0, {
-	direction: eNodeDirection.COLUMN,
-	border: false,
-});
-
-section4.Push(new v_Surface(160, 160, function(xx, yy, width, height){
-	drawSpeedometer(xx, yy, height);
-}));
-main.Push(section4);
-main.Push(v_Separator());
-
 GUI.Register(function(){
 	MINIMAP.Draw();
 });
+

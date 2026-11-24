@@ -52,6 +52,7 @@ function item_data(){
 		type: eItemType.BLANK,
 		icon: -1,
 		sprite: -1,
+		translationKey: "",
 	};
 	
 	ITEM.SetDefaultComponents(defaultComponents);
@@ -141,6 +142,7 @@ function item_data(){
 					type: eItemType.SPACESHIP_MODULE_GYRO,
 					turnForce: 0,
 					maxTurnSpeed: 0,
+					minSpeed: 1,
 
 					independent: false,
 				}
@@ -163,9 +165,10 @@ function item_data(){
 		}
 	}
 	
-	ITEM.Prototype = function(type, icon, components={}) {
+	ITEM.Prototype = function(type, icon, tkey, components={}) {
 		var c = {
 			icon: icon,
+			translationKey: tkey,
 		}
 		
 		var typeComponents = ITEM.GetTypeComponents(type, components);
@@ -177,15 +180,15 @@ function item_data(){
 	
 	#region Blanks
 	
-	ITEM.Register(eItemID.WOOD, ITEM.Prototype(eItemType.BLANK, sItem_Wood));
-	ITEM.Register(eItemID.STEEL, ITEM.Prototype(eItemType.BLANK, sItem_Steel));
-	ITEM.Register(eItemID.URANIUM, ITEM.Prototype(eItemType.BLANK, sItem_Uranium));
+	ITEM.Register(eItemID.WOOD, ITEM.Prototype(eItemType.BLANK, sItem_Wood, "item_wood"));
+	ITEM.Register(eItemID.STEEL, ITEM.Prototype(eItemType.BLANK, sItem_Steel, "item_steel"));
+	ITEM.Register(eItemID.URANIUM, ITEM.Prototype(eItemType.BLANK, sItem_Uranium, "item_uranium"));
 	
 	#endregion
 
 	#region Guns
 
-	ITEM.Register(eItemID.PISTOL, ITEM.Prototype(eItemType.GUN, sItem_Gun_Pistol, {
+	ITEM.Register(eItemID.PISTOL, ITEM.Prototype(eItemType.GUN, sItem_Gun_Pistol, "item_pistol", {
 		damage: 5,
 		recoil: 4,
 		firerate: 50,
@@ -197,7 +200,7 @@ function item_data(){
 		projectileOffset: 16,
 	}));
 	
-	ITEM.Register(eItemID.LMG, ITEM.Prototype(eItemType.GUN, sItem_Gun_LMG, {
+	ITEM.Register(eItemID.LMG, ITEM.Prototype(eItemType.GUN, sItem_Gun_LMG, "item_lmg", {
 		damage: 5,
 		recoil: 2,
 		firerate: 10,
@@ -212,7 +215,7 @@ function item_data(){
 	
 	#region Tools
 	
-	ITEM.Register(eItemID.BASIC_PICKAXE, ITEM.Prototype(eItemType.PICKAXE, sItem_Pickaxe, {
+	ITEM.Register(eItemID.BASIC_PICKAXE, ITEM.Prototype(eItemType.PICKAXE, sItem_Pickaxe, "item_pickaxe", {
 		miningSpeed : 10,
 	}));
 	
@@ -220,7 +223,7 @@ function item_data(){
 	
 	#region Props
 	
-	ITEM.Register(eItemID.BASIC_SOLAR_PANEL, ITEM.Prototype(eItemType.PROP, sItem_BasicSolarPanel, {
+	ITEM.Register(eItemID.BASIC_SOLAR_PANEL, ITEM.Prototype(eItemType.PROP, sItem_BasicSolarPanel, "item_basicsolarpanel", {
 		prop: Prop_BasicSolarPanel,
 		sprite: sProp_SolarPanel,
 		size: [
@@ -231,7 +234,7 @@ function item_data(){
 		],
 	}));
 	
-	ITEM.Register(eItemID.BASIC_MINING_DRILL, ITEM.Prototype(eItemType.PROP, sItem_BasicMiningDrill, {
+	ITEM.Register(eItemID.BASIC_MINING_DRILL, ITEM.Prototype(eItemType.PROP, sItem_BasicMiningDrill, "item_basicminingdrill", {
 		prop: Prop_BasicMiningDrill,
 		sprite: sProp_BasicMiningDrill,
 		size: [
@@ -247,12 +250,12 @@ function item_data(){
 	#region Spaceship Modules
 	
 	// Turrets
-	ITEM.Register(eItemID.BASIC_TURRET, ITEM.Prototype(eItemType.SPACESHIP_MODULE_TURRET, sItem_Steel, {
+	ITEM.Register(eItemID.BASIC_TURRET, ITEM.Prototype(eItemType.SPACESHIP_MODULE_TURRET, sItem_Steel, "item_basicturret", {
 		sprite: sTurret_Canon,
 		firerate: 24,
 	}));
 	
-	ITEM.Register(eItemID.DOUBLE_BARREL_TURRET, ITEM.Prototype(eItemType.SPACESHIP_MODULE_TURRET, sItem_Steel, {
+	ITEM.Register(eItemID.DOUBLE_BARREL_TURRET, ITEM.Prototype(eItemType.SPACESHIP_MODULE_TURRET, sItem_Steel, "item_doubleturret", {
 		sprite: sTurret_DoubleCanon,
 		firerate: 20,
 	}));
@@ -264,10 +267,10 @@ function item_data(){
 	}));
 	
 	ITEM.Register(eItemID.IMPROVED_GYRO, ITEM.Prototype(eItemType.SPACESHIP_MODULE_GYRO, -1, {
-		turnForce: 0.1,
+		turnForce: 0.2,
 		maxTurnSpeed: 2.0,
 		independent: true,
-		minSpeed: 0.25,
+		minSpeed: 0.45,
 	}));
 	
 	// Propellers

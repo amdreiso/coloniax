@@ -40,3 +40,4 @@ if (moving) {
 	part_emitter_burst(World.ps, emitter, World.particleFire, n);
 	part_emitter_destroy(World.ps, emitter);
 }
+

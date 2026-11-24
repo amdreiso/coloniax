@@ -19,11 +19,7 @@ var px = -8000;
 var py = 0;
 
 network_create_controllable_player(px, py, 0);
-spawn(px, py - 300, "Spaceship", Enemy_Mercenary);
-spawn(px, py - 400, "Spaceship", Enemy_Mercenary);
-spawn(px, py - 320, "Spaceship", Enemy_Mercenary);
-spawn(px, py - 330, "Spaceship", Enemy_Mercenary);
-spawn(px, py - 350, "Spaceship", Enemy_Mercenary);
+spawn(px, py-600, "Spaceship", Formation);
 
 alarm[0] = 1;
 

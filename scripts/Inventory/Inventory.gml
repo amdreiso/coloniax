@@ -27,6 +27,10 @@ RECIPE.Register(
 
 #macro INVENTORY_MAX_AMOUNT 100
 
+function inventory_exists(inv) {
+	return (is_struct(inv) && inv.length > 0);
+}
+
 function inventory_create(slots) {
 	var inv = {};
 	inv.slots = array_create(slots);
@@ -149,8 +153,19 @@ function inventory_remove(inv, itemID, amount) {
 	return true;
 }
 
+function inventory_clear_slot(inv, index) {
+	if (!is_struct(inv)) return;
+	if (inv.length <= 0) return;
+
+	inv.slots[index] = 0;
+}
+
 function inventory_get(inv, index) {
-	return inv.slots[index];
+	return inv.slots[index] ?? 0;
+}
+
+function inventory_set(inv, index, slot) {
+	inv.slots[index] = inventory_slot(slot.itemID, slot.amount);
 }
 
 function inventory_craft(inv, itemID) {

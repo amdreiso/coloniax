@@ -7,3 +7,4 @@ p.setParticle(World.particleExplosion)
 p.setRange(sprite_width*2, sprite_height*2);
 
 SOUND.PlayAt(eSoundType.SFX, snd_explosion, x, y, false, 1, [0.95, 1.05]);
+
