@@ -42,5 +42,10 @@ item_basicsolarpanel = basic solar panel
 item_basicminingdrill = basic mining drill
 item_basicturret = basic turret
 item_doubleturret = double barrel turret
+item_basic_gyro = basic gyro
+item_improved_gyro = improved gyro
+item_basic_propeller = basic propeller
+item_improved_propeller = improved propeller
+item_basic_projectile = basic projectile
 ";
 }

@@ -1,6 +1,4 @@
 function chat_init(){
-	#macro CHAT_FALLOFF 5 * 60
-	
 	G CHAT;
 	CHAT = {
 		open : false,
@@ -10,162 +8,17 @@ function chat_init(){
 		height: 600,
 		textScale: 1,
 		backgroundAlpha: 0.33,
+		falloff: 5 * 60,
 	};
-	
-	enum eChatCharType {
-		TEXT,
-		SPRITE,
-	}
-
-	CHAT.Char = function(value, color=c_white, font=fnt_console) constructor {
-		self.type = eChatCharType.TEXT;
-		if (is_string(value)) {
-			self.type = eChatCharType.TEXT;
-		} else if (sprite_exists(value)) {
-			self.type = eChatCharType.SPRITE;
-		}
-		
-		self.value = value;
-		self.font = font;
-		self.color = color;
-		self.rainbow = false;
-	}
-	
-	CHAT.Parse = function(str) {
-		var content = [];
-		var i = 1;
-		var text = "";
-		var color = c_white;
-		var rainbow = false;
-		var font = fnt_console;
-		
-		while (i <= string_length(str)) {
-			var c = string_char_at(str, i);
-			var delim = "~";
-		
-			// emojis
-			if (c == delim) {
-				if (text != "") {
-					var char = new CHAT.Char(text, color, font);
-					char.rainbow = rainbow;
-					array_push(content, char);
-					text = "";
-				}
-			
-				var asset = "";
-				i++;
-			
-				while (string_char_at(str, i) != delim && i <= string_length(str)) {
-					asset += string_char_at(str, i);
-					i++;
-				}
-			
-				i++;
-			
-				var spr = "sEmoji_" + asset;
-				array_push(content, new CHAT.Char(asset_get_index(spr), color));
-				continue;
-			}
-		
-			// hex color
-			if (c == "$") {
-				if (text != "") {
-					var char = new CHAT.Char(text, color, font);
-					char.rainbow = rainbow;
-					array_push(content, char);
-					text = "";
-				}
-				
-				str = string_delete(str, i, 1);
-			
-				var hex = string_copy(str, i, 6);
-			
-				var r = real("0x" + string_copy(hex, 1, 2)); 
-				var g = real("0x" + string_copy(hex, 3, 2)); 
-				var b = real("0x" + string_copy(hex, 5, 2));
-			
-				color = make_color_rgb(r, g, b);
-			
-				i += 6;
-				continue;
-			}
-			
-			// formatting
-			if (c == "%") {
-				if (text != "") {
-					var char = new CHAT.Char(text, color, font);
-					char.rainbow = rainbow;
-					array_push(content, char);
-					text = "";
-				}
-				
-				i++;
-				var cmd = string_char_at(str, i);
-				
-				if (cmd == "r") {
-					rainbow = true;
-					i++;
-				}
-				
-				if (cmd == "b") {
-					font = fnt_console_bold;
-					i++;
-				}
-				
-				if (cmd == "i") {
-					font = fnt_console_italic;
-					i++;
-				}
-				
-				if (cmd == "d") {
-					font = fnt_console_bold_italic;
-					i++;
-				}
-				
-				if (cmd == "n") {
-					font = fnt_console;
-					i++;
-				}
-				
-				continue;
-			}
-		
-			text += c;
-			i++;
-		}
-	
-		if (text != "") {
-			var char = new CHAT.Char(text, color, font);
-			char.rainbow = rainbow;
-			array_push(content, char);
-		}
-		
-		return content;
-	}
-	
-	CHAT.Token = function(content) constructor {
-		self.content = content;
-		self.width = 0;
-		
-		for (var i = 0; i < array_length(self.content); i++) {
-			var str = self.content[i];
-			
-			if (str.type == eChatCharType.TEXT) {
-				self.width += string_width(str.value);
-			} else if (str.type == eChatCharType.SPRITE) {
-				self.width += sprite_get_width(str.value) / 2;
-			}
-		}
-		
-		self.time = CHAT_FALLOFF;
-	}
 	
 	CHAT.Send = function(text, local=false) {
 		text = string_trim(text);
 		if (text == "") return;
 		
 		if (local) {
-			array_insert(CHAT.messages, 0, new CHAT.Token(CHAT.Parse(text)));
+			var str = RichText.Create(text);
+			str.time = CHAT.falloff;
+			array_insert(CHAT.messages, 0, str);
 			return;
 		}
 		
@@ -178,7 +31,9 @@ function chat_init(){
 			buffer_delete(buffer);
 			
 		} else {
-		    array_insert(CHAT.messages, 0, new CHAT.Token(CHAT.Parse(text)));
+			var str = RichText.Create(text);
+			str.time = CHAT.falloff;
+			array_insert(CHAT.messages, 0, str);
 
 		    var b = buffer_create(256, buffer_grow, 1);
 		    buffer_write(b, buffer_u8, NET.CHAT_MESSAGE);
@@ -214,30 +69,13 @@ function chat_init(){
 		var pos = 20;
 		ALIGN_BOTTOM_LEFT;
 		
-		alpha = clamp(alpha, 0, 1);
-		
 		draw_set_alpha(CHAT.backgroundAlpha * alpha);
 		draw_rectangle_color(0, yy, CHAT.width, yy - 21, c_black, c_black, c_black, c_black, false);
 		draw_set_alpha(1);
 		
 		for (var i = 0; i < array_length(token.content); i++) {
 			var char = token.content[i];
-			
-			if (char.type == eChatCharType.TEXT) {
-				draw_set_font(char.font);
-				var c = char.color;
-				if (char.rainbow) {
-					c = make_color_hsv((current_time / 25) % 255, 255, 255);
-				}
-				draw_text_color(pos, yy, char.value, c, c, c, c, alpha);
-				pos += string_width(char.value);
-				draw_set_font(fnt_main);
-			}
-			
-			if (char.type == eChatCharType.SPRITE) {
-				draw_sprite_ext(char.value, 0, pos, yy, 1, 1, 0, char.color, alpha);
-				pos += sprite_get_width(char.value) / 2;
-			}
+			RichText.Draw(5, yy, token, alpha);
 		}
 	}
 	
@@ -271,8 +109,8 @@ function chat_init(){
 			
 			if (keyboard_check_pressed(vk_enter)) {
 				CHAT.Send("$aaaaaa%b<player>$ffffff%n "+keyboard_string);
-				keyboard_string = "";
 				CHAT.Close();
+				keyboard_string = "";
 			}
 			
 		} else {

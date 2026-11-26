@@ -103,7 +103,7 @@
   "isEcma":false,
   "LibraryEmitters":[],
   "MetaData":{
-    "IDEVersion":"2026.1.0.27",
+    "IDEVersion":"2026.1.1.34",
   },
   "name":"space simulator",
   "resources":[
@@ -129,6 +129,7 @@
     {"id":{"name":"ItemDrop","path":"objects/ItemDrop/ItemDrop.yy",},},
     {"id":{"name":"Main","path":"objects/Main/Main.yy",},},
     {"id":{"name":"Menu_ColorPicker","path":"objects/Menu_ColorPicker/Menu_ColorPicker.yy",},},
+    {"id":{"name":"Menu_Monitor","path":"objects/Menu_Monitor/Menu_Monitor.yy",},},
     {"id":{"name":"Menu_Pause","path":"objects/Menu_Pause/Menu_Pause.yy",},},
     {"id":{"name":"Menu_Planet","path":"objects/Menu_Planet/Menu_Planet.yy",},},
     {"id":{"name":"Menu_Script","path":"objects/Menu_Script/Menu_Script.yy",},},

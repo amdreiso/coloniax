@@ -23,6 +23,11 @@ spawn(px, py-600, "Spaceship", Formation);
 
 alarm[0] = 1;
 
+while (server < 0 && port < 65535) {
+	port ++;
+	server = network_create_server(network_socket_tcp, port, 4);
+}
+
 if (server < 0) {
 	CHAT.DebugNetwork($"HOST: Failed to create server.");
 } else {

@@ -184,7 +184,9 @@ createJetParticles = function(xoff, yoff, val) {
 propellerSound = -1;
 
 pilot = function() {
-	if (keyboard_check(ord("W")) && canMove) {
+	if (!canMove) return;
+
+	if (keyboard_check(ord("W"))) {
 		spd = min(maxSpeed, spd + acceleration);
 		var offset = 15;
 		createJetParticles(0, 0, 16);
@@ -212,11 +214,12 @@ pilot = function() {
 steer = function() {
 	if (!controlling) return;
 
-	var left = keyboard_check(ord("A"));
+	var left  = keyboard_check(ord("A"));
 	var right = keyboard_check(ord("D"));
 	
 	var speedFactor = (spd / maxSpeed);
 	var turnSpeedModifier = 1;
+
 	if (gyroIndependent) {
 		speedFactor = max(gyroMinimumSpeed, (spd / maxSpeed));
 		turnSpeedModifier = 1;
@@ -267,6 +270,21 @@ shoot = function() {
 	}
 }
 
+checkPlanetCollision = function() {
+	if (!instance_exists(Planet)) return; 
+
+	var p = instance_nearest(x, y, Planet);
+	if (!instance_exists(p)) return;
+	
+	var dx = x - p.x;
+	var dy = y - p.y;
+	var rx = p.radius;
+	var ry = p.radius / 2;
+
+	onPlanet = ((dx * dx) / (rx * rx) + (dy * dy) / (ry * ry) <= 1);
+	
+}
+
 // Draw
 spaceship = sSpaceship_Default;
 sprite_index = spaceship;
@@ -284,7 +302,7 @@ drawSpaceship = function(spr, x, y, scale, angle, color, alpha, offsetFactor = 1
 	
 	var ty = y+4;
 	if (controlling && !Paused && point_distance(x, y, mouse_x, mouse_y) > 5 && !isPuppet) {
-		turretAngle = point_direction(x, y, mouse_x, mouse_y);
+		turretAngle = floor(point_direction(x, y, mouse_x, mouse_y));
 	}
 	
 	var ts = (turretSpriteShootingCooldown) ? turretSpriteShooting : turretSprite;
@@ -347,7 +365,7 @@ inventory_add(inventory, eItemID.STEEL, 10);
 menuOpen = false;
 
 Input.Bind.Set(ord("E"), {}, , function(){
-	if (!controlling) return;
+	if (!controlling && !Paused) return;
 	
 	if (!instance_exists(Menu_Spaceship)){
 		instance_create_depth(200, 200, 0, Menu_Spaceship);
@@ -359,4 +377,9 @@ Input.Bind.Set(ord("E"), {}, , function(){
 GUI.Register(function(){
 	MINIMAP.Draw();
 });
+
+//var keys = struct_get_names(self);
+//for (var i = 0; i < array_length(keys); i++) {
+//	CHAT.SendTime($"{keys[i]} : {struct_get(self, keys[i])}");
+//}
 

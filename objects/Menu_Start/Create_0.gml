@@ -143,7 +143,7 @@ ipAddress.Push(new v_Text(T.Get("ip")+": "));
 ip = new v_InputText(Settings.network.ip);
 ipAddress.Push(ip);
 ipAddress.Push(new v_Text(T.Get("port")+": "));
-port = new v_InputText(string(Settings.network.port));
+port = new v_InputText(string(8080));
 ipAddress.Push(port);
 
 multiplayer.Push(ipAddress);

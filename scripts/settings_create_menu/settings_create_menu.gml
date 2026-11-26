@@ -135,6 +135,10 @@ function settings_create_menu(obj, x, y, separator=new v_Text(), style={}){
 
 	graphicSettings.Push(v_Separator());
 
+	graphicSettings.Push(new v_Button("Fullscreen", function(){
+		window_set_fullscreen(!window_get_fullscreen());
+	}));
+
 	graphicSettings.Push(new v_Button(T.Getc("resolution")+": "+Resolution.value, function(){
 		Resolution.Cycle();
 		graphicSettings.Edit("resolution_button", function(e){

@@ -20,11 +20,25 @@ zoomDown = function(){
 zoomUp = function(){
 	zoom -= (zoom > zoomPart) ? zoomPart : 0;
 }
+setZoom = function(value){
+	zoom = value;
+}
 
+previousTarget = noone;
 target = noone;
 
+returnCondition = function(){}
+returnToPreviousTarget = function(fn) {
+	returnCondition = fn;
+}
+
+setTarget = function(obj) {
+	previousTarget = target;
+	target = obj;
+}
+
 defaultFollowSpeed = 1;
-followSpeed = 1;
+followSpeed = 0.5;
 
 left	= 0;
 right	= 0;

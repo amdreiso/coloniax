@@ -9,6 +9,7 @@ orbitRadius = point_distance(sun.x, sun.y, x, y);
 orbitAngle = point_direction(sun.x, sun.y, x, y);	
 mass = 10000;
 motion = new Vec2();
+interactionRange = 1000; // how far to be clicked
 
 children = new Children();
 riders = [];

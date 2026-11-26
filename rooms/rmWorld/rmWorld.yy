@@ -33,8 +33,8 @@
     {"$GMRInstanceLayer":"","%Name":"Particles","depth":200,"effectEnabled":true,"effectType":null,"gridX":32,"gridY":32,"hierarchyFrozen":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"inheritSubLayers":true,"inheritVisibility":true,"instances":[],"layers":[],"name":"Particles","properties":[],"resourceType":"GMRInstanceLayer","resourceVersion":"2.0","userdefinedDepth":true,"visible":true,},
     {"$GMRInstanceLayer":"","%Name":"Planet","depth":300,"effectEnabled":true,"effectType":null,"gridX":32,"gridY":32,"hierarchyFrozen":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"inheritSubLayers":true,"inheritVisibility":true,"instances":[],"layers":[],"name":"Planet","properties":[],"resourceType":"GMRInstanceLayer","resourceVersion":"2.0","userdefinedDepth":false,"visible":true,},
     {"$GMREffectLayer":"","%Name":"Glow","depth":50000,"effectEnabled":true,"effectType":"_effect_glow","gridX":32,"gridY":32,"hierarchyFrozen":false,"inheritLayerDepth":false,"inheritLayerSettings":false,"inheritSubLayers":true,"inheritVisibility":true,"layers":[],"name":"Glow","properties":[
-        {"name":"g_GlowRadius","type":0,"value":"581",},
-        {"name":"g_GlowQuality","type":0,"value":"5.53",},
+        {"name":"g_GlowRadius","type":0,"value":"273",},
+        {"name":"g_GlowQuality","type":0,"value":"5.01",},
         {"name":"g_GlowIntensity","type":0,"value":"1",},
         {"name":"g_GlowGamma","type":0,"value":"2",},
         {"name":"g_GlowAlpha","type":0,"value":"1",},

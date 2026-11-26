@@ -23,6 +23,7 @@ function rich_text_init(){
 		char.rainbow = false;
 		return char;
 	}
+
 	RichText.Parse = function(str) {
 		var content = [];
 		var i = 1;
@@ -130,6 +131,7 @@ function rich_text_init(){
 		
 		return content;
 	}
+
 	RichText.Token = function(content) {
 		var tkn = {};
 		tkn.content = content;
@@ -138,15 +140,16 @@ function rich_text_init(){
 		for (var i = 0; i < array_length(tkn.content); i++) {
 			var char = tkn.content[i];
 			
-			if (char.type == eChatCharType.TEXT) {
+			if (char.type == RT_CharType.TEXT) {
 				tkn.width += string_width(char.value);
-			} else if (char.type == eChatCharType.SPRITE) {
+			} else if (char.type == RT_CharType.SPRITE) {
 				tkn.width += sprite_get_width(char.value) / 2;
 			}
 		}
 		
 		return tkn;
 	}
+
 	RichText.Draw = function(xx, yy, token, alpha=1) {
 		var pos = 0;
 		ALIGN_BOTTOM_LEFT;
@@ -154,7 +157,7 @@ function rich_text_init(){
 		for (var i = 0; i < array_length(token.content); i++) {
 			var char = token.content[i];
 			
-			if (char.type == eChatCharType.TEXT) {
+			if (char.type == RT_CharType.TEXT) {
 				draw_set_font(char.font);
 				var c = char.color;
 				var cnext = char.color;
@@ -173,12 +176,13 @@ function rich_text_init(){
 				draw_set_font(fnt_main);
 			}
 			
-			else if (char.type == eChatCharType.SPRITE) {
+			else if (char.type == RT_CharType.SPRITE) {
 				draw_sprite_ext(char.value, 0, xx + pos, yy, 1, 1, 0, char.color, alpha);
 				pos += sprite_get_width(char.value) / 2;
 			}
 		}
 	}
+
 	RichText.Create = function(str) {
 		var tkn = RichText.Token(RichText.Parse(str));
 		return tkn;

@@ -51,13 +51,13 @@ currentBuild = game_get_build();
 
 G Debug;
 Debug = {
-	console : false,
-	showDebugUI : false,
-	velaUI : false,
-	windowInfo : false,
-	showMessages : true,
-	showNetworkPackets : false,
-	showHitboxes : false,
+	console: false,
+	showDebugUI: false,
+	velaUI: false,
+	windowInfo: false,
+	showMessages: false,
+	showNetworkPackets: true,
+	showHitboxes: false,
 }
 
 function debug_get_input() {
@@ -67,21 +67,25 @@ function debug_get_input() {
 	if (holding) {
 		if (keyboard_check_pressed(ord("S"))) {
 			Debug.showNetworkPackets = !Debug.showNetworkPackets;
+			CHAT.Debug("Showing network packets");
 			used = true;
 		}
 		
 		if (keyboard_check_pressed(ord("H"))) {
 			Debug.showHitboxes = !Debug.showHitboxes;
+			CHAT.Debug("Showing hitboxes");
 			used = true;
 		}
 		
 		if (keyboard_check_pressed(ord("M"))) {
 			Debug.showMessages = !Debug.showMessages;
+			CHAT.Debug("Showing messages");
 			used = true;
 		}
 		
 		if (keyboard_check_pressed(ord("V"))) {
 			Debug.velaUI = !Debug.velaUI;
+			CHAT.Debug("Showing Vela UI");
 			used = true;
 		}
 	}

@@ -261,26 +261,26 @@ function item_data(){
 	}));
 	
 	// Gyros
-	ITEM.Register(eItemID.BASIC_GYRO, ITEM.Prototype(eItemType.SPACESHIP_MODULE_GYRO, -1, {
+	ITEM.Register(eItemID.BASIC_GYRO, ITEM.Prototype(eItemType.SPACESHIP_MODULE_GYRO, -1, "item_basic_gyro", {
 		turnForce: 0.085,
 		maxTurnSpeed: 1.05,
 	}));
 	
-	ITEM.Register(eItemID.IMPROVED_GYRO, ITEM.Prototype(eItemType.SPACESHIP_MODULE_GYRO, -1, {
-		turnForce: 0.2,
-		maxTurnSpeed: 2.0,
-		independent: true,
+	ITEM.Register(eItemID.IMPROVED_GYRO, ITEM.Prototype(eItemType.SPACESHIP_MODULE_GYRO, -1, "item_improved_gyro", {
+		turnForce: 0.4,
+		maxTurnSpeed: 3.0,
 		minSpeed: 0.45,
+		independent: true,
 	}));
 	
 	// Propellers
-	ITEM.Register(eItemID.BASIC_PROPELLER, ITEM.Prototype(eItemType.SPACESHIP_MODULE_PROPELLER, -1, {
+	ITEM.Register(eItemID.BASIC_PROPELLER, ITEM.Prototype(eItemType.SPACESHIP_MODULE_PROPELLER, -1, "item_basic_propeller", {
 		acceleration: 0.025,
 		deceleration: 0.005,
 		maxSpeed: 5,
 	}));
 	
-	ITEM.Register(eItemID.IMPROVED_PROPELLER, ITEM.Prototype(eItemType.SPACESHIP_MODULE_PROPELLER, -1, {
+	ITEM.Register(eItemID.IMPROVED_PROPELLER, ITEM.Prototype(eItemType.SPACESHIP_MODULE_PROPELLER, -1, "item_improved_propeller", {
 		acceleration: 0.03,
 		deceleration: 0.005,
 		maxSpeed: 5,
@@ -291,7 +291,7 @@ function item_data(){
 	#region Projectiles
 	
 	// Turret Projectiles
-	ITEM.Register(eItemID.BASIC_PROJECTILE, ITEM.Prototype(eItemType.TURRET_PROJECTILE, -1, {
+	ITEM.Register(eItemID.BASIC_PROJECTILE, ITEM.Prototype(eItemType.TURRET_PROJECTILE, -1, "item_basic_projectile", {
 		sprite: sTurretProjectile_Basic,
 		spd: 10,
 		knockback: 0.4,

@@ -1,5 +1,6 @@
 function orbit_set(planet=false) {
-	var body = sun;
+	var body = instance_nearest(x, y, Sun);
+	if (!instance_exists(body)) return;
 
 	var r = point_distance(body.x, body.y, x, y);
 	if (r < 1) return;

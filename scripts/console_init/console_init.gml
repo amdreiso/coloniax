@@ -13,11 +13,11 @@ function console_init()
 	CONSOLE = {
 		commands		: [],
 		logs			: [],
-		maxlogs			: 30,
+		maxlogs			: 1000,
 		logRewind		: -1,
 		scroll			: 0,
 		scrollSpeed		: 8,
-		pos				: {x:1,y:1},
+		pos				: {x:0,y:0},
 	};
 	
 	CONSOLE.Run = function(input, showHistory = false) {
@@ -356,7 +356,6 @@ function command_data(){
 		_log("Programming by Andrei Scatolin",	c_aqua);
 		_log("Art by Andrei Scatolin",			c_aqua);
 		_log("Audio Design by Andrei Scatolin",	c_aqua);
-		_log("Special thank to the chud: Logan aka So_Damn_Close",	c_aqua);
 		_log("-------------------------------",	c_red);
 	});
 
@@ -397,7 +396,6 @@ function command_data(){
 			return;
 		}
 		var value = args[1];
-	
 		var r = variable_instance_get(obj, value);
 	
 		if (is_struct(r)) {
@@ -427,7 +425,31 @@ function command_data(){
 		
 	});
 
+	COMMAND.Register("instances", 0, function(args) {
+		var nums = {};
+		for (var i = 0; i < instance_number(all); i++) {
+			var inst = instance_find(all, i);
+			var name = object_get_name(inst.object_index);
+			if (nums[$ name] == undefined)
+				nums[$ name] = 1;
+			else nums[$ name]++;
+		}
+		var names = struct_get_names(nums);
+		for (var j = 0; j < array_length(names); j++) {
+			var name = names[j];
+			log($"{name}: {struct_get(nums, name)}");
+		}
+	});
+
+	COMMAND.Register("monitor", 1, function(args) {
+		var inst = args[0];
+		var asset = asset_get_index(inst); 
+		if (!asset) {
+			_err($"Instance '{inst}' doesn't exist.");
+			return;
+		}
+		var mon = spawn(0, 0, 0, Menu_Monitor, {
+			instance: asset,
+		});
+	});
 }
-
-
-

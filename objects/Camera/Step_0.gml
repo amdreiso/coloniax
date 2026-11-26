@@ -1,6 +1,12 @@
 
 if (target == noone) return;
 if (!instance_exists(target)) return;
+if (Paused) return;
+
+if (returnCondition()) {
+	setTarget(previousTarget);
+	returnCondition = function(){}
+}
 
 var shake = power(shakeValue, shakePower);
 
@@ -14,8 +20,6 @@ var zoomHeight	= height * zoomTo;
 
 camera_set_view_pos(index, x - zoomWidth / 2, y - zoomHeight / 2);
 camera_set_view_size(index, zoomWidth, zoomHeight);
-
-if (Paused) return;
 
 zoom += (mouse_wheel_down() && zoom < 30) ? zoomPart : 0;
 zoom -= (mouse_wheel_up() && zoom > zoomPart) ? zoomPart : 0;

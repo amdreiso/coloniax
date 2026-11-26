@@ -53,6 +53,8 @@ function network_receive_packet(buffer, socket, size){
 					
 				}
 			}
+
+			log("[NETWORK]: received 'WELCOME' packet");
 			break;
 		}
 
@@ -62,6 +64,8 @@ function network_receive_packet(buffer, socket, size){
 			var py = buffer_read(buffer, buffer_f32);
 			
 			network_create_controllable_player(px, py, pid, true);
+
+			log("[NETWORK]: received 'SPAWN' packet");
 			break;
 		}
 
@@ -86,7 +90,8 @@ function network_receive_packet(buffer, socket, size){
 					}
 				}
 			}
-			
+
+			log("[NETWORK]: received 'STATE' packet");
 			break;
 		}
 		
@@ -94,6 +99,8 @@ function network_receive_packet(buffer, socket, size){
 			var sender = buffer_read(buffer, buffer_u8);
 			var text = buffer_read(buffer, buffer_string);
 			CHAT.Send(text, true);
+
+			log("[NETWORK]: received 'CHAT_MESSAGE' packet");
 			break;
 		}
 	}

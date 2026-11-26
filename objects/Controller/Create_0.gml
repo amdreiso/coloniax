@@ -35,7 +35,7 @@ update = function() {
 	x = inst.x;
 	y = inst.y;
 	
-	switch (inst) {
+	switch (controlledObject) {
 		case "Spaceship":
 			dir = inst.dir;
 			
@@ -46,3 +46,4 @@ update = function() {
 			break;
 	}
 }
+

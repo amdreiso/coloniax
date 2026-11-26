@@ -50,17 +50,7 @@ knockback.x = lerp(knockback.x, 0, 0.03);
 knockback.y = lerp(knockback.y, 0, 0.03);
 
 // Player
-if (instance_exists(Planet)) {
-	var planet = instance_nearest(x, y, Planet);
-	
-	var dx = x - planet.x;
-	var dy = y - planet.y;
-	var rx = planet.radius;
-	var ry = planet.radius / 2;
-
-	//var spaceshipCollision = (distance_to_object(Spaceship) < radius / 2);
-	onPlanet = ((dx * dx) / (rx * rx) + (dy * dy) / (ry * ry) <= 1);
-}
+checkPlanetCollision();
 
 if (keyboard_check_pressed(vk_space)) {
 	if (!player.ejected && canMove) {

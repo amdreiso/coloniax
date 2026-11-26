@@ -43,5 +43,10 @@ item_basicsolarpanel = painel solar básico
 item_basicminingdrill = perfuradora básica
 item_basicturret = torreta básica
 item_doubleturret = torreta dupla
+item_basic_gyro = giroscópio básico
+item_improved_gyro = giroscópio aprimorado
+item_basic_propeller = propulsor básico
+item_improved_propeller = propulsor aprimorado
+item_basic_projectile = projétil básico
 ";
 }

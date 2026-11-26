@@ -8,6 +8,11 @@ if (hovering) {
 	var p = self;
 	
 	if (mouse_check_button_released(mb_left) && !instance_exists(Menu_Planet)) {
+		Camera.setTarget(self);
+		Camera.returnToPreviousTarget(function(){
+			return (point_distance(Camera.target.x, Camera.target.y, Camera.previousTarget.x, Camera.previousTarget.y) > interactionRange);
+		});
+
 		spawn(window_mouse_get_x(), window_mouse_get_y(), 0, Menu_Planet, {
 			planet: p,
 		});

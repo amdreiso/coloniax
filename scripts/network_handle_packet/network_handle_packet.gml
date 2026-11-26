@@ -28,6 +28,8 @@ function network_handle_packet(buffer, socketID, size){
 			        target.dir = dir;
 			    }
 			}
+
+			log("[NETWORK]: handled 'PLAYER_INPUT' packet");
 			break;
 		}
 		
@@ -46,6 +48,7 @@ function network_handle_packet(buffer, socketID, size){
 			
 		    CHAT.Send(text, true);
 			
+			log("[NETWORK]: handled 'CHAT_MESSAGE' packet");
 			break;
 		}
 	}
